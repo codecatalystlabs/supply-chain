@@ -1,0 +1,91 @@
+basePath: /api/v1
+definitions:
+  dto.StockOnHandCreateDTO:
+    properties:
+      src_batch_number:
+        type: string
+      src_expiry_date:
+        type: string
+      src_facility_code:
+        type: string
+      src_product_code:
+        type: string
+      src_quantity:
+        type: integer
+      src_system_code:
+        type: string
+    required:
+    - src_batch_number
+    - src_expiry_date
+    - src_facility_code
+    - src_product_code
+    - src_quantity
+    - src_system_code
+    type: object
+  dto.StockOnHandResponseDTO:
+    properties:
+      id:
+        type: integer
+      src_batch_number:
+        type: string
+      src_expiry_date:
+        type: string
+      src_facility_code:
+        type: string
+      src_product_code:
+        type: string
+      src_quantity:
+        type: integer
+      src_system_code:
+        type: string
+      src_timestamp:
+        type: string
+      sync_status:
+        type: integer
+      validation_status:
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: ict@moh.go.ug
+    name: ICT Division
+  description: Backend API for emergency call & dispatch system
+  termsOfService: https://health.go.ug
+  title: MoH Emergency Dispatch API
+  version: "1.0"
+paths:
+  /api/v1/stock/on-hand:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Stock payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.StockOnHandCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.StockOnHandResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create stock on hand
+      tags:
+      - StockOnHand
+swagger: "2.0"

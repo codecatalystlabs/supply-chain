@@ -1,59 +1,35 @@
 package dto
 
 import (
-	"net/http"
 	"time"
-
-	"github.com/gin-gonic/gin"
-
-	"supply-chain/internals/config"
-	"supply-chain/internals/dto"
-	"supply-chain/internals/models"
 )
 
-func CreateStockOnHand(c *gin.Context) {
-	var payload dto.StockOnHandCreateDTO
+/* ========= CREATE ========= */
+type StockOnHandCreateDTO struct {
+	SrcSystemCode   string    `json:"src_system_code" binding:"required"`
+	SrcFacilityCode string    `json:"src_facility_code" binding:"required"`
+	SrcProductCode  string    `json:"src_product_code" binding:"required"`
+	SrcBatchNumber  string    `json:"src_batch_number" binding:"required"`
+	SrcQuantity     int       `json:"src_quantity" binding:"required,gt=0"`
+	SrcExpiryDate   time.Time `json:"src_expiry_date" binding:"required"`
+}
 
-	// Validate JSON payload
-	if err := c.ShouldBindJSON(&payload); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status":  "error",
-			"message": "Invalid request payload",
-			"details": err.Error(),
-		})
-		return
-	}
+/* ========= UPDATE ========= */
+type StockOnHandUpdateDTO struct {
+	SrcQuantity   int       `json:"src_quantity" binding:"omitempty,gt=0"`
+	SrcExpiryDate time.Time `json:"src_expiry_date" binding:"omitempty"`
+}
 
-	// Map DTO → Model
-	record := models.StockOnHand{
-		SrcSystemCode:   payload.SrcSystemCode,
-		SrcFacilityCode: payload.SrcFacilityCode,
-		SrcProductCode:  payload.SrcProductCode,
-		SrcBatchNumber:  payload.SrcBatchNumber,
-		SrcQuantity:     payload.SrcQuantity,
-		SrcExpiryDate:   payload.SrcExpiryDate,
-		SrcTimestamp:    time.Now(),
-
-		BaseModel: models.BaseModel{
-			ValidationStatus: 0,
-			SyncStatus:       0,
-		},
-	}
-
-	//Persist
-	if err := config.DB.Create(&record).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"status":  "error",
-			"message": "Failed to create stock record",
-			"details": err.Error(),
-		})
-		return
-	}
-
-	//Response
-	c.JSON(http.StatusCreated, gin.H{
-		"status":  "success",
-		"message": "Stock on hand recorded successfully",
-		"data":    record,
-	})
+/* ========= RESPONSE ========= */
+type StockOnHandResponseDTO struct {
+	ID               uint64    `json:"id"`
+	SrcSystemCode    string    `json:"src_system_code"`
+	SrcFacilityCode  string    `json:"src_facility_code"`
+	SrcTimestamp     time.Time `json:"src_timestamp"`
+	SrcProductCode   string    `json:"src_product_code"`
+	SrcBatchNumber   string    `json:"src_batch_number"`
+	SrcQuantity      int       `json:"src_quantity"`
+	SrcExpiryDate    time.Time `json:"src_expiry_date"`
+	ValidationStatus int16     `json:"validation_status"`
+	SyncStatus       int16     `json:"sync_status"`
 }

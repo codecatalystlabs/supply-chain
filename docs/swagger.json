@@ -1,0 +1,136 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Backend API for emergency call \u0026 dispatch system",
+        "title": "MoH Emergency Dispatch API",
+        "termsOfService": "https://health.go.ug",
+        "contact": {
+            "name": "ICT Division",
+            "email": "ict@moh.go.ug"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {
+        "/api/v1/stock/on-hand": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StockOnHand"
+                ],
+                "summary": "Create stock on hand",
+                "parameters": [
+                    {
+                        "description": "Stock payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.StockOnHandCreateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.StockOnHandResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dto.StockOnHandCreateDTO": {
+            "type": "object",
+            "required": [
+                "src_batch_number",
+                "src_expiry_date",
+                "src_facility_code",
+                "src_product_code",
+                "src_quantity",
+                "src_system_code"
+            ],
+            "properties": {
+                "src_batch_number": {
+                    "type": "string"
+                },
+                "src_expiry_date": {
+                    "type": "string"
+                },
+                "src_facility_code": {
+                    "type": "string"
+                },
+                "src_product_code": {
+                    "type": "string"
+                },
+                "src_quantity": {
+                    "type": "integer"
+                },
+                "src_system_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.StockOnHandResponseDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "src_batch_number": {
+                    "type": "string"
+                },
+                "src_expiry_date": {
+                    "type": "string"
+                },
+                "src_facility_code": {
+                    "type": "string"
+                },
+                "src_product_code": {
+                    "type": "string"
+                },
+                "src_quantity": {
+                    "type": "integer"
+                },
+                "src_system_code": {
+                    "type": "string"
+                },
+                "src_timestamp": {
+                    "type": "string"
+                },
+                "sync_status": {
+                    "type": "integer"
+                },
+                "validation_status": {
+                    "type": "integer"
+                }
+            }
+        }
+    }
+}
