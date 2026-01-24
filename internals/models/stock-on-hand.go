@@ -18,7 +18,6 @@ type StockOnHand struct {
 	SrcBatchNumber  string    `gorm:"column:src_batch_number;size:100;not null" json:"src_batch_number"`
 	SrcQuantity     int       `gorm:"column:src_quantity;not null" json:"src_quantity"`
 	SrcExpiryDate   time.Time `gorm:"column:src_expiry_date;not null" json:"src_expiry_date"`
-
 	BaseModel
 }
 
