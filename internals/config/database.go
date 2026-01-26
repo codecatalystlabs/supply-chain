@@ -6,6 +6,8 @@ import (
 	"os"
 	"time"
 
+	"supply-chain/internals/models"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -42,4 +44,23 @@ func ConnectDatabase() {
 
 	DB = db
 	log.Println("✅ Database connected")
+
+	// Auto-migrate models
+	if err := DB.AutoMigrate(
+		&models.StockOnHand{},
+		&models.StockDispensed{},
+		&models.PurchaseOrder{},
+		&models.ProcurementPlan{},
+		&models.ProcurementPlanItem{},
+		&models.PatientVisit{},
+		&models.StockReturn{},
+		&models.ProductAmc{},
+		&models.StockAdjustment{},
+		&models.PharmacyStock{},
+		&models.GoodsReceipt{},
+		&models.WarehouseOrder{},
+		&models.WarehouseDelivery{},
+	); err != nil {
+		log.Fatal("Failed to migrate database models:", err)
+	}
 }
