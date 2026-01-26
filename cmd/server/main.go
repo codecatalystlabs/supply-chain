@@ -21,7 +21,7 @@ import (
 // @description Backend API for emergency call & dispatch system
 // @termsOfService https://health.go.ug
 
-// @contact.name ICT Division
+// @contact.name DHI
 // @contact.email ict@moh.go.ug
 
 // @host localhost:8080
@@ -39,15 +39,25 @@ func main() {
 	// Swagger
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	api := router.Group("/api/v1/stock")
+	stock := router.Group("/api/v1/stock")
 	{
-		api.POST("/on-hand", handlers.CreateStockOnHand)
-		api.GET("/on-hand", handlers.ListStockOnHand)
-		api.GET("/on-hand/:id", handlers.GetStockOnHand)
-		api.PUT("/on-hand/:id", handlers.UpdateStockOnHand)
-		api.DELETE("/on-hand/:id", handlers.DeleteStockOnHand)
+		stock.POST("/on-hand", handlers.CreateStockOnHand)
+		stock.GET("/on-hand", handlers.ListStockOnHand)
+		stock.GET("/on-hand/:id", handlers.GetStockOnHand)
+		stock.PUT("/on-hand/:id", handlers.UpdateStockOnHand)
+		stock.DELETE("/on-hand/:id", handlers.DeleteStockOnHand)
+	}
+	// Purchase Order routes
+	po := router.Group("/api/v1/purchase-order")
+	{
+		po.POST("/", handlers.CreatePurchaseOrder)
+		po.GET("/:id", handlers.GetPurchaseOrder)
+		po.PUT("/:id", handlers.UpdatePurchaseOrder)
+		po.DELETE("/:id", handlers.DeletePurchaseOrder)
+		po.GET("/", handlers.ListPurchaseOrders)
 	}
 
+	// Run server
 	port := os.Getenv("APP_PORT")
 	router.Run(":" + port)
 }
