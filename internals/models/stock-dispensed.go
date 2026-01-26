@@ -13,10 +13,7 @@ type StockDispensed struct {
 	DspDispensedQuantity float64 `gorm:"not null"`
 	DspPatientHash       string  `gorm:"size:100;not null"`
 	DspExpiryDate        time.Time
-	ValidationStatus     int16   `gorm:"default:0"`
-	ValidationMessage    *string `gorm:"size:100"`
-	SyncStatus           int16   `gorm:"default:0"`
-	AddDate              *time.Time
+	BaseModel
 }
 
 func (StockDispensed) TableName() string {

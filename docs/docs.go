@@ -11,7 +11,7 @@ const docTemplate = `{
         "title": "{{.Title}}",
         "termsOfService": "https://health.go.ug",
         "contact": {
-            "name": "ICT Division",
+            "name": "DHI",
             "email": "ict@moh.go.ug"
         },
         "version": "{{.Version}}"
@@ -19,7 +19,1607 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/goods-receipt": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "GoodsReceipt"
+                ],
+                "summary": "List goods receipts",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.GoodsReceiptResponseDTO"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "GoodsReceipt"
+                ],
+                "summary": "Create goods receipt",
+                "parameters": [
+                    {
+                        "description": "Goods receipt payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.GoodsReceiptCreateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GoodsReceiptResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/goods-receipt/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "GoodsReceipt"
+                ],
+                "summary": "Get goods receipt by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GoodsReceiptResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "GoodsReceipt"
+                ],
+                "summary": "Update goods receipt",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.GoodsReceiptUpdateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.GoodsReceiptResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "GoodsReceipt"
+                ],
+                "summary": "Delete goods receipt",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/patient-visit": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PatientVisit"
+                ],
+                "summary": "Create patient visit",
+                "parameters": [
+                    {
+                        "description": "Patient visit payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PatientVisitCreateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.PatientVisitResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/pharmacy-stock": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PharmacyStock"
+                ],
+                "summary": "List pharmacy stock",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.PharmacyStockResponseDTO"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PharmacyStock"
+                ],
+                "summary": "Create pharmacy stock",
+                "parameters": [
+                    {
+                        "description": "Pharmacy stock payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PharmacyStockCreateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.PharmacyStockResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/pharmacy-stock/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PharmacyStock"
+                ],
+                "summary": "Get pharmacy stock by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.PharmacyStockResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PharmacyStock"
+                ],
+                "summary": "Update pharmacy stock",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PharmacyStockUpdateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.PharmacyStockResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "PharmacyStock"
+                ],
+                "summary": "Delete pharmacy stock",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/procurement": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ProcurementPlan"
+                ],
+                "summary": "List procurement plans",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.ProcurementPlanResponseDTO"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ProcurementPlan"
+                ],
+                "summary": "Create procurement plan",
+                "parameters": [
+                    {
+                        "description": "Procurement plan payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProcurementPlanCreateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProcurementPlanResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/procurement/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ProcurementPlan"
+                ],
+                "summary": "Get procurement plan",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProcurementPlanResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "ProcurementPlan"
+                ],
+                "summary": "Delete procurement plan",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/product-amc": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ProductAmc"
+                ],
+                "summary": "List product AMC",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.ProductAmcResponseDTO"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ProductAmc"
+                ],
+                "summary": "Create product AMC",
+                "parameters": [
+                    {
+                        "description": "Product AMC payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProductAmcCreateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProductAmcResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/product-amc/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ProductAmc"
+                ],
+                "summary": "Get product AMC by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProductAmcResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ProductAmc"
+                ],
+                "summary": "Update product AMC",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProductAmcUpdateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ProductAmcResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "ProductAmc"
+                ],
+                "summary": "Delete product AMC",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/purchase-order": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PurchaseOrder"
+                ],
+                "summary": "List purchase orders",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.PurchaseOrderResponseDTO"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PurchaseOrder"
+                ],
+                "summary": "Create purchase order",
+                "parameters": [
+                    {
+                        "description": "Purchase order payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PurchaseOrderCreateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.PurchaseOrderResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/purchase-order/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PurchaseOrder"
+                ],
+                "summary": "Get purchase order by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.PurchaseOrderResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PurchaseOrder"
+                ],
+                "summary": "Update purchase order",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PurchaseOrderUpdateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.PurchaseOrderResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "PurchaseOrder"
+                ],
+                "summary": "Delete purchase order",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/stock/adjustment": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StockAdjustment"
+                ],
+                "summary": "List stock adjustments",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.StockAdjustmentResponseDTO"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StockAdjustment"
+                ],
+                "summary": "Create stock adjustment",
+                "parameters": [
+                    {
+                        "description": "Stock adjustment payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.StockAdjustmentCreateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.StockAdjustmentResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/stock/adjustment/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StockAdjustment"
+                ],
+                "summary": "Get stock adjustment by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.StockAdjustmentResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StockAdjustment"
+                ],
+                "summary": "Update stock adjustment",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.StockAdjustmentUpdateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.StockAdjustmentResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "StockAdjustment"
+                ],
+                "summary": "Delete stock adjustment",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/stock/dispensed": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StockDispensed"
+                ],
+                "summary": "List stock dispensed",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.StockDispensedResponseDTO"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StockDispensed"
+                ],
+                "summary": "Create stock dispensed",
+                "parameters": [
+                    {
+                        "description": "Stock dispensed payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.StockDispensedCreateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.StockDispensedResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/stock/dispensed/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StockDispensed"
+                ],
+                "summary": "Get stock dispensed by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.StockDispensedResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StockDispensed"
+                ],
+                "summary": "Update stock dispensed",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.StockDispensedUpdateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.StockDispensedResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "StockDispensed"
+                ],
+                "summary": "Delete stock dispensed",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/stock/on-hand": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StockOnHand"
+                ],
+                "summary": "List stock on hand",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.StockOnHandResponseDTO"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
             "post": {
                 "consumes": [
                     "application/json"
@@ -69,9 +1669,1224 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/v1/stock/on-hand/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StockOnHand"
+                ],
+                "summary": "List stock on hand",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.StockOnHandResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StockOnHand"
+                ],
+                "summary": "Update stock on hand",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Stock payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.StockOnHandUpdateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.StockOnHandResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StockOnHand"
+                ],
+                "summary": "Delete stock on hand",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/stock/return": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StockReturn"
+                ],
+                "summary": "List stock returns",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.StockReturnResponseDTO"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StockReturn"
+                ],
+                "summary": "Create stock return",
+                "parameters": [
+                    {
+                        "description": "Stock return payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.StockReturnCreateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.StockReturnResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/stock/return/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StockReturn"
+                ],
+                "summary": "Get stock return by id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.StockReturnResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StockReturn"
+                ],
+                "summary": "Update stock return",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.StockReturnUpdateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.StockReturnResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "StockReturn"
+                ],
+                "summary": "Delete stock return",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/warehouse-orders": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WarehouseOrder"
+                ],
+                "summary": "List warehouse orders",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.WarehouseOrderResponseDTO"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WarehouseOrder"
+                ],
+                "summary": "Receive warehouse order",
+                "parameters": [
+                    {
+                        "description": "Warehouse order payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.WarehouseOrderCreateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.WarehouseOrderResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/warehouse-orders/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "WarehouseOrder"
+                ],
+                "summary": "Get warehouse order",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.WarehouseOrderResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "dto.GoodsReceiptCreateDTO": {
+            "type": "object",
+            "required": [
+                "grn_batch_number",
+                "grn_expiry_date",
+                "grn_facility_code",
+                "grn_facility_receipt_number",
+                "grn_order_number",
+                "grn_product_code",
+                "grn_quantity",
+                "grn_receipt_date",
+                "grn_supplier_code",
+                "grn_system_code",
+                "grn_warehouse_ref_number"
+            ],
+            "properties": {
+                "grn_batch_number": {
+                    "type": "string"
+                },
+                "grn_expiry_date": {
+                    "type": "string"
+                },
+                "grn_facility_code": {
+                    "type": "string"
+                },
+                "grn_facility_receipt_number": {
+                    "type": "string"
+                },
+                "grn_order_number": {
+                    "type": "string"
+                },
+                "grn_product_code": {
+                    "type": "string"
+                },
+                "grn_quantity": {
+                    "type": "integer"
+                },
+                "grn_receipt_date": {
+                    "type": "string"
+                },
+                "grn_supplier_code": {
+                    "type": "string"
+                },
+                "grn_system_code": {
+                    "type": "string"
+                },
+                "grn_warehouse_ref_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.GoodsReceiptResponseDTO": {
+            "type": "object",
+            "properties": {
+                "grn_batch_number": {
+                    "type": "string"
+                },
+                "grn_expiry_date": {
+                    "type": "string"
+                },
+                "grn_facility_code": {
+                    "type": "string"
+                },
+                "grn_facility_receipt_number": {
+                    "type": "string"
+                },
+                "grn_order_number": {
+                    "type": "string"
+                },
+                "grn_product_code": {
+                    "type": "string"
+                },
+                "grn_quantity": {
+                    "type": "integer"
+                },
+                "grn_receipt_date": {
+                    "type": "string"
+                },
+                "grn_supplier_code": {
+                    "type": "string"
+                },
+                "grn_system_code": {
+                    "type": "string"
+                },
+                "grn_timestamp": {
+                    "type": "string"
+                },
+                "grn_warehouse_ref_number": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "sync_status": {
+                    "type": "integer"
+                },
+                "validation_status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.GoodsReceiptUpdateDTO": {
+            "type": "object",
+            "properties": {
+                "grn_quantity": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.PatientVisitCreateDTO": {
+            "type": "object",
+            "required": [
+                "vst_age",
+                "vst_batch_number",
+                "vst_facility_code",
+                "vst_patient_category",
+                "vst_patient_code",
+                "vst_product_code",
+                "vst_quantity",
+                "vst_regimen_code",
+                "vst_sex",
+                "vst_system_code",
+                "vst_visit_date"
+            ],
+            "properties": {
+                "vst_age": {
+                    "type": "integer"
+                },
+                "vst_batch_number": {
+                    "type": "string"
+                },
+                "vst_facility_code": {
+                    "type": "string"
+                },
+                "vst_patient_category": {
+                    "type": "string"
+                },
+                "vst_patient_code": {
+                    "type": "string"
+                },
+                "vst_product_code": {
+                    "type": "string"
+                },
+                "vst_quantity": {
+                    "type": "number"
+                },
+                "vst_regimen_code": {
+                    "type": "string"
+                },
+                "vst_sex": {
+                    "type": "string"
+                },
+                "vst_system_code": {
+                    "type": "string"
+                },
+                "vst_visit_date": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.PatientVisitResponseDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "sync_status": {
+                    "type": "integer"
+                },
+                "validation_status": {
+                    "type": "integer"
+                },
+                "vst_age": {
+                    "type": "integer"
+                },
+                "vst_batch_number": {
+                    "type": "string"
+                },
+                "vst_facility_code": {
+                    "type": "string"
+                },
+                "vst_patient_category": {
+                    "type": "string"
+                },
+                "vst_patient_code": {
+                    "type": "string"
+                },
+                "vst_product_code": {
+                    "type": "string"
+                },
+                "vst_quantity": {
+                    "type": "number"
+                },
+                "vst_regimen_code": {
+                    "type": "string"
+                },
+                "vst_sex": {
+                    "type": "string"
+                },
+                "vst_system_code": {
+                    "type": "string"
+                },
+                "vst_timestamp": {
+                    "type": "string"
+                },
+                "vst_visit_date": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.PharmacyStockCreateDTO": {
+            "type": "object",
+            "required": [
+                "pha_batch_number",
+                "pha_expiry_date",
+                "pha_facility_code",
+                "pha_product_code",
+                "pha_quantity",
+                "pha_system_code"
+            ],
+            "properties": {
+                "pha_batch_number": {
+                    "type": "string"
+                },
+                "pha_expiry_date": {
+                    "type": "string"
+                },
+                "pha_facility_code": {
+                    "type": "string"
+                },
+                "pha_product_code": {
+                    "type": "string"
+                },
+                "pha_quantity": {
+                    "type": "integer"
+                },
+                "pha_system_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.PharmacyStockResponseDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "pha_batch_number": {
+                    "type": "string"
+                },
+                "pha_expiry_date": {
+                    "type": "string"
+                },
+                "pha_facility_code": {
+                    "type": "string"
+                },
+                "pha_product_code": {
+                    "type": "string"
+                },
+                "pha_quantity": {
+                    "type": "integer"
+                },
+                "pha_system_code": {
+                    "type": "string"
+                },
+                "pha_timestamp": {
+                    "type": "string"
+                },
+                "sync_status": {
+                    "type": "integer"
+                },
+                "validation_status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.PharmacyStockUpdateDTO": {
+            "type": "object",
+            "properties": {
+                "pha_quantity": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ProcurementPlanCreateDTO": {
+            "type": "object",
+            "required": [
+                "items",
+                "plan_system_code",
+                "store_code"
+            ],
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.ProcurementPlanItemCreateDTO"
+                    }
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "plan_system_code": {
+                    "type": "string"
+                },
+                "store_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ProcurementPlanItemCreateDTO": {
+            "type": "object",
+            "required": [
+                "needed_by",
+                "product_code",
+                "quantity"
+            ],
+            "properties": {
+                "needed_by": {
+                    "type": "string"
+                },
+                "product_code": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ProcurementPlanItemResponseDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "needed_by": {
+                    "type": "string"
+                },
+                "procurement_id": {
+                    "type": "integer"
+                },
+                "product_code": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ProcurementPlanResponseDTO": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.ProcurementPlanItemResponseDTO"
+                    }
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "plan_system_code": {
+                    "type": "string"
+                },
+                "store_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.ProductAmcCreateDTO": {
+            "type": "object",
+            "required": [
+                "amc_date",
+                "amc_facility_code",
+                "amc_month",
+                "amc_product_code",
+                "amc_product_name",
+                "amc_system_code",
+                "amc_value",
+                "amc_year"
+            ],
+            "properties": {
+                "amc_date": {
+                    "type": "string"
+                },
+                "amc_facility_code": {
+                    "type": "string"
+                },
+                "amc_month": {
+                    "type": "integer"
+                },
+                "amc_product_code": {
+                    "type": "string"
+                },
+                "amc_product_name": {
+                    "type": "string"
+                },
+                "amc_system_code": {
+                    "type": "string"
+                },
+                "amc_value": {
+                    "type": "number"
+                },
+                "amc_year": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ProductAmcResponseDTO": {
+            "type": "object",
+            "properties": {
+                "amc_date": {
+                    "type": "string"
+                },
+                "amc_days_out_stock": {
+                    "type": "number"
+                },
+                "amc_facility_code": {
+                    "type": "string"
+                },
+                "amc_month": {
+                    "type": "integer"
+                },
+                "amc_product_code": {
+                    "type": "string"
+                },
+                "amc_product_name": {
+                    "type": "string"
+                },
+                "amc_system_code": {
+                    "type": "string"
+                },
+                "amc_timestamp": {
+                    "type": "string"
+                },
+                "amc_value": {
+                    "type": "number"
+                },
+                "amc_year": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "sync_status": {
+                    "type": "integer"
+                },
+                "validation_status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.ProductAmcUpdateDTO": {
+            "type": "object",
+            "properties": {
+                "amc_value": {
+                    "type": "number"
+                }
+            }
+        },
+        "dto.PurchaseOrderCreateDTO": {
+            "type": "object",
+            "required": [
+                "ord_facility_code",
+                "ord_order_date",
+                "ord_order_number",
+                "ord_order_ref_number",
+                "ord_ordered_quantity",
+                "ord_product_code",
+                "ord_system_code"
+            ],
+            "properties": {
+                "ord_facility_code": {
+                    "type": "string"
+                },
+                "ord_order_date": {
+                    "type": "string"
+                },
+                "ord_order_number": {
+                    "type": "string"
+                },
+                "ord_order_ref_number": {
+                    "type": "string"
+                },
+                "ord_ordered_quantity": {
+                    "type": "integer"
+                },
+                "ord_product_code": {
+                    "type": "string"
+                },
+                "ord_system_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.PurchaseOrderResponseDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "ord_facility_code": {
+                    "type": "string"
+                },
+                "ord_order_date": {
+                    "type": "string"
+                },
+                "ord_order_number": {
+                    "type": "string"
+                },
+                "ord_order_ref_number": {
+                    "type": "string"
+                },
+                "ord_ordered_quantity": {
+                    "type": "integer"
+                },
+                "ord_product_code": {
+                    "type": "string"
+                },
+                "ord_system_code": {
+                    "type": "string"
+                },
+                "ord_timestamp": {
+                    "type": "string"
+                },
+                "sync_status": {
+                    "type": "integer"
+                },
+                "validation_status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.PurchaseOrderUpdateDTO": {
+            "type": "object",
+            "properties": {
+                "ord_ordered_quantity": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.StockAdjustmentCreateDTO": {
+            "type": "object",
+            "required": [
+                "adj_adjustment_date",
+                "adj_adjustment_reason",
+                "adj_adjustment_type",
+                "adj_batch_number",
+                "adj_expiry_date",
+                "adj_facility_code",
+                "adj_product_code",
+                "adj_quantity",
+                "adj_system_code"
+            ],
+            "properties": {
+                "adj_adjustment_date": {
+                    "type": "string"
+                },
+                "adj_adjustment_reason": {
+                    "type": "string"
+                },
+                "adj_adjustment_type": {
+                    "type": "string"
+                },
+                "adj_batch_number": {
+                    "type": "string"
+                },
+                "adj_expiry_date": {
+                    "type": "string"
+                },
+                "adj_facility_code": {
+                    "type": "string"
+                },
+                "adj_product_code": {
+                    "type": "string"
+                },
+                "adj_quantity": {
+                    "type": "integer"
+                },
+                "adj_system_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.StockAdjustmentResponseDTO": {
+            "type": "object",
+            "properties": {
+                "adj_adjustment_date": {
+                    "type": "string"
+                },
+                "adj_adjustment_reason": {
+                    "type": "string"
+                },
+                "adj_adjustment_type": {
+                    "type": "string"
+                },
+                "adj_batch_number": {
+                    "type": "string"
+                },
+                "adj_expiry_date": {
+                    "type": "string"
+                },
+                "adj_facility_code": {
+                    "type": "string"
+                },
+                "adj_product_code": {
+                    "type": "string"
+                },
+                "adj_quantity": {
+                    "type": "integer"
+                },
+                "adj_system_code": {
+                    "type": "string"
+                },
+                "adj_timestamp": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "sync_status": {
+                    "type": "integer"
+                },
+                "validation_status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.StockAdjustmentUpdateDTO": {
+            "type": "object",
+            "properties": {
+                "adj_quantity": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.StockDispensedCreateDTO": {
+            "type": "object",
+            "required": [
+                "dsp_batch_number",
+                "dsp_dispense_date",
+                "dsp_dispensed_quantity",
+                "dsp_expiry_date",
+                "dsp_facility_code",
+                "dsp_patient_hash",
+                "dsp_product_code",
+                "dsp_system_code"
+            ],
+            "properties": {
+                "dsp_batch_number": {
+                    "type": "string"
+                },
+                "dsp_dispense_date": {
+                    "type": "string"
+                },
+                "dsp_dispensed_quantity": {
+                    "type": "number"
+                },
+                "dsp_expiry_date": {
+                    "type": "string"
+                },
+                "dsp_facility_code": {
+                    "type": "string"
+                },
+                "dsp_patient_hash": {
+                    "type": "string"
+                },
+                "dsp_product_code": {
+                    "type": "string"
+                },
+                "dsp_system_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.StockDispensedResponseDTO": {
+            "type": "object",
+            "properties": {
+                "dsp_batch_number": {
+                    "type": "string"
+                },
+                "dsp_dispense_date": {
+                    "type": "string"
+                },
+                "dsp_dispensed_quantity": {
+                    "type": "number"
+                },
+                "dsp_expiry_date": {
+                    "type": "string"
+                },
+                "dsp_facility_code": {
+                    "type": "string"
+                },
+                "dsp_patient_hash": {
+                    "type": "string"
+                },
+                "dsp_product_code": {
+                    "type": "string"
+                },
+                "dsp_system_code": {
+                    "type": "string"
+                },
+                "dsp_timestamp": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "sync_status": {
+                    "type": "integer"
+                },
+                "validation_status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.StockDispensedUpdateDTO": {
+            "type": "object",
+            "properties": {
+                "dsp_dispensed_quantity": {
+                    "type": "number"
+                }
+            }
+        },
         "dto.StockOnHandCreateDTO": {
             "type": "object",
             "required": [
@@ -135,6 +2950,211 @@ const docTemplate = `{
                 },
                 "validation_status": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.StockOnHandUpdateDTO": {
+            "type": "object",
+            "properties": {
+                "src_expiry_date": {
+                    "type": "string"
+                },
+                "src_quantity": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.StockReturnCreateDTO": {
+            "type": "object",
+            "required": [
+                "rtn_batch_number",
+                "rtn_facility_code",
+                "rtn_product_code",
+                "rtn_quantity",
+                "rtn_return_date",
+                "rtn_return_number",
+                "rtn_system_code",
+                "rtn_unit_code"
+            ],
+            "properties": {
+                "rtn_batch_number": {
+                    "type": "string"
+                },
+                "rtn_facility_code": {
+                    "type": "string"
+                },
+                "rtn_product_code": {
+                    "type": "string"
+                },
+                "rtn_quantity": {
+                    "type": "integer"
+                },
+                "rtn_return_date": {
+                    "type": "string"
+                },
+                "rtn_return_number": {
+                    "type": "string"
+                },
+                "rtn_system_code": {
+                    "type": "string"
+                },
+                "rtn_unit_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.StockReturnResponseDTO": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "rtn_batch_number": {
+                    "type": "string"
+                },
+                "rtn_facility_code": {
+                    "type": "string"
+                },
+                "rtn_product_code": {
+                    "type": "string"
+                },
+                "rtn_quantity": {
+                    "type": "integer"
+                },
+                "rtn_return_date": {
+                    "type": "string"
+                },
+                "rtn_return_number": {
+                    "type": "string"
+                },
+                "rtn_system_code": {
+                    "type": "string"
+                },
+                "rtn_timestamp": {
+                    "type": "string"
+                },
+                "rtn_unit_code": {
+                    "type": "string"
+                },
+                "sync_status": {
+                    "type": "integer"
+                },
+                "validation_status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.StockReturnUpdateDTO": {
+            "type": "object",
+            "properties": {
+                "rtn_quantity": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.WarehouseDeliveryCreateDTO": {
+            "type": "object",
+            "required": [
+                "delivery_ref",
+                "quantity"
+            ],
+            "properties": {
+                "delivered_at": {
+                    "type": "string"
+                },
+                "delivery_ref": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.WarehouseDeliveryResponseDTO": {
+            "type": "object",
+            "properties": {
+                "delivered_at": {
+                    "type": "string"
+                },
+                "delivery_ref": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "order_id": {
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.WarehouseOrderCreateDTO": {
+            "type": "object",
+            "required": [
+                "order_number",
+                "warehouse_code"
+            ],
+            "properties": {
+                "deliveries": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.WarehouseDeliveryCreateDTO"
+                    }
+                },
+                "honored_quantity": {
+                    "type": "integer"
+                },
+                "order_number": {
+                    "type": "string"
+                },
+                "received_date": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "warehouse_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.WarehouseOrderResponseDTO": {
+            "type": "object",
+            "properties": {
+                "delivered_count": {
+                    "type": "integer"
+                },
+                "deliveries": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.WarehouseDeliveryResponseDTO"
+                    }
+                },
+                "honored_quantity": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "order_number": {
+                    "type": "string"
+                },
+                "received_date": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "warehouse_code": {
+                    "type": "string"
                 }
             }
         }

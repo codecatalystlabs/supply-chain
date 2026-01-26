@@ -3,19 +3,16 @@ package models
 import "time"
 
 type PurchaseOrder struct {
-	ID                 uint64    `gorm:"primaryKey"`
-	OrdSystemCode      string    `gorm:"size:100;not null"`
-	OrdFacilityCode    string    `gorm:"size:100;not null"`
-	OrdTimestamp       time.Time `gorm:"not null"`
-	OrdOrderDate       time.Time `gorm:"not null"`
-	OrdOrderRefNumber  string    `gorm:"size:100;not null"`
-	OrdOrderNumber     string    `gorm:"size:100;not null"`
-	OrdProductCode     string    `gorm:"size:100;not null"`
-	OrdOrderedQuantity int       `gorm:"not null"`
-	ValidationStatus   int16     `gorm:"default:0"`
-	ValidationMessage  *string   `gorm:"size:100"`
-	SyncStatus         int16     `gorm:"default:0"`
-	AddDate            *time.Time
+	ID                 uint64    `gorm:"primaryKey" json:"id"`
+	OrdSystemCode      string    `gorm:"size:100;not null" json:"ord_system_code"`
+	OrdFacilityCode    string    `gorm:"size:100;not null" json:"ord_facility_code"`
+	OrdTimestamp       time.Time `gorm:"not null" json:"ord_timestamp"`
+	OrdOrderDate       time.Time `gorm:"not null" json:"ord_order_date"`
+	OrdOrderRefNumber  string    `gorm:"size:100;not null" json:"ord_order_ref_number"`
+	OrdOrderNumber     string    `gorm:"size:100;not null" json:"ord_order_number"`
+	OrdProductCode     string    `gorm:"size:100;not null" json:"ord_product_code"`
+	OrdOrderedQuantity int       `gorm:"not null" json:"ord_ordered_quantity"`
+	BaseModel
 }
 
 func (PurchaseOrder) TableName() string {

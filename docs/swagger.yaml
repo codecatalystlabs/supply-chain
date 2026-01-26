@@ -1,5 +1,504 @@
 basePath: /api/v1
 definitions:
+  dto.GoodsReceiptCreateDTO:
+    properties:
+      grn_batch_number:
+        type: string
+      grn_expiry_date:
+        type: string
+      grn_facility_code:
+        type: string
+      grn_facility_receipt_number:
+        type: string
+      grn_order_number:
+        type: string
+      grn_product_code:
+        type: string
+      grn_quantity:
+        type: integer
+      grn_receipt_date:
+        type: string
+      grn_supplier_code:
+        type: string
+      grn_system_code:
+        type: string
+      grn_warehouse_ref_number:
+        type: string
+    required:
+    - grn_batch_number
+    - grn_expiry_date
+    - grn_facility_code
+    - grn_facility_receipt_number
+    - grn_order_number
+    - grn_product_code
+    - grn_quantity
+    - grn_receipt_date
+    - grn_supplier_code
+    - grn_system_code
+    - grn_warehouse_ref_number
+    type: object
+  dto.GoodsReceiptResponseDTO:
+    properties:
+      grn_batch_number:
+        type: string
+      grn_expiry_date:
+        type: string
+      grn_facility_code:
+        type: string
+      grn_facility_receipt_number:
+        type: string
+      grn_order_number:
+        type: string
+      grn_product_code:
+        type: string
+      grn_quantity:
+        type: integer
+      grn_receipt_date:
+        type: string
+      grn_supplier_code:
+        type: string
+      grn_system_code:
+        type: string
+      grn_timestamp:
+        type: string
+      grn_warehouse_ref_number:
+        type: string
+      id:
+        type: integer
+      sync_status:
+        type: integer
+      validation_status:
+        type: integer
+    type: object
+  dto.GoodsReceiptUpdateDTO:
+    properties:
+      grn_quantity:
+        type: integer
+    type: object
+  dto.PatientVisitCreateDTO:
+    properties:
+      vst_age:
+        type: integer
+      vst_batch_number:
+        type: string
+      vst_facility_code:
+        type: string
+      vst_patient_category:
+        type: string
+      vst_patient_code:
+        type: string
+      vst_product_code:
+        type: string
+      vst_quantity:
+        type: number
+      vst_regimen_code:
+        type: string
+      vst_sex:
+        type: string
+      vst_system_code:
+        type: string
+      vst_visit_date:
+        type: string
+    required:
+    - vst_age
+    - vst_batch_number
+    - vst_facility_code
+    - vst_patient_category
+    - vst_patient_code
+    - vst_product_code
+    - vst_quantity
+    - vst_regimen_code
+    - vst_sex
+    - vst_system_code
+    - vst_visit_date
+    type: object
+  dto.PatientVisitResponseDTO:
+    properties:
+      id:
+        type: integer
+      sync_status:
+        type: integer
+      validation_status:
+        type: integer
+      vst_age:
+        type: integer
+      vst_batch_number:
+        type: string
+      vst_facility_code:
+        type: string
+      vst_patient_category:
+        type: string
+      vst_patient_code:
+        type: string
+      vst_product_code:
+        type: string
+      vst_quantity:
+        type: number
+      vst_regimen_code:
+        type: string
+      vst_sex:
+        type: string
+      vst_system_code:
+        type: string
+      vst_timestamp:
+        type: string
+      vst_visit_date:
+        type: string
+    type: object
+  dto.PharmacyStockCreateDTO:
+    properties:
+      pha_batch_number:
+        type: string
+      pha_expiry_date:
+        type: string
+      pha_facility_code:
+        type: string
+      pha_product_code:
+        type: string
+      pha_quantity:
+        type: integer
+      pha_system_code:
+        type: string
+    required:
+    - pha_batch_number
+    - pha_expiry_date
+    - pha_facility_code
+    - pha_product_code
+    - pha_quantity
+    - pha_system_code
+    type: object
+  dto.PharmacyStockResponseDTO:
+    properties:
+      id:
+        type: integer
+      pha_batch_number:
+        type: string
+      pha_expiry_date:
+        type: string
+      pha_facility_code:
+        type: string
+      pha_product_code:
+        type: string
+      pha_quantity:
+        type: integer
+      pha_system_code:
+        type: string
+      pha_timestamp:
+        type: string
+      sync_status:
+        type: integer
+      validation_status:
+        type: integer
+    type: object
+  dto.PharmacyStockUpdateDTO:
+    properties:
+      pha_quantity:
+        type: integer
+    type: object
+  dto.ProcurementPlanCreateDTO:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/dto.ProcurementPlanItemCreateDTO'
+        type: array
+      notes:
+        type: string
+      plan_system_code:
+        type: string
+      store_code:
+        type: string
+    required:
+    - items
+    - plan_system_code
+    - store_code
+    type: object
+  dto.ProcurementPlanItemCreateDTO:
+    properties:
+      needed_by:
+        type: string
+      product_code:
+        type: string
+      quantity:
+        type: integer
+    required:
+    - needed_by
+    - product_code
+    - quantity
+    type: object
+  dto.ProcurementPlanItemResponseDTO:
+    properties:
+      id:
+        type: integer
+      needed_by:
+        type: string
+      procurement_id:
+        type: integer
+      product_code:
+        type: string
+      quantity:
+        type: integer
+      status:
+        type: string
+    type: object
+  dto.ProcurementPlanResponseDTO:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      items:
+        items:
+          $ref: '#/definitions/dto.ProcurementPlanItemResponseDTO'
+        type: array
+      notes:
+        type: string
+      plan_system_code:
+        type: string
+      store_code:
+        type: string
+    type: object
+  dto.ProductAmcCreateDTO:
+    properties:
+      amc_date:
+        type: string
+      amc_facility_code:
+        type: string
+      amc_month:
+        type: integer
+      amc_product_code:
+        type: string
+      amc_product_name:
+        type: string
+      amc_system_code:
+        type: string
+      amc_value:
+        type: number
+      amc_year:
+        type: integer
+    required:
+    - amc_date
+    - amc_facility_code
+    - amc_month
+    - amc_product_code
+    - amc_product_name
+    - amc_system_code
+    - amc_value
+    - amc_year
+    type: object
+  dto.ProductAmcResponseDTO:
+    properties:
+      amc_date:
+        type: string
+      amc_days_out_stock:
+        type: number
+      amc_facility_code:
+        type: string
+      amc_month:
+        type: integer
+      amc_product_code:
+        type: string
+      amc_product_name:
+        type: string
+      amc_system_code:
+        type: string
+      amc_timestamp:
+        type: string
+      amc_value:
+        type: number
+      amc_year:
+        type: integer
+      id:
+        type: integer
+      sync_status:
+        type: integer
+      validation_status:
+        type: integer
+    type: object
+  dto.ProductAmcUpdateDTO:
+    properties:
+      amc_value:
+        type: number
+    type: object
+  dto.PurchaseOrderCreateDTO:
+    properties:
+      ord_facility_code:
+        type: string
+      ord_order_date:
+        type: string
+      ord_order_number:
+        type: string
+      ord_order_ref_number:
+        type: string
+      ord_ordered_quantity:
+        type: integer
+      ord_product_code:
+        type: string
+      ord_system_code:
+        type: string
+    required:
+    - ord_facility_code
+    - ord_order_date
+    - ord_order_number
+    - ord_order_ref_number
+    - ord_ordered_quantity
+    - ord_product_code
+    - ord_system_code
+    type: object
+  dto.PurchaseOrderResponseDTO:
+    properties:
+      id:
+        type: integer
+      ord_facility_code:
+        type: string
+      ord_order_date:
+        type: string
+      ord_order_number:
+        type: string
+      ord_order_ref_number:
+        type: string
+      ord_ordered_quantity:
+        type: integer
+      ord_product_code:
+        type: string
+      ord_system_code:
+        type: string
+      ord_timestamp:
+        type: string
+      sync_status:
+        type: integer
+      validation_status:
+        type: integer
+    type: object
+  dto.PurchaseOrderUpdateDTO:
+    properties:
+      ord_ordered_quantity:
+        type: integer
+    type: object
+  dto.StockAdjustmentCreateDTO:
+    properties:
+      adj_adjustment_date:
+        type: string
+      adj_adjustment_reason:
+        type: string
+      adj_adjustment_type:
+        type: string
+      adj_batch_number:
+        type: string
+      adj_expiry_date:
+        type: string
+      adj_facility_code:
+        type: string
+      adj_product_code:
+        type: string
+      adj_quantity:
+        type: integer
+      adj_system_code:
+        type: string
+    required:
+    - adj_adjustment_date
+    - adj_adjustment_reason
+    - adj_adjustment_type
+    - adj_batch_number
+    - adj_expiry_date
+    - adj_facility_code
+    - adj_product_code
+    - adj_quantity
+    - adj_system_code
+    type: object
+  dto.StockAdjustmentResponseDTO:
+    properties:
+      adj_adjustment_date:
+        type: string
+      adj_adjustment_reason:
+        type: string
+      adj_adjustment_type:
+        type: string
+      adj_batch_number:
+        type: string
+      adj_expiry_date:
+        type: string
+      adj_facility_code:
+        type: string
+      adj_product_code:
+        type: string
+      adj_quantity:
+        type: integer
+      adj_system_code:
+        type: string
+      adj_timestamp:
+        type: string
+      id:
+        type: integer
+      sync_status:
+        type: integer
+      validation_status:
+        type: integer
+    type: object
+  dto.StockAdjustmentUpdateDTO:
+    properties:
+      adj_quantity:
+        type: integer
+    type: object
+  dto.StockDispensedCreateDTO:
+    properties:
+      dsp_batch_number:
+        type: string
+      dsp_dispense_date:
+        type: string
+      dsp_dispensed_quantity:
+        type: number
+      dsp_expiry_date:
+        type: string
+      dsp_facility_code:
+        type: string
+      dsp_patient_hash:
+        type: string
+      dsp_product_code:
+        type: string
+      dsp_system_code:
+        type: string
+    required:
+    - dsp_batch_number
+    - dsp_dispense_date
+    - dsp_dispensed_quantity
+    - dsp_expiry_date
+    - dsp_facility_code
+    - dsp_patient_hash
+    - dsp_product_code
+    - dsp_system_code
+    type: object
+  dto.StockDispensedResponseDTO:
+    properties:
+      dsp_batch_number:
+        type: string
+      dsp_dispense_date:
+        type: string
+      dsp_dispensed_quantity:
+        type: number
+      dsp_expiry_date:
+        type: string
+      dsp_facility_code:
+        type: string
+      dsp_patient_hash:
+        type: string
+      dsp_product_code:
+        type: string
+      dsp_system_code:
+        type: string
+      dsp_timestamp:
+        type: string
+      id:
+        type: integer
+      sync_status:
+        type: integer
+      validation_status:
+        type: integer
+    type: object
+  dto.StockDispensedUpdateDTO:
+    properties:
+      dsp_dispensed_quantity:
+        type: number
+    type: object
   dto.StockOnHandCreateDTO:
     properties:
       src_batch_number:
@@ -45,17 +544,1201 @@ definitions:
       validation_status:
         type: integer
     type: object
+  dto.StockOnHandUpdateDTO:
+    properties:
+      src_expiry_date:
+        type: string
+      src_quantity:
+        type: integer
+    type: object
+  dto.StockReturnCreateDTO:
+    properties:
+      rtn_batch_number:
+        type: string
+      rtn_facility_code:
+        type: string
+      rtn_product_code:
+        type: string
+      rtn_quantity:
+        type: integer
+      rtn_return_date:
+        type: string
+      rtn_return_number:
+        type: string
+      rtn_system_code:
+        type: string
+      rtn_unit_code:
+        type: string
+    required:
+    - rtn_batch_number
+    - rtn_facility_code
+    - rtn_product_code
+    - rtn_quantity
+    - rtn_return_date
+    - rtn_return_number
+    - rtn_system_code
+    - rtn_unit_code
+    type: object
+  dto.StockReturnResponseDTO:
+    properties:
+      id:
+        type: integer
+      rtn_batch_number:
+        type: string
+      rtn_facility_code:
+        type: string
+      rtn_product_code:
+        type: string
+      rtn_quantity:
+        type: integer
+      rtn_return_date:
+        type: string
+      rtn_return_number:
+        type: string
+      rtn_system_code:
+        type: string
+      rtn_timestamp:
+        type: string
+      rtn_unit_code:
+        type: string
+      sync_status:
+        type: integer
+      validation_status:
+        type: integer
+    type: object
+  dto.StockReturnUpdateDTO:
+    properties:
+      rtn_quantity:
+        type: integer
+    type: object
+  dto.WarehouseDeliveryCreateDTO:
+    properties:
+      delivered_at:
+        type: string
+      delivery_ref:
+        type: string
+      quantity:
+        type: integer
+      status:
+        type: string
+    required:
+    - delivery_ref
+    - quantity
+    type: object
+  dto.WarehouseDeliveryResponseDTO:
+    properties:
+      delivered_at:
+        type: string
+      delivery_ref:
+        type: string
+      id:
+        type: integer
+      order_id:
+        type: integer
+      quantity:
+        type: integer
+      status:
+        type: string
+    type: object
+  dto.WarehouseOrderCreateDTO:
+    properties:
+      deliveries:
+        items:
+          $ref: '#/definitions/dto.WarehouseDeliveryCreateDTO'
+        type: array
+      honored_quantity:
+        type: integer
+      order_number:
+        type: string
+      received_date:
+        type: string
+      status:
+        type: string
+      warehouse_code:
+        type: string
+    required:
+    - order_number
+    - warehouse_code
+    type: object
+  dto.WarehouseOrderResponseDTO:
+    properties:
+      delivered_count:
+        type: integer
+      deliveries:
+        items:
+          $ref: '#/definitions/dto.WarehouseDeliveryResponseDTO'
+        type: array
+      honored_quantity:
+        type: integer
+      id:
+        type: integer
+      order_number:
+        type: string
+      received_date:
+        type: string
+      status:
+        type: string
+      warehouse_code:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact:
     email: ict@moh.go.ug
-    name: ICT Division
+    name: DHI
   description: Backend API for emergency call & dispatch system
   termsOfService: https://health.go.ug
   title: MoH Emergency Dispatch API
   version: "1.0"
 paths:
+  /api/v1/goods-receipt:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.GoodsReceiptResponseDTO'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List goods receipts
+      tags:
+      - GoodsReceipt
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Goods receipt payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.GoodsReceiptCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.GoodsReceiptResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create goods receipt
+      tags:
+      - GoodsReceipt
+  /api/v1/goods-receipt/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete goods receipt
+      tags:
+      - GoodsReceipt
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GoodsReceiptResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get goods receipt by id
+      tags:
+      - GoodsReceipt
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.GoodsReceiptUpdateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GoodsReceiptResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update goods receipt
+      tags:
+      - GoodsReceipt
+  /api/v1/patient-visit:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Patient visit payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PatientVisitCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.PatientVisitResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create patient visit
+      tags:
+      - PatientVisit
+  /api/v1/pharmacy-stock:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.PharmacyStockResponseDTO'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List pharmacy stock
+      tags:
+      - PharmacyStock
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Pharmacy stock payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PharmacyStockCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.PharmacyStockResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create pharmacy stock
+      tags:
+      - PharmacyStock
+  /api/v1/pharmacy-stock/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete pharmacy stock
+      tags:
+      - PharmacyStock
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.PharmacyStockResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get pharmacy stock by id
+      tags:
+      - PharmacyStock
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PharmacyStockUpdateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.PharmacyStockResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update pharmacy stock
+      tags:
+      - PharmacyStock
+  /api/v1/procurement:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.ProcurementPlanResponseDTO'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List procurement plans
+      tags:
+      - ProcurementPlan
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Procurement plan payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ProcurementPlanCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.ProcurementPlanResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create procurement plan
+      tags:
+      - ProcurementPlan
+  /api/v1/procurement/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete procurement plan
+      tags:
+      - ProcurementPlan
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ProcurementPlanResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get procurement plan
+      tags:
+      - ProcurementPlan
+  /api/v1/product-amc:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.ProductAmcResponseDTO'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List product AMC
+      tags:
+      - ProductAmc
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Product AMC payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ProductAmcCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.ProductAmcResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create product AMC
+      tags:
+      - ProductAmc
+  /api/v1/product-amc/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete product AMC
+      tags:
+      - ProductAmc
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ProductAmcResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get product AMC by id
+      tags:
+      - ProductAmc
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ProductAmcUpdateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ProductAmcResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update product AMC
+      tags:
+      - ProductAmc
+  /api/v1/purchase-order:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.PurchaseOrderResponseDTO'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List purchase orders
+      tags:
+      - PurchaseOrder
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Purchase order payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PurchaseOrderCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.PurchaseOrderResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create purchase order
+      tags:
+      - PurchaseOrder
+  /api/v1/purchase-order/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete purchase order
+      tags:
+      - PurchaseOrder
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.PurchaseOrderResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get purchase order by id
+      tags:
+      - PurchaseOrder
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PurchaseOrderUpdateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.PurchaseOrderResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update purchase order
+      tags:
+      - PurchaseOrder
+  /api/v1/stock/adjustment:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.StockAdjustmentResponseDTO'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List stock adjustments
+      tags:
+      - StockAdjustment
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Stock adjustment payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.StockAdjustmentCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.StockAdjustmentResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create stock adjustment
+      tags:
+      - StockAdjustment
+  /api/v1/stock/adjustment/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete stock adjustment
+      tags:
+      - StockAdjustment
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.StockAdjustmentResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get stock adjustment by id
+      tags:
+      - StockAdjustment
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.StockAdjustmentUpdateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.StockAdjustmentResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update stock adjustment
+      tags:
+      - StockAdjustment
+  /api/v1/stock/dispensed:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.StockDispensedResponseDTO'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List stock dispensed
+      tags:
+      - StockDispensed
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Stock dispensed payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.StockDispensedCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.StockDispensedResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create stock dispensed
+      tags:
+      - StockDispensed
+  /api/v1/stock/dispensed/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete stock dispensed
+      tags:
+      - StockDispensed
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.StockDispensedResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get stock dispensed by id
+      tags:
+      - StockDispensed
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.StockDispensedUpdateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.StockDispensedResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update stock dispensed
+      tags:
+      - StockDispensed
   /api/v1/stock/on-hand:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.StockOnHandResponseDTO'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List stock on hand
+      tags:
+      - StockOnHand
     post:
       consumes:
       - application/json
@@ -88,4 +1771,320 @@ paths:
       summary: Create stock on hand
       tags:
       - StockOnHand
+  /api/v1/stock/on-hand/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete stock on hand
+      tags:
+      - StockOnHand
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.StockOnHandResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List stock on hand
+      tags:
+      - StockOnHand
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Stock payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.StockOnHandUpdateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.StockOnHandResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update stock on hand
+      tags:
+      - StockOnHand
+  /api/v1/stock/return:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.StockReturnResponseDTO'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List stock returns
+      tags:
+      - StockReturn
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Stock return payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.StockReturnCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.StockReturnResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create stock return
+      tags:
+      - StockReturn
+  /api/v1/stock/return/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete stock return
+      tags:
+      - StockReturn
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.StockReturnResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get stock return by id
+      tags:
+      - StockReturn
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.StockReturnUpdateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.StockReturnResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update stock return
+      tags:
+      - StockReturn
+  /api/v1/warehouse-orders:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.WarehouseOrderResponseDTO'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List warehouse orders
+      tags:
+      - WarehouseOrder
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Warehouse order payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.WarehouseOrderCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.WarehouseOrderResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Receive warehouse order
+      tags:
+      - WarehouseOrder
+  /api/v1/warehouse-orders/{id}:
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.WarehouseOrderResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get warehouse order
+      tags:
+      - WarehouseOrder
 swagger: "2.0"

@@ -16,10 +16,7 @@ type PatientVisit struct {
 	VstQuantity        float64 `gorm:"not null"`
 	VstRegimenCode     string  `gorm:"size:100;not null"`
 	VstPatientCategory string  `gorm:"size:100;not null"`
-	ValidationStatus   int16   `gorm:"default:0"`
-	ValidationMessage  *string `gorm:"size:100"`
-	SyncStatus         int16   `gorm:"default:0"`
-	AddDate            *time.Time
+	BaseModel
 }
 
 func (PatientVisit) TableName() string {

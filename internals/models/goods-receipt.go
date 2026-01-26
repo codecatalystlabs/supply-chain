@@ -16,10 +16,7 @@ type GoodsReceipt struct {
 	GrnQuantity              int       `gorm:"not null"`
 	GrnExpiryDate            time.Time `gorm:"not null"`
 	GrnSupplierCode          string    `gorm:"size:100;not null"`
-	ValidationStatus         int16     `gorm:"default:0"`
-	ValidationMessage        *string   `gorm:"size:100"`
-	SyncStatus               int16     `gorm:"default:0"`
-	AddDate                  *time.Time
+	BaseModel
 }
 
 func (GoodsReceipt) TableName() string {

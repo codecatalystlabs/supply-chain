@@ -14,10 +14,7 @@ type StockAdjustment struct {
 	AdjBatchNumber      string    `gorm:"size:100;not null"`
 	AdjQuantity         int       `gorm:"not null"`
 	AdjExpiryDate       time.Time `gorm:"not null"`
-	ValidationStatus    int16     `gorm:"default:0"`
-	ValidationMessage   *string   `gorm:"size:100"`
-	SyncStatus          int16     `gorm:"default:0"`
-	AddDate             *time.Time
+	BaseModel
 }
 
 func (StockAdjustment) TableName() string {
