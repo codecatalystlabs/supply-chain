@@ -19,7 +19,7 @@ import (
 // @Success 201 {object} dto.ProcurementPlanResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/procurement [post]
+// @Router /procurement [post]
 func CreateProcurementPlan(c *gin.Context) {
 	var payload dto.ProcurementPlanCreateDTO
 	if err := c.ShouldBindJSON(&payload); err != nil {
@@ -64,7 +64,7 @@ func CreateProcurementPlan(c *gin.Context) {
 // @Produce json
 // @Success 200 {array} dto.ProcurementPlanResponseDTO
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/procurement [get]
+// @Router /procurement [get]
 func ListProcurementPlans(c *gin.Context) {
 	var plans []models.ProcurementPlan
 	if err := config.DB.Find(&plans).Error; err != nil {
@@ -86,7 +86,7 @@ func ListProcurementPlans(c *gin.Context) {
 // @Param id path int true "ID"
 // @Success 200 {object} dto.ProcurementPlanResponseDTO
 // @Failure 404 {object} map[string]string
-// @Router /api/v1/procurement/{id} [get]
+// @Router /procurement/{id} [get]
 func GetProcurementPlan(c *gin.Context) {
 	id := c.Param("id")
 	var plan models.ProcurementPlan
@@ -104,7 +104,7 @@ func GetProcurementPlan(c *gin.Context) {
 // @Param id path int true "ID"
 // @Success 200 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/procurement/{id} [delete]
+// @Router /procurement/{id} [delete]
 func DeleteProcurementPlan(c *gin.Context) {
 	id := c.Param("id")
 	if err := config.DB.Delete(&models.ProcurementPlan{}, id).Error; err != nil {

@@ -19,7 +19,941 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/goods-receipt": {
+        "/emr-integrations": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "EMRIntegration"
+                ],
+                "summary": "List EMR integrations",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Filter by facility ID",
+                        "name": "facility_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Filter by active status",
+                        "name": "active",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.EMRIntegrationResponseDTO"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "EMRIntegration"
+                ],
+                "summary": "Create EMR integration",
+                "parameters": [
+                    {
+                        "description": "Integration payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.EMRIntegrationCreateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.EMRIntegrationResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/emr-integrations/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "EMRIntegration"
+                ],
+                "summary": "Get EMR integration by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Integration ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.EMRIntegrationResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "EMRIntegration"
+                ],
+                "summary": "Update EMR integration",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Integration ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.EMRIntegrationUpdateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.EMRIntegrationResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/emr-integrations/{id}/sync-logs": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "EMRIntegration"
+                ],
+                "summary": "Get EMR sync logs",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Integration ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit results",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.EMRSyncLogResponseDTO"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/emr-integrations/{id}/verify": {
+            "post": {
+                "tags": [
+                    "EMRIntegration"
+                ],
+                "summary": "Verify EMR integration",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Integration ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Verify payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.EMRIntegrationResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/facilities": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Facility"
+                ],
+                "summary": "List facilities",
+                "parameters": [
+                    {
+                        "type": "boolean",
+                        "description": "Filter by active status",
+                        "name": "active",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by region",
+                        "name": "region",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.FacilityResponseDTO"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Facility"
+                ],
+                "summary": "Create facility",
+                "parameters": [
+                    {
+                        "description": "Facility payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.FacilityCreateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.FacilityResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/facilities/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Facility"
+                ],
+                "summary": "Get facility by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Facility ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.FacilityResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Facility"
+                ],
+                "summary": "Update facility",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Facility ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.FacilityUpdateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.FacilityResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Facility"
+                ],
+                "summary": "Delete facility",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Facility ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/facility-orders": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "FacilityOrder"
+                ],
+                "summary": "List facility orders",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Filter by facility ID",
+                        "name": "facility_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Filter by warehouse ID",
+                        "name": "warehouse_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by order status",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.FacilityOrderResponseDTO"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "FacilityOrder"
+                ],
+                "summary": "Create facility order",
+                "parameters": [
+                    {
+                        "description": "Order payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.FacilityOrderCreateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.FacilityOrderResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/facility-orders/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "FacilityOrder"
+                ],
+                "summary": "Get facility order by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Order ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.FacilityOrderResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "FacilityOrder"
+                ],
+                "summary": "Update facility order",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Order ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.FacilityOrderUpdateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.FacilityOrderResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/facility-orders/{id}/approve": {
+            "post": {
+                "tags": [
+                    "FacilityOrder"
+                ],
+                "summary": "Approve facility order",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Order ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Approve payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.FacilityOrderResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/facility-orders/{id}/deliveries": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "FacilityOrder"
+                ],
+                "summary": "Create delivery for facility order",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Order ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Delivery payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.FacilityDeliveryCreateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.FacilityDeliveryResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/facility-orders/{id}/submit": {
+            "post": {
+                "tags": [
+                    "FacilityOrder"
+                ],
+                "summary": "Submit facility order for approval",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Order ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Submit payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.FacilityOrderResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/goods-receipt": {
             "get": {
                 "produces": [
                     "application/json"
@@ -99,7 +1033,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/goods-receipt/{id}": {
+        "/goods-receipt/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -245,7 +1179,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/patient-visit": {
+        "/patient-visit": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -296,7 +1230,247 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/pharmacy-stock": {
+        "/pharmacies": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Pharmacy"
+                ],
+                "summary": "List pharmacies",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Filter by facility ID",
+                        "name": "facility_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Filter by active status",
+                        "name": "active",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.PharmacyResponseDTO"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Pharmacy"
+                ],
+                "summary": "Create pharmacy",
+                "parameters": [
+                    {
+                        "description": "Pharmacy payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PharmacyCreateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.PharmacyResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pharmacies/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Pharmacy"
+                ],
+                "summary": "Get pharmacy by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Pharmacy ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.PharmacyResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Pharmacy"
+                ],
+                "summary": "Update pharmacy",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Pharmacy ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PharmacyUpdateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.PharmacyResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Pharmacy"
+                ],
+                "summary": "Delete pharmacy",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Pharmacy ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pharmacy-stock": {
             "get": {
                 "produces": [
                     "application/json"
@@ -376,7 +1550,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/pharmacy-stock/{id}": {
+        "/pharmacy-stock/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -522,7 +1696,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/procurement": {
+        "/procurement": {
             "get": {
                 "produces": [
                     "application/json"
@@ -602,7 +1776,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/procurement/{id}": {
+        "/procurement/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -674,7 +1848,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/product-amc": {
+        "/product-amc": {
             "get": {
                 "produces": [
                     "application/json"
@@ -754,7 +1928,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/product-amc/{id}": {
+        "/product-amc/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -900,7 +2074,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/purchase-order": {
+        "/purchase-order": {
             "get": {
                 "produces": [
                     "application/json"
@@ -980,7 +2154,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/purchase-order/{id}": {
+        "/purchase-order/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -1138,7 +2312,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/stock/adjustment": {
+        "/stock/adjustment": {
             "get": {
                 "produces": [
                     "application/json"
@@ -1147,6 +2321,20 @@ const docTemplate = `{
                     "StockAdjustment"
                 ],
                 "summary": "List stock adjustments",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filter by facility code",
+                        "name": "facility_code",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Filter by pharmacy ID",
+                        "name": "pharmacy_id",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1218,7 +2406,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/stock/adjustment/{id}": {
+        "/stock/adjustment/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -1364,7 +2552,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/stock/dispensed": {
+        "/stock/dispensed": {
             "get": {
                 "produces": [
                     "application/json"
@@ -1444,7 +2632,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/stock/dispensed/{id}": {
+        "/stock/dispensed/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -1590,7 +2778,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/stock/on-hand": {
+        "/stock/on-hand": {
             "get": {
                 "produces": [
                     "application/json"
@@ -1670,7 +2858,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/stock/on-hand/{id}": {
+        "/stock/on-hand/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -1810,7 +2998,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/stock/return": {
+        "/stock/return": {
             "get": {
                 "produces": [
                     "application/json"
@@ -1890,7 +3078,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/stock/return/{id}": {
+        "/stock/return/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -2036,7 +3224,334 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/warehouse-orders": {
+        "/stock/transfers": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StockTransfer"
+                ],
+                "summary": "List stock transfers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filter by transfer type",
+                        "name": "transfer_type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Filter by from facility ID",
+                        "name": "from_facility_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Filter by to facility ID",
+                        "name": "to_facility_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by status",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.StockTransferResponseDTO"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StockTransfer"
+                ],
+                "summary": "Create stock transfer",
+                "parameters": [
+                    {
+                        "description": "Transfer payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.StockTransferCreateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.StockTransferResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/stock/transfers/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StockTransfer"
+                ],
+                "summary": "Get stock transfer by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Transfer ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.StockTransferResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "StockTransfer"
+                ],
+                "summary": "Update stock transfer",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Transfer ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.StockTransferUpdateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.StockTransferResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/stock/transfers/{id}/approve": {
+            "post": {
+                "tags": [
+                    "StockTransfer"
+                ],
+                "summary": "Approve stock transfer",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Transfer ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Approve payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.StockTransferResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/stock/transfers/{id}/receive": {
+            "post": {
+                "tags": [
+                    "StockTransfer"
+                ],
+                "summary": "Receive stock transfer",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Transfer ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Receive payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.StockTransferResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/warehouse-orders": {
             "get": {
                 "produces": [
                     "application/json"
@@ -2116,7 +3631,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/warehouse-orders/{id}": {
+        "/warehouse-orders/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -2152,9 +3667,1047 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/warehouses": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Warehouse"
+                ],
+                "summary": "List warehouses",
+                "parameters": [
+                    {
+                        "type": "boolean",
+                        "description": "Filter by active status",
+                        "name": "active",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.WarehouseResponseDTO"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Warehouse"
+                ],
+                "summary": "Create warehouse",
+                "parameters": [
+                    {
+                        "description": "Warehouse payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.WarehouseCreateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.WarehouseResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/warehouses/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Warehouse"
+                ],
+                "summary": "Get warehouse by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Warehouse ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.WarehouseResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Warehouse"
+                ],
+                "summary": "Update warehouse",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Warehouse ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.WarehouseUpdateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.WarehouseResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Warehouse"
+                ],
+                "summary": "Delete warehouse",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Warehouse ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "dto.EMRIntegrationCreateDTO": {
+            "type": "object",
+            "required": [
+                "emr_system_code",
+                "emr_system_name",
+                "facility_id"
+            ],
+            "properties": {
+                "api_endpoint": {
+                    "type": "string"
+                },
+                "api_key": {
+                    "type": "string"
+                },
+                "api_secret": {
+                    "type": "string"
+                },
+                "auth_config": {
+                    "type": "string"
+                },
+                "auth_type": {
+                    "type": "string"
+                },
+                "emr_system_code": {
+                    "type": "string"
+                },
+                "emr_system_name": {
+                    "type": "string"
+                },
+                "emr_system_version": {
+                    "type": "string"
+                },
+                "facility_id": {
+                    "type": "integer"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "sync_enabled": {
+                    "type": "boolean"
+                },
+                "sync_frequency": {
+                    "type": "string"
+                },
+                "webhook_url": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.EMRIntegrationResponseDTO": {
+            "type": "object",
+            "properties": {
+                "api_endpoint": {
+                    "type": "string"
+                },
+                "auth_type": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "emr_system_code": {
+                    "type": "string"
+                },
+                "emr_system_name": {
+                    "type": "string"
+                },
+                "emr_system_version": {
+                    "type": "string"
+                },
+                "facility_code": {
+                    "type": "string"
+                },
+                "facility_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "is_verified": {
+                    "type": "boolean"
+                },
+                "last_sync_at": {
+                    "type": "string"
+                },
+                "last_sync_message": {
+                    "type": "string"
+                },
+                "last_sync_status": {
+                    "type": "string"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "sync_enabled": {
+                    "type": "boolean"
+                },
+                "sync_frequency": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "verified_at": {
+                    "type": "string"
+                },
+                "verified_by": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.EMRIntegrationUpdateDTO": {
+            "type": "object",
+            "properties": {
+                "api_endpoint": {
+                    "type": "string"
+                },
+                "api_key": {
+                    "type": "string"
+                },
+                "api_secret": {
+                    "type": "string"
+                },
+                "auth_config": {
+                    "type": "string"
+                },
+                "auth_type": {
+                    "type": "string"
+                },
+                "emr_system_version": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "sync_enabled": {
+                    "type": "boolean"
+                },
+                "sync_frequency": {
+                    "type": "string"
+                },
+                "webhook_url": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.EMRSyncLogResponseDTO": {
+            "type": "object",
+            "properties": {
+                "completed_at": {
+                    "type": "string"
+                },
+                "duration_seconds": {
+                    "type": "integer"
+                },
+                "error_message": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "integration_id": {
+                    "type": "integer"
+                },
+                "records_failed": {
+                    "type": "integer"
+                },
+                "records_processed": {
+                    "type": "integer"
+                },
+                "records_successful": {
+                    "type": "integer"
+                },
+                "started_at": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "sync_direction": {
+                    "type": "string"
+                },
+                "sync_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.FacilityCreateDTO": {
+            "type": "object",
+            "required": [
+                "facility_code",
+                "facility_name"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "contact_email": {
+                    "type": "string"
+                },
+                "contact_person": {
+                    "type": "string"
+                },
+                "contact_phone": {
+                    "type": "string"
+                },
+                "dhis2_code": {
+                    "type": "string"
+                },
+                "district": {
+                    "type": "string"
+                },
+                "emr_system_code": {
+                    "type": "string"
+                },
+                "emr_system_name": {
+                    "type": "string"
+                },
+                "facility_code": {
+                    "type": "string"
+                },
+                "facility_name": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "level_of_care": {
+                    "type": "string"
+                },
+                "region": {
+                    "type": "string"
+                },
+                "zone": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.FacilityDeliveryCreateDTO": {
+            "type": "object",
+            "required": [
+                "delivered_at",
+                "delivery_date",
+                "items",
+                "order_id"
+            ],
+            "properties": {
+                "condition_notes": {
+                    "type": "string"
+                },
+                "delivered_at": {
+                    "type": "string"
+                },
+                "delivered_by": {
+                    "type": "string"
+                },
+                "delivery_date": {
+                    "type": "string"
+                },
+                "delivery_number": {
+                    "type": "string"
+                },
+                "driver_name": {
+                    "type": "string"
+                },
+                "items": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "#/definitions/dto.FacilityDeliveryItemCreateDTO"
+                    }
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "order_id": {
+                    "type": "integer"
+                },
+                "vehicle_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.FacilityDeliveryItemCreateDTO": {
+            "type": "object",
+            "required": [
+                "product_code",
+                "quantity"
+            ],
+            "properties": {
+                "batch_number": {
+                    "type": "string"
+                },
+                "condition": {
+                    "type": "string"
+                },
+                "condition_notes": {
+                    "type": "string"
+                },
+                "expiry_date": {
+                    "type": "string"
+                },
+                "order_item_id": {
+                    "type": "integer"
+                },
+                "product_code": {
+                    "type": "string"
+                },
+                "product_description": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "received_quantity": {
+                    "type": "integer"
+                },
+                "unit_price": {
+                    "type": "number"
+                }
+            }
+        },
+        "dto.FacilityDeliveryItemResponseDTO": {
+            "type": "object",
+            "properties": {
+                "batch_number": {
+                    "type": "string"
+                },
+                "condition": {
+                    "type": "string"
+                },
+                "condition_notes": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "delivery_id": {
+                    "type": "integer"
+                },
+                "expiry_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "order_item_id": {
+                    "type": "integer"
+                },
+                "product_code": {
+                    "type": "string"
+                },
+                "product_description": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "received_quantity": {
+                    "type": "integer"
+                },
+                "total_price": {
+                    "type": "number"
+                },
+                "unit_price": {
+                    "type": "number"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.FacilityDeliveryResponseDTO": {
+            "type": "object",
+            "properties": {
+                "condition_notes": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "delivered_at": {
+                    "type": "string"
+                },
+                "delivered_by": {
+                    "type": "string"
+                },
+                "delivery_date": {
+                    "type": "string"
+                },
+                "delivery_number": {
+                    "type": "string"
+                },
+                "delivery_ref": {
+                    "type": "string"
+                },
+                "driver_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.FacilityDeliveryItemResponseDTO"
+                    }
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "order_id": {
+                    "type": "integer"
+                },
+                "received_at": {
+                    "type": "string"
+                },
+                "received_by": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "total_items": {
+                    "type": "integer"
+                },
+                "total_quantity": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "vehicle_number": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.FacilityOrderCreateDTO": {
+            "type": "object",
+            "required": [
+                "facility_id",
+                "items",
+                "order_date",
+                "warehouse_id"
+            ],
+            "properties": {
+                "expected_delivery_date": {
+                    "type": "string"
+                },
+                "facility_id": {
+                    "type": "integer"
+                },
+                "financial_year": {
+                    "type": "string"
+                },
+                "idempotency_key": {
+                    "type": "string"
+                },
+                "items": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "#/definitions/dto.FacilityOrderItemCreateDTO"
+                    }
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "order_cycle": {
+                    "type": "string"
+                },
+                "order_date": {
+                    "type": "string"
+                },
+                "order_ref_number": {
+                    "type": "string"
+                },
+                "order_type": {
+                    "type": "string"
+                },
+                "priority": {
+                    "type": "string"
+                },
+                "procurement_plan_id": {
+                    "type": "integer"
+                },
+                "source_record_id": {
+                    "type": "string"
+                },
+                "source_system": {
+                    "type": "string"
+                },
+                "warehouse_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.FacilityOrderItemCreateDTO": {
+            "type": "object",
+            "required": [
+                "ordered_quantity",
+                "product_code"
+            ],
+            "properties": {
+                "currency": {
+                    "type": "string"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "ordered_quantity": {
+                    "type": "integer"
+                },
+                "product_code": {
+                    "type": "string"
+                },
+                "product_description": {
+                    "type": "string"
+                },
+                "unit_price": {
+                    "type": "number"
+                },
+                "uom": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.FacilityOrderItemResponseDTO": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "delivered_quantity": {
+                    "type": "integer"
+                },
+                "honored_quantity": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "order_id": {
+                    "type": "integer"
+                },
+                "ordered_quantity": {
+                    "type": "integer"
+                },
+                "product_code": {
+                    "type": "string"
+                },
+                "product_description": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "total_price": {
+                    "type": "number"
+                },
+                "unit_price": {
+                    "type": "number"
+                },
+                "uom": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.FacilityOrderResponseDTO": {
+            "type": "object",
+            "properties": {
+                "actual_delivery_date": {
+                    "type": "string"
+                },
+                "approved_at": {
+                    "type": "string"
+                },
+                "approved_by": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "deliveries": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.FacilityDeliveryResponseDTO"
+                    }
+                },
+                "expected_delivery_date": {
+                    "type": "string"
+                },
+                "facility_code": {
+                    "type": "string"
+                },
+                "facility_id": {
+                    "type": "integer"
+                },
+                "financial_year": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.FacilityOrderItemResponseDTO"
+                    }
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "order_cycle": {
+                    "type": "string"
+                },
+                "order_date": {
+                    "type": "string"
+                },
+                "order_number": {
+                    "type": "string"
+                },
+                "order_ref_number": {
+                    "type": "string"
+                },
+                "order_status": {
+                    "type": "string"
+                },
+                "order_type": {
+                    "type": "string"
+                },
+                "priority": {
+                    "type": "string"
+                },
+                "procurement_plan_id": {
+                    "type": "integer"
+                },
+                "source_system": {
+                    "type": "string"
+                },
+                "submitted_at": {
+                    "type": "string"
+                },
+                "submitted_by": {
+                    "type": "string"
+                },
+                "total_items": {
+                    "type": "integer"
+                },
+                "total_quantity": {
+                    "type": "integer"
+                },
+                "total_value": {
+                    "type": "number"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "warehouse_code": {
+                    "type": "string"
+                },
+                "warehouse_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.FacilityOrderUpdateDTO": {
+            "type": "object",
+            "properties": {
+                "expected_delivery_date": {
+                    "type": "string"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "order_status": {
+                    "type": "string"
+                },
+                "priority": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.FacilityResponseDTO": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "contact_email": {
+                    "type": "string"
+                },
+                "contact_person": {
+                    "type": "string"
+                },
+                "contact_phone": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "dhis2_code": {
+                    "type": "string"
+                },
+                "district": {
+                    "type": "string"
+                },
+                "emr_system_code": {
+                    "type": "string"
+                },
+                "emr_system_name": {
+                    "type": "string"
+                },
+                "facility_code": {
+                    "type": "string"
+                },
+                "facility_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "level_of_care": {
+                    "type": "string"
+                },
+                "pharmacies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.PharmacyResponseDTO"
+                    }
+                },
+                "region": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "zone": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.FacilityUpdateDTO": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "contact_email": {
+                    "type": "string"
+                },
+                "contact_person": {
+                    "type": "string"
+                },
+                "contact_phone": {
+                    "type": "string"
+                },
+                "dhis2_code": {
+                    "type": "string"
+                },
+                "district": {
+                    "type": "string"
+                },
+                "emr_system_code": {
+                    "type": "string"
+                },
+                "emr_system_name": {
+                    "type": "string"
+                },
+                "facility_name": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "level_of_care": {
+                    "type": "string"
+                },
+                "region": {
+                    "type": "string"
+                },
+                "zone": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.GoodsReceiptCreateDTO": {
             "type": "object",
             "required": [
@@ -2365,6 +4918,63 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.PharmacyCreateDTO": {
+            "type": "object",
+            "required": [
+                "facility_id",
+                "pharmacy_code",
+                "pharmacy_name"
+            ],
+            "properties": {
+                "facility_id": {
+                    "type": "integer"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "pharmacy_code": {
+                    "type": "string"
+                },
+                "pharmacy_name": {
+                    "type": "string"
+                },
+                "pharmacy_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.PharmacyResponseDTO": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "facility": {
+                    "$ref": "#/definitions/dto.FacilityResponseDTO"
+                },
+                "facility_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "pharmacy_code": {
+                    "type": "string"
+                },
+                "pharmacy_name": {
+                    "type": "string"
+                },
+                "pharmacy_type": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.PharmacyStockCreateDTO": {
             "type": "object",
             "required": [
@@ -2436,6 +5046,20 @@ const docTemplate = `{
             "properties": {
                 "pha_quantity": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.PharmacyUpdateDTO": {
+            "type": "object",
+            "properties": {
+                "is_active": {
+                    "type": "boolean"
+                },
+                "pharmacy_name": {
+                    "type": "string"
+                },
+                "pharmacy_type": {
+                    "type": "string"
                 }
             }
         },
@@ -2727,6 +5351,9 @@ const docTemplate = `{
                 "adj_adjustment_type": {
                     "type": "string"
                 },
+                "adj_approved_by": {
+                    "type": "string"
+                },
                 "adj_batch_number": {
                     "type": "string"
                 },
@@ -2736,11 +5363,21 @@ const docTemplate = `{
                 "adj_facility_code": {
                     "type": "string"
                 },
+                "adj_notes": {
+                    "type": "string"
+                },
+                "adj_pharmacy_id": {
+                    "description": "Optional: for pharmacy-level adjustments",
+                    "type": "integer"
+                },
                 "adj_product_code": {
                     "type": "string"
                 },
                 "adj_quantity": {
                     "type": "integer"
+                },
+                "adj_reference_number": {
+                    "type": "string"
                 },
                 "adj_system_code": {
                     "type": "string"
@@ -2759,6 +5396,9 @@ const docTemplate = `{
                 "adj_adjustment_type": {
                     "type": "string"
                 },
+                "adj_approved_by": {
+                    "type": "string"
+                },
                 "adj_batch_number": {
                     "type": "string"
                 },
@@ -2768,11 +5408,26 @@ const docTemplate = `{
                 "adj_facility_code": {
                     "type": "string"
                 },
+                "adj_notes": {
+                    "type": "string"
+                },
+                "adj_pharmacy_code": {
+                    "type": "string"
+                },
+                "adj_pharmacy_id": {
+                    "type": "integer"
+                },
+                "adj_pharmacy_name": {
+                    "type": "string"
+                },
                 "adj_product_code": {
                     "type": "string"
                 },
                 "adj_quantity": {
                     "type": "integer"
+                },
+                "adj_reference_number": {
+                    "type": "string"
                 },
                 "adj_system_code": {
                     "type": "string"
@@ -3052,6 +5707,197 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.StockTransferCreateDTO": {
+            "type": "object",
+            "required": [
+                "from_facility_id",
+                "product_code",
+                "quantity",
+                "to_facility_id",
+                "transfer_date",
+                "transfer_type"
+            ],
+            "properties": {
+                "batch_number": {
+                    "type": "string"
+                },
+                "expiry_date": {
+                    "type": "string"
+                },
+                "from_facility_id": {
+                    "type": "integer"
+                },
+                "from_pharmacy_id": {
+                    "description": "Required for intra_facility",
+                    "type": "integer"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "product_code": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "requested_by": {
+                    "type": "string"
+                },
+                "to_facility_id": {
+                    "type": "integer"
+                },
+                "to_pharmacy_id": {
+                    "description": "Required for intra_facility",
+                    "type": "integer"
+                },
+                "transfer_date": {
+                    "type": "string"
+                },
+                "transfer_type": {
+                    "type": "string",
+                    "enum": [
+                        "inter_facility",
+                        "intra_facility"
+                    ]
+                }
+            }
+        },
+        "dto.StockTransferResponseDTO": {
+            "type": "object",
+            "properties": {
+                "approved_by": {
+                    "type": "string"
+                },
+                "batch_number": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "expiry_date": {
+                    "type": "string"
+                },
+                "from_facility_code": {
+                    "type": "string"
+                },
+                "from_facility_id": {
+                    "type": "integer"
+                },
+                "from_pharmacy_code": {
+                    "type": "string"
+                },
+                "from_pharmacy_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "product_code": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "received_at": {
+                    "type": "string"
+                },
+                "received_by": {
+                    "type": "string"
+                },
+                "requested_by": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "to_facility_code": {
+                    "type": "string"
+                },
+                "to_facility_id": {
+                    "type": "integer"
+                },
+                "to_pharmacy_code": {
+                    "type": "string"
+                },
+                "to_pharmacy_id": {
+                    "type": "integer"
+                },
+                "transfer_date": {
+                    "type": "string"
+                },
+                "transfer_ref": {
+                    "type": "string"
+                },
+                "transfer_type": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.StockTransferUpdateDTO": {
+            "type": "object",
+            "properties": {
+                "approved_by": {
+                    "type": "string"
+                },
+                "notes": {
+                    "type": "string"
+                },
+                "received_at": {
+                    "type": "string"
+                },
+                "received_by": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "pending",
+                        "in_transit",
+                        "completed",
+                        "cancelled"
+                    ]
+                }
+            }
+        },
+        "dto.WarehouseCreateDTO": {
+            "type": "object",
+            "required": [
+                "warehouse_code",
+                "warehouse_name"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "contact_email": {
+                    "type": "string"
+                },
+                "contact_person": {
+                    "type": "string"
+                },
+                "contact_phone": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "warehouse_code": {
+                    "type": "string"
+                },
+                "warehouse_name": {
+                    "type": "string"
+                },
+                "warehouse_type": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.WarehouseDeliveryCreateDTO": {
             "type": "object",
             "required": [
@@ -3157,6 +6003,70 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "dto.WarehouseResponseDTO": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "contact_email": {
+                    "type": "string"
+                },
+                "contact_person": {
+                    "type": "string"
+                },
+                "contact_phone": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "warehouse_code": {
+                    "type": "string"
+                },
+                "warehouse_name": {
+                    "type": "string"
+                },
+                "warehouse_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.WarehouseUpdateDTO": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "contact_email": {
+                    "type": "string"
+                },
+                "contact_person": {
+                    "type": "string"
+                },
+                "contact_phone": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "warehouse_name": {
+                    "type": "string"
+                },
+                "warehouse_type": {
+                    "type": "string"
+                }
+            }
         }
     }
 }`
@@ -3164,8 +6074,8 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8080",
-	BasePath:         "/",
+	Host:             "localhost:5500",
+	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "MoH Emergency Dispatch API",
 	Description:      "Backend API for emergency call & dispatch system",

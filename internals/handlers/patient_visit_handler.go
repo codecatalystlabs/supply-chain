@@ -18,7 +18,7 @@ import (
 // @Success 201 {object} dto.PatientVisitResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/patient-visit [post]
+// @Router /patient-visit [post]
 func CreatePatientVisit(c *gin.Context) {
 	var payload dto.PatientVisitCreateDTO
 	if err := c.ShouldBindJSON(&payload); err != nil {

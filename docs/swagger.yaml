@@ -1,5 +1,540 @@
 basePath: /api/v1
 definitions:
+  dto.EMRIntegrationCreateDTO:
+    properties:
+      api_endpoint:
+        type: string
+      api_key:
+        type: string
+      api_secret:
+        type: string
+      auth_config:
+        type: string
+      auth_type:
+        type: string
+      emr_system_code:
+        type: string
+      emr_system_name:
+        type: string
+      emr_system_version:
+        type: string
+      facility_id:
+        type: integer
+      notes:
+        type: string
+      sync_enabled:
+        type: boolean
+      sync_frequency:
+        type: string
+      webhook_url:
+        type: string
+    required:
+    - emr_system_code
+    - emr_system_name
+    - facility_id
+    type: object
+  dto.EMRIntegrationResponseDTO:
+    properties:
+      api_endpoint:
+        type: string
+      auth_type:
+        type: string
+      created_at:
+        type: string
+      emr_system_code:
+        type: string
+      emr_system_name:
+        type: string
+      emr_system_version:
+        type: string
+      facility_code:
+        type: string
+      facility_id:
+        type: integer
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      is_verified:
+        type: boolean
+      last_sync_at:
+        type: string
+      last_sync_message:
+        type: string
+      last_sync_status:
+        type: string
+      notes:
+        type: string
+      sync_enabled:
+        type: boolean
+      sync_frequency:
+        type: string
+      updated_at:
+        type: string
+      verified_at:
+        type: string
+      verified_by:
+        type: string
+    type: object
+  dto.EMRIntegrationUpdateDTO:
+    properties:
+      api_endpoint:
+        type: string
+      api_key:
+        type: string
+      api_secret:
+        type: string
+      auth_config:
+        type: string
+      auth_type:
+        type: string
+      emr_system_version:
+        type: string
+      is_active:
+        type: boolean
+      notes:
+        type: string
+      sync_enabled:
+        type: boolean
+      sync_frequency:
+        type: string
+      webhook_url:
+        type: string
+    type: object
+  dto.EMRSyncLogResponseDTO:
+    properties:
+      completed_at:
+        type: string
+      duration_seconds:
+        type: integer
+      error_message:
+        type: string
+      id:
+        type: integer
+      integration_id:
+        type: integer
+      records_failed:
+        type: integer
+      records_processed:
+        type: integer
+      records_successful:
+        type: integer
+      started_at:
+        type: string
+      status:
+        type: string
+      sync_direction:
+        type: string
+      sync_type:
+        type: string
+    type: object
+  dto.FacilityCreateDTO:
+    properties:
+      address:
+        type: string
+      contact_email:
+        type: string
+      contact_person:
+        type: string
+      contact_phone:
+        type: string
+      dhis2_code:
+        type: string
+      district:
+        type: string
+      emr_system_code:
+        type: string
+      emr_system_name:
+        type: string
+      facility_code:
+        type: string
+      facility_name:
+        type: string
+      is_active:
+        type: boolean
+      level_of_care:
+        type: string
+      region:
+        type: string
+      zone:
+        type: string
+    required:
+    - facility_code
+    - facility_name
+    type: object
+  dto.FacilityDeliveryCreateDTO:
+    properties:
+      condition_notes:
+        type: string
+      delivered_at:
+        type: string
+      delivered_by:
+        type: string
+      delivery_date:
+        type: string
+      delivery_number:
+        type: string
+      driver_name:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/dto.FacilityDeliveryItemCreateDTO'
+        minItems: 1
+        type: array
+      notes:
+        type: string
+      order_id:
+        type: integer
+      vehicle_number:
+        type: string
+    required:
+    - delivered_at
+    - delivery_date
+    - items
+    - order_id
+    type: object
+  dto.FacilityDeliveryItemCreateDTO:
+    properties:
+      batch_number:
+        type: string
+      condition:
+        type: string
+      condition_notes:
+        type: string
+      expiry_date:
+        type: string
+      order_item_id:
+        type: integer
+      product_code:
+        type: string
+      product_description:
+        type: string
+      quantity:
+        type: integer
+      received_quantity:
+        type: integer
+      unit_price:
+        type: number
+    required:
+    - product_code
+    - quantity
+    type: object
+  dto.FacilityDeliveryItemResponseDTO:
+    properties:
+      batch_number:
+        type: string
+      condition:
+        type: string
+      condition_notes:
+        type: string
+      created_at:
+        type: string
+      delivery_id:
+        type: integer
+      expiry_date:
+        type: string
+      id:
+        type: integer
+      order_item_id:
+        type: integer
+      product_code:
+        type: string
+      product_description:
+        type: string
+      quantity:
+        type: integer
+      received_quantity:
+        type: integer
+      total_price:
+        type: number
+      unit_price:
+        type: number
+      updated_at:
+        type: string
+    type: object
+  dto.FacilityDeliveryResponseDTO:
+    properties:
+      condition_notes:
+        type: string
+      created_at:
+        type: string
+      delivered_at:
+        type: string
+      delivered_by:
+        type: string
+      delivery_date:
+        type: string
+      delivery_number:
+        type: string
+      delivery_ref:
+        type: string
+      driver_name:
+        type: string
+      id:
+        type: integer
+      items:
+        items:
+          $ref: '#/definitions/dto.FacilityDeliveryItemResponseDTO'
+        type: array
+      notes:
+        type: string
+      order_id:
+        type: integer
+      received_at:
+        type: string
+      received_by:
+        type: string
+      status:
+        type: string
+      total_items:
+        type: integer
+      total_quantity:
+        type: integer
+      updated_at:
+        type: string
+      vehicle_number:
+        type: string
+    type: object
+  dto.FacilityOrderCreateDTO:
+    properties:
+      expected_delivery_date:
+        type: string
+      facility_id:
+        type: integer
+      financial_year:
+        type: string
+      idempotency_key:
+        type: string
+      items:
+        items:
+          $ref: '#/definitions/dto.FacilityOrderItemCreateDTO'
+        minItems: 1
+        type: array
+      notes:
+        type: string
+      order_cycle:
+        type: string
+      order_date:
+        type: string
+      order_ref_number:
+        type: string
+      order_type:
+        type: string
+      priority:
+        type: string
+      procurement_plan_id:
+        type: integer
+      source_record_id:
+        type: string
+      source_system:
+        type: string
+      warehouse_id:
+        type: integer
+    required:
+    - facility_id
+    - items
+    - order_date
+    - warehouse_id
+    type: object
+  dto.FacilityOrderItemCreateDTO:
+    properties:
+      currency:
+        type: string
+      notes:
+        type: string
+      ordered_quantity:
+        type: integer
+      product_code:
+        type: string
+      product_description:
+        type: string
+      unit_price:
+        type: number
+      uom:
+        type: string
+    required:
+    - ordered_quantity
+    - product_code
+    type: object
+  dto.FacilityOrderItemResponseDTO:
+    properties:
+      created_at:
+        type: string
+      currency:
+        type: string
+      delivered_quantity:
+        type: integer
+      honored_quantity:
+        type: integer
+      id:
+        type: integer
+      notes:
+        type: string
+      order_id:
+        type: integer
+      ordered_quantity:
+        type: integer
+      product_code:
+        type: string
+      product_description:
+        type: string
+      status:
+        type: string
+      total_price:
+        type: number
+      unit_price:
+        type: number
+      uom:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dto.FacilityOrderResponseDTO:
+    properties:
+      actual_delivery_date:
+        type: string
+      approved_at:
+        type: string
+      approved_by:
+        type: string
+      created_at:
+        type: string
+      deliveries:
+        items:
+          $ref: '#/definitions/dto.FacilityDeliveryResponseDTO'
+        type: array
+      expected_delivery_date:
+        type: string
+      facility_code:
+        type: string
+      facility_id:
+        type: integer
+      financial_year:
+        type: string
+      id:
+        type: integer
+      items:
+        items:
+          $ref: '#/definitions/dto.FacilityOrderItemResponseDTO'
+        type: array
+      notes:
+        type: string
+      order_cycle:
+        type: string
+      order_date:
+        type: string
+      order_number:
+        type: string
+      order_ref_number:
+        type: string
+      order_status:
+        type: string
+      order_type:
+        type: string
+      priority:
+        type: string
+      procurement_plan_id:
+        type: integer
+      source_system:
+        type: string
+      submitted_at:
+        type: string
+      submitted_by:
+        type: string
+      total_items:
+        type: integer
+      total_quantity:
+        type: integer
+      total_value:
+        type: number
+      updated_at:
+        type: string
+      warehouse_code:
+        type: string
+      warehouse_id:
+        type: integer
+    type: object
+  dto.FacilityOrderUpdateDTO:
+    properties:
+      expected_delivery_date:
+        type: string
+      notes:
+        type: string
+      order_status:
+        type: string
+      priority:
+        type: string
+    type: object
+  dto.FacilityResponseDTO:
+    properties:
+      address:
+        type: string
+      contact_email:
+        type: string
+      contact_person:
+        type: string
+      contact_phone:
+        type: string
+      created_at:
+        type: string
+      dhis2_code:
+        type: string
+      district:
+        type: string
+      emr_system_code:
+        type: string
+      emr_system_name:
+        type: string
+      facility_code:
+        type: string
+      facility_name:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      level_of_care:
+        type: string
+      pharmacies:
+        items:
+          $ref: '#/definitions/dto.PharmacyResponseDTO'
+        type: array
+      region:
+        type: string
+      updated_at:
+        type: string
+      zone:
+        type: string
+    type: object
+  dto.FacilityUpdateDTO:
+    properties:
+      address:
+        type: string
+      contact_email:
+        type: string
+      contact_person:
+        type: string
+      contact_phone:
+        type: string
+      dhis2_code:
+        type: string
+      district:
+        type: string
+      emr_system_code:
+        type: string
+      emr_system_name:
+        type: string
+      facility_name:
+        type: string
+      is_active:
+        type: boolean
+      level_of_care:
+        type: string
+      region:
+        type: string
+      zone:
+        type: string
+    type: object
   dto.GoodsReceiptCreateDTO:
     properties:
       grn_batch_number:
@@ -145,6 +680,44 @@ definitions:
       vst_visit_date:
         type: string
     type: object
+  dto.PharmacyCreateDTO:
+    properties:
+      facility_id:
+        type: integer
+      is_active:
+        type: boolean
+      pharmacy_code:
+        type: string
+      pharmacy_name:
+        type: string
+      pharmacy_type:
+        type: string
+    required:
+    - facility_id
+    - pharmacy_code
+    - pharmacy_name
+    type: object
+  dto.PharmacyResponseDTO:
+    properties:
+      created_at:
+        type: string
+      facility:
+        $ref: '#/definitions/dto.FacilityResponseDTO'
+      facility_id:
+        type: integer
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      pharmacy_code:
+        type: string
+      pharmacy_name:
+        type: string
+      pharmacy_type:
+        type: string
+      updated_at:
+        type: string
+    type: object
   dto.PharmacyStockCreateDTO:
     properties:
       pha_batch_number:
@@ -194,6 +767,15 @@ definitions:
     properties:
       pha_quantity:
         type: integer
+    type: object
+  dto.PharmacyUpdateDTO:
+    properties:
+      is_active:
+        type: boolean
+      pharmacy_name:
+        type: string
+      pharmacy_type:
+        type: string
     type: object
   dto.ProcurementPlanCreateDTO:
     properties:
@@ -382,16 +964,25 @@ definitions:
         type: string
       adj_adjustment_type:
         type: string
+      adj_approved_by:
+        type: string
       adj_batch_number:
         type: string
       adj_expiry_date:
         type: string
       adj_facility_code:
         type: string
+      adj_notes:
+        type: string
+      adj_pharmacy_id:
+        description: 'Optional: for pharmacy-level adjustments'
+        type: integer
       adj_product_code:
         type: string
       adj_quantity:
         type: integer
+      adj_reference_number:
+        type: string
       adj_system_code:
         type: string
     required:
@@ -413,16 +1004,28 @@ definitions:
         type: string
       adj_adjustment_type:
         type: string
+      adj_approved_by:
+        type: string
       adj_batch_number:
         type: string
       adj_expiry_date:
         type: string
       adj_facility_code:
         type: string
+      adj_notes:
+        type: string
+      adj_pharmacy_code:
+        type: string
+      adj_pharmacy_id:
+        type: integer
+      adj_pharmacy_name:
+        type: string
       adj_product_code:
         type: string
       adj_quantity:
         type: integer
+      adj_reference_number:
+        type: string
       adj_system_code:
         type: string
       adj_timestamp:
@@ -611,6 +1214,136 @@ definitions:
       rtn_quantity:
         type: integer
     type: object
+  dto.StockTransferCreateDTO:
+    properties:
+      batch_number:
+        type: string
+      expiry_date:
+        type: string
+      from_facility_id:
+        type: integer
+      from_pharmacy_id:
+        description: Required for intra_facility
+        type: integer
+      notes:
+        type: string
+      product_code:
+        type: string
+      quantity:
+        type: integer
+      requested_by:
+        type: string
+      to_facility_id:
+        type: integer
+      to_pharmacy_id:
+        description: Required for intra_facility
+        type: integer
+      transfer_date:
+        type: string
+      transfer_type:
+        enum:
+        - inter_facility
+        - intra_facility
+        type: string
+    required:
+    - from_facility_id
+    - product_code
+    - quantity
+    - to_facility_id
+    - transfer_date
+    - transfer_type
+    type: object
+  dto.StockTransferResponseDTO:
+    properties:
+      approved_by:
+        type: string
+      batch_number:
+        type: string
+      created_at:
+        type: string
+      expiry_date:
+        type: string
+      from_facility_code:
+        type: string
+      from_facility_id:
+        type: integer
+      from_pharmacy_code:
+        type: string
+      from_pharmacy_id:
+        type: integer
+      id:
+        type: integer
+      notes:
+        type: string
+      product_code:
+        type: string
+      quantity:
+        type: integer
+      received_at:
+        type: string
+      received_by:
+        type: string
+      requested_by:
+        type: string
+      status:
+        type: string
+      to_facility_code:
+        type: string
+      to_facility_id:
+        type: integer
+      to_pharmacy_code:
+        type: string
+      to_pharmacy_id:
+        type: integer
+      transfer_date:
+        type: string
+      transfer_ref:
+        type: string
+      transfer_type:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  dto.StockTransferUpdateDTO:
+    properties:
+      approved_by:
+        type: string
+      notes:
+        type: string
+      received_at:
+        type: string
+      received_by:
+        type: string
+      status:
+        enum:
+        - pending
+        - in_transit
+        - completed
+        - cancelled
+        type: string
+    type: object
+  dto.WarehouseCreateDTO:
+    properties:
+      address:
+        type: string
+      contact_email:
+        type: string
+      contact_person:
+        type: string
+      contact_phone:
+        type: string
+      is_active:
+        type: boolean
+      warehouse_code:
+        type: string
+      warehouse_name:
+        type: string
+      warehouse_type:
+        type: string
+    required:
+    - warehouse_code
+    - warehouse_name
+    type: object
   dto.WarehouseDeliveryCreateDTO:
     properties:
       delivered_at:
@@ -681,7 +1414,49 @@ definitions:
       warehouse_code:
         type: string
     type: object
-host: localhost:8080
+  dto.WarehouseResponseDTO:
+    properties:
+      address:
+        type: string
+      contact_email:
+        type: string
+      contact_person:
+        type: string
+      contact_phone:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      updated_at:
+        type: string
+      warehouse_code:
+        type: string
+      warehouse_name:
+        type: string
+      warehouse_type:
+        type: string
+    type: object
+  dto.WarehouseUpdateDTO:
+    properties:
+      address:
+        type: string
+      contact_email:
+        type: string
+      contact_person:
+        type: string
+      contact_phone:
+        type: string
+      is_active:
+        type: boolean
+      warehouse_name:
+        type: string
+      warehouse_type:
+        type: string
+    type: object
+host: localhost:5500
 info:
   contact:
     email: ict@moh.go.ug
@@ -691,7 +1466,618 @@ info:
   title: MoH Emergency Dispatch API
   version: "1.0"
 paths:
-  /api/v1/goods-receipt:
+  /emr-integrations:
+    get:
+      parameters:
+      - description: Filter by facility ID
+        in: query
+        name: facility_id
+        type: integer
+      - description: Filter by active status
+        in: query
+        name: active
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.EMRIntegrationResponseDTO'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List EMR integrations
+      tags:
+      - EMRIntegration
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Integration payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.EMRIntegrationCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.EMRIntegrationResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create EMR integration
+      tags:
+      - EMRIntegration
+  /emr-integrations/{id}:
+    get:
+      parameters:
+      - description: Integration ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.EMRIntegrationResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get EMR integration by ID
+      tags:
+      - EMRIntegration
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Integration ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.EMRIntegrationUpdateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.EMRIntegrationResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update EMR integration
+      tags:
+      - EMRIntegration
+  /emr-integrations/{id}/sync-logs:
+    get:
+      parameters:
+      - description: Integration ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Limit results
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.EMRSyncLogResponseDTO'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get EMR sync logs
+      tags:
+      - EMRIntegration
+  /emr-integrations/{id}/verify:
+    post:
+      parameters:
+      - description: Integration ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Verify payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          additionalProperties:
+            type: string
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.EMRIntegrationResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Verify EMR integration
+      tags:
+      - EMRIntegration
+  /facilities:
+    get:
+      parameters:
+      - description: Filter by active status
+        in: query
+        name: active
+        type: boolean
+      - description: Filter by region
+        in: query
+        name: region
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.FacilityResponseDTO'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List facilities
+      tags:
+      - Facility
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Facility payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.FacilityCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.FacilityResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create facility
+      tags:
+      - Facility
+  /facilities/{id}:
+    delete:
+      parameters:
+      - description: Facility ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete facility
+      tags:
+      - Facility
+    get:
+      parameters:
+      - description: Facility ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.FacilityResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get facility by ID
+      tags:
+      - Facility
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Facility ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.FacilityUpdateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.FacilityResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update facility
+      tags:
+      - Facility
+  /facility-orders:
+    get:
+      parameters:
+      - description: Filter by facility ID
+        in: query
+        name: facility_id
+        type: integer
+      - description: Filter by warehouse ID
+        in: query
+        name: warehouse_id
+        type: integer
+      - description: Filter by order status
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.FacilityOrderResponseDTO'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List facility orders
+      tags:
+      - FacilityOrder
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Order payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.FacilityOrderCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.FacilityOrderResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create facility order
+      tags:
+      - FacilityOrder
+  /facility-orders/{id}:
+    get:
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.FacilityOrderResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get facility order by ID
+      tags:
+      - FacilityOrder
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.FacilityOrderUpdateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.FacilityOrderResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update facility order
+      tags:
+      - FacilityOrder
+  /facility-orders/{id}/approve:
+    post:
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Approve payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          additionalProperties:
+            type: string
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.FacilityOrderResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Approve facility order
+      tags:
+      - FacilityOrder
+  /facility-orders/{id}/deliveries:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Delivery payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.FacilityDeliveryCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.FacilityDeliveryResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create delivery for facility order
+      tags:
+      - FacilityOrder
+  /facility-orders/{id}/submit:
+    post:
+      parameters:
+      - description: Order ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Submit payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          additionalProperties:
+            type: string
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.FacilityOrderResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Submit facility order for approval
+      tags:
+      - FacilityOrder
+  /goods-receipt:
     get:
       produces:
       - application/json
@@ -743,7 +2129,7 @@ paths:
       summary: Create goods receipt
       tags:
       - GoodsReceipt
-  /api/v1/goods-receipt/{id}:
+  /goods-receipt/{id}:
     delete:
       parameters:
       - description: ID
@@ -839,7 +2225,7 @@ paths:
       summary: Update goods receipt
       tags:
       - GoodsReceipt
-  /api/v1/patient-visit:
+  /patient-visit:
     post:
       consumes:
       - application/json
@@ -872,7 +2258,164 @@ paths:
       summary: Create patient visit
       tags:
       - PatientVisit
-  /api/v1/pharmacy-stock:
+  /pharmacies:
+    get:
+      parameters:
+      - description: Filter by facility ID
+        in: query
+        name: facility_id
+        type: integer
+      - description: Filter by active status
+        in: query
+        name: active
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.PharmacyResponseDTO'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List pharmacies
+      tags:
+      - Pharmacy
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Pharmacy payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PharmacyCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.PharmacyResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create pharmacy
+      tags:
+      - Pharmacy
+  /pharmacies/{id}:
+    delete:
+      parameters:
+      - description: Pharmacy ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete pharmacy
+      tags:
+      - Pharmacy
+    get:
+      parameters:
+      - description: Pharmacy ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.PharmacyResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get pharmacy by ID
+      tags:
+      - Pharmacy
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Pharmacy ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PharmacyUpdateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.PharmacyResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update pharmacy
+      tags:
+      - Pharmacy
+  /pharmacy-stock:
     get:
       produces:
       - application/json
@@ -924,7 +2467,7 @@ paths:
       summary: Create pharmacy stock
       tags:
       - PharmacyStock
-  /api/v1/pharmacy-stock/{id}:
+  /pharmacy-stock/{id}:
     delete:
       parameters:
       - description: ID
@@ -1020,7 +2563,7 @@ paths:
       summary: Update pharmacy stock
       tags:
       - PharmacyStock
-  /api/v1/procurement:
+  /procurement:
     get:
       produces:
       - application/json
@@ -1072,7 +2615,7 @@ paths:
       summary: Create procurement plan
       tags:
       - ProcurementPlan
-  /api/v1/procurement/{id}:
+  /procurement/{id}:
     delete:
       parameters:
       - description: ID
@@ -1119,7 +2662,7 @@ paths:
       summary: Get procurement plan
       tags:
       - ProcurementPlan
-  /api/v1/product-amc:
+  /product-amc:
     get:
       produces:
       - application/json
@@ -1171,7 +2714,7 @@ paths:
       summary: Create product AMC
       tags:
       - ProductAmc
-  /api/v1/product-amc/{id}:
+  /product-amc/{id}:
     delete:
       parameters:
       - description: ID
@@ -1267,7 +2810,7 @@ paths:
       summary: Update product AMC
       tags:
       - ProductAmc
-  /api/v1/purchase-order:
+  /purchase-order:
     get:
       produces:
       - application/json
@@ -1319,7 +2862,7 @@ paths:
       summary: Create purchase order
       tags:
       - PurchaseOrder
-  /api/v1/purchase-order/{id}:
+  /purchase-order/{id}:
     delete:
       parameters:
       - description: ID
@@ -1423,8 +2966,17 @@ paths:
       summary: Update purchase order
       tags:
       - PurchaseOrder
-  /api/v1/stock/adjustment:
+  /stock/adjustment:
     get:
+      parameters:
+      - description: Filter by facility code
+        in: query
+        name: facility_code
+        type: string
+      - description: Filter by pharmacy ID
+        in: query
+        name: pharmacy_id
+        type: integer
       produces:
       - application/json
       responses:
@@ -1475,7 +3027,7 @@ paths:
       summary: Create stock adjustment
       tags:
       - StockAdjustment
-  /api/v1/stock/adjustment/{id}:
+  /stock/adjustment/{id}:
     delete:
       parameters:
       - description: ID
@@ -1571,7 +3123,7 @@ paths:
       summary: Update stock adjustment
       tags:
       - StockAdjustment
-  /api/v1/stock/dispensed:
+  /stock/dispensed:
     get:
       produces:
       - application/json
@@ -1623,7 +3175,7 @@ paths:
       summary: Create stock dispensed
       tags:
       - StockDispensed
-  /api/v1/stock/dispensed/{id}:
+  /stock/dispensed/{id}:
     delete:
       parameters:
       - description: ID
@@ -1719,7 +3271,7 @@ paths:
       summary: Update stock dispensed
       tags:
       - StockDispensed
-  /api/v1/stock/on-hand:
+  /stock/on-hand:
     get:
       produces:
       - application/json
@@ -1771,7 +3323,7 @@ paths:
       summary: Create stock on hand
       tags:
       - StockOnHand
-  /api/v1/stock/on-hand/{id}:
+  /stock/on-hand/{id}:
     delete:
       parameters:
       - description: ID
@@ -1863,7 +3415,7 @@ paths:
       summary: Update stock on hand
       tags:
       - StockOnHand
-  /api/v1/stock/return:
+  /stock/return:
     get:
       produces:
       - application/json
@@ -1915,7 +3467,7 @@ paths:
       summary: Create stock return
       tags:
       - StockReturn
-  /api/v1/stock/return/{id}:
+  /stock/return/{id}:
     delete:
       parameters:
       - description: ID
@@ -2011,7 +3563,221 @@ paths:
       summary: Update stock return
       tags:
       - StockReturn
-  /api/v1/warehouse-orders:
+  /stock/transfers:
+    get:
+      parameters:
+      - description: Filter by transfer type
+        in: query
+        name: transfer_type
+        type: string
+      - description: Filter by from facility ID
+        in: query
+        name: from_facility_id
+        type: integer
+      - description: Filter by to facility ID
+        in: query
+        name: to_facility_id
+        type: integer
+      - description: Filter by status
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.StockTransferResponseDTO'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List stock transfers
+      tags:
+      - StockTransfer
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Transfer payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.StockTransferCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.StockTransferResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create stock transfer
+      tags:
+      - StockTransfer
+  /stock/transfers/{id}:
+    get:
+      parameters:
+      - description: Transfer ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.StockTransferResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get stock transfer by ID
+      tags:
+      - StockTransfer
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Transfer ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.StockTransferUpdateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.StockTransferResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update stock transfer
+      tags:
+      - StockTransfer
+  /stock/transfers/{id}/approve:
+    post:
+      parameters:
+      - description: Transfer ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Approve payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          additionalProperties:
+            type: string
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.StockTransferResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Approve stock transfer
+      tags:
+      - StockTransfer
+  /stock/transfers/{id}/receive:
+    post:
+      parameters:
+      - description: Transfer ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Receive payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          additionalProperties:
+            type: string
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.StockTransferResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Receive stock transfer
+      tags:
+      - StockTransfer
+  /warehouse-orders:
     get:
       produces:
       - application/json
@@ -2063,7 +3829,7 @@ paths:
       summary: Receive warehouse order
       tags:
       - WarehouseOrder
-  /api/v1/warehouse-orders/{id}:
+  /warehouse-orders/{id}:
     get:
       parameters:
       - description: ID
@@ -2087,4 +3853,157 @@ paths:
       summary: Get warehouse order
       tags:
       - WarehouseOrder
+  /warehouses:
+    get:
+      parameters:
+      - description: Filter by active status
+        in: query
+        name: active
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.WarehouseResponseDTO'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List warehouses
+      tags:
+      - Warehouse
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Warehouse payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.WarehouseCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.WarehouseResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create warehouse
+      tags:
+      - Warehouse
+  /warehouses/{id}:
+    delete:
+      parameters:
+      - description: Warehouse ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete warehouse
+      tags:
+      - Warehouse
+    get:
+      parameters:
+      - description: Warehouse ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.WarehouseResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get warehouse by ID
+      tags:
+      - Warehouse
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Warehouse ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.WarehouseUpdateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.WarehouseResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update warehouse
+      tags:
+      - Warehouse
 swagger: "2.0"

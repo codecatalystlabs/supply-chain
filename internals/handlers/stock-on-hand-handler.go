@@ -20,7 +20,7 @@ import (
 // @Success 201 {object} dto.StockOnHandResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/stock/on-hand [post]
+// @Router /stock/on-hand [post]
 func CreateStockOnHand(c *gin.Context) {
 	var payload dto.StockOnHandCreateDTO
 
@@ -53,7 +53,7 @@ func CreateStockOnHand(c *gin.Context) {
 // @Produce json
 // @Success 200 {array} dto.StockOnHandResponseDTO
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/stock/on-hand [get]
+// @Router /stock/on-hand [get]
 func ListStockOnHand(c *gin.Context) {
 	var records []models.StockOnHand
 
@@ -78,7 +78,7 @@ func ListStockOnHand(c *gin.Context) {
 // @Success 200 {object} dto.StockOnHandResponseDTO
 // @Failure 404 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/stock/on-hand/{id} [get]
+// @Router /stock/on-hand/{id} [get]
 func GetStockOnHand(c *gin.Context) {
 	id := c.Param("id")
 	var record models.StockOnHand
@@ -101,7 +101,7 @@ func GetStockOnHand(c *gin.Context) {
 // @Success 200 {object} dto.StockOnHandResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/stock/on-hand/{id} [put]
+// @Router /stock/on-hand/{id} [put]
 func UpdateStockOnHand(c *gin.Context) {
 	id := c.Param("id")
 	var payload dto.StockOnHandUpdateDTO
@@ -139,7 +139,7 @@ func UpdateStockOnHand(c *gin.Context) {
 // @Param id path int true "ID"
 // @Success 200 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/stock/on-hand/{id} [delete]
+// @Router /stock/on-hand/{id} [delete]
 func DeleteStockOnHand(c *gin.Context) {
 	id := c.Param("id")
 

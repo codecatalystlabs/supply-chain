@@ -17,7 +17,7 @@ import (
 // @Success 201 {object} dto.GoodsReceiptResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/goods-receipt [post]
+// @Router /goods-receipt [post]
 func CreateGoodsReceipt(c *gin.Context) {
 	var payload dto.GoodsReceiptCreateDTO
 	if err := c.ShouldBindJSON(&payload); err != nil {
@@ -49,7 +49,7 @@ func CreateGoodsReceipt(c *gin.Context) {
 // @Produce json
 // @Success 200 {array} dto.GoodsReceiptResponseDTO
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/goods-receipt [get]
+// @Router /goods-receipt [get]
 func ListGoodsReceipts(c *gin.Context) {
 	var records []models.GoodsReceipt
 	if err := config.DB.Find(&records).Error; err != nil {
@@ -70,7 +70,7 @@ func ListGoodsReceipts(c *gin.Context) {
 // @Success 200 {object} dto.GoodsReceiptResponseDTO
 // @Failure 404 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/goods-receipt/{id} [get]
+// @Router /goods-receipt/{id} [get]
 func GetGoodsReceipt(c *gin.Context) {
 	id := c.Param("id")
 	var record models.GoodsReceipt
@@ -91,7 +91,7 @@ func GetGoodsReceipt(c *gin.Context) {
 // @Failure 400 {object} map[string]string
 // @Failure 404 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/goods-receipt/{id} [put]
+// @Router /goods-receipt/{id} [put]
 func UpdateGoodsReceipt(c *gin.Context) {
 	id := c.Param("id")
 	var payload dto.GoodsReceiptUpdateDTO
@@ -119,7 +119,7 @@ func UpdateGoodsReceipt(c *gin.Context) {
 // @Param id path int true "ID"
 // @Success 200 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/goods-receipt/{id} [delete]
+// @Router /goods-receipt/{id} [delete]
 func DeleteGoodsReceipt(c *gin.Context) {
 	id := c.Param("id")
 	if err := config.DB.Delete(&models.GoodsReceipt{}, id).Error; err != nil {

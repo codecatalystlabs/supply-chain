@@ -5,6 +5,7 @@ import "time"
 type StockAdjustmentCreateDTO struct {
 	AdjSystemCode       string    `json:"adj_system_code" binding:"required"`
 	AdjFacilityCode     string    `json:"adj_facility_code" binding:"required"`
+	AdjPharmacyID       *uint64   `json:"adj_pharmacy_id,omitempty"` // Optional: for pharmacy-level adjustments
 	AdjAdjustmentDate   time.Time `json:"adj_adjustment_date" binding:"required"`
 	AdjAdjustmentType   string    `json:"adj_adjustment_type" binding:"required"`
 	AdjAdjustmentReason string    `json:"adj_adjustment_reason" binding:"required"`
@@ -12,6 +13,9 @@ type StockAdjustmentCreateDTO struct {
 	AdjBatchNumber      string    `json:"adj_batch_number" binding:"required"`
 	AdjQuantity         int       `json:"adj_quantity" binding:"required"`
 	AdjExpiryDate       time.Time `json:"adj_expiry_date" binding:"required"`
+	AdjReferenceNumber  *string   `json:"adj_reference_number,omitempty"`
+	AdjApprovedBy       *string   `json:"adj_approved_by,omitempty"`
+	AdjNotes            *string   `json:"adj_notes,omitempty"`
 }
 
 type StockAdjustmentUpdateDTO struct {
@@ -22,6 +26,9 @@ type StockAdjustmentResponseDTO struct {
 	ID                  uint64    `json:"id"`
 	AdjSystemCode       string    `json:"adj_system_code"`
 	AdjFacilityCode     string    `json:"adj_facility_code"`
+	AdjPharmacyID       *uint64   `json:"adj_pharmacy_id,omitempty"`
+	AdjPharmacyCode     *string   `json:"adj_pharmacy_code,omitempty"`
+	AdjPharmacyName     *string   `json:"adj_pharmacy_name,omitempty"`
 	AdjTimestamp        time.Time `json:"adj_timestamp"`
 	AdjAdjustmentDate   time.Time `json:"adj_adjustment_date"`
 	AdjAdjustmentType   string    `json:"adj_adjustment_type"`
@@ -30,6 +37,9 @@ type StockAdjustmentResponseDTO struct {
 	AdjBatchNumber      string    `json:"adj_batch_number"`
 	AdjQuantity         int       `json:"adj_quantity"`
 	AdjExpiryDate       time.Time `json:"adj_expiry_date"`
+	AdjReferenceNumber  *string   `json:"adj_reference_number,omitempty"`
+	AdjApprovedBy       *string   `json:"adj_approved_by,omitempty"`
+	AdjNotes            *string   `json:"adj_notes,omitempty"`
 	ValidationStatus    int16     `json:"validation_status"`
 	SyncStatus          int16     `json:"sync_status"`
 }
