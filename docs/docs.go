@@ -19,7 +19,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/goods-receipt": {
+        "/goods-receipt": {
             "get": {
                 "produces": [
                     "application/json"
@@ -99,7 +99,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/goods-receipt/{id}": {
+        "/goods-receipt/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -245,7 +245,36 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/patient-visit": {
+        "/patient-visit": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PatientVisit"
+                ],
+                "summary": "List patient visits",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.PatientVisitResponseDTO"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
             "post": {
                 "consumes": [
                     "application/json"
@@ -296,7 +325,147 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/pharmacy-stock": {
+        "/patient-visit/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PatientVisit"
+                ],
+                "summary": "Get patient visit by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Patient Visit ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.PatientVisitResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PatientVisit"
+                ],
+                "summary": "Update patient visit",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Patient Visit ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Patient visit update payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PatientVisitUpdateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.PatientVisitResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PatientVisit"
+                ],
+                "summary": "Delete patient visit",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Patient Visit ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/pharmacy-stock": {
             "get": {
                 "produces": [
                     "application/json"
@@ -376,7 +545,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/pharmacy-stock/{id}": {
+        "/pharmacy-stock/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -522,7 +691,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/procurement": {
+        "/procurement": {
             "get": {
                 "produces": [
                     "application/json"
@@ -602,7 +771,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/procurement/{id}": {
+        "/procurement/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -674,7 +843,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/product-amc": {
+        "/product-amc": {
             "get": {
                 "produces": [
                     "application/json"
@@ -754,7 +923,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/product-amc/{id}": {
+        "/product-amc/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -900,7 +1069,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/purchase-order": {
+        "/purchase-order": {
             "get": {
                 "produces": [
                     "application/json"
@@ -980,7 +1149,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/purchase-order/{id}": {
+        "/purchase-order/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -1138,7 +1307,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/stock/adjustment": {
+        "/stock/adjustment": {
             "get": {
                 "produces": [
                     "application/json"
@@ -1218,7 +1387,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/stock/adjustment/{id}": {
+        "/stock/adjustment/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -1364,7 +1533,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/stock/dispensed": {
+        "/stock/dispensed": {
             "get": {
                 "produces": [
                     "application/json"
@@ -1444,7 +1613,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/stock/dispensed/{id}": {
+        "/stock/dispensed/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -1590,7 +1759,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/stock/on-hand": {
+        "/stock/on-hand": {
             "get": {
                 "produces": [
                     "application/json"
@@ -1670,7 +1839,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/stock/on-hand/{id}": {
+        "/stock/on-hand/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -1810,7 +1979,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/stock/return": {
+        "/stock/return": {
             "get": {
                 "produces": [
                     "application/json"
@@ -1890,7 +2059,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/stock/return/{id}": {
+        "/stock/return/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -2036,7 +2205,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/warehouse-orders": {
+        "/warehouse-orders": {
             "get": {
                 "produces": [
                     "application/json"
@@ -2116,7 +2285,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/warehouse-orders/{id}": {
+        "/warehouse-orders/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -2362,6 +2531,14 @@ const docTemplate = `{
                 },
                 "vst_visit_date": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.PatientVisitUpdateDTO": {
+            "type": "object",
+            "properties": {
+                "vst_quantity": {
+                    "type": "number"
                 }
             }
         },
@@ -3165,7 +3342,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:8080",
-	BasePath:         "/",
+	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "MoH Emergency Dispatch API",
 	Description:      "Backend API for emergency call & dispatch system",

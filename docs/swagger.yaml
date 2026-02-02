@@ -1,4 +1,4 @@
-basePath: /api/v1
+basePath: 
 definitions:
   dto.GoodsReceiptCreateDTO:
     properties:
@@ -144,6 +144,11 @@ definitions:
         type: string
       vst_visit_date:
         type: string
+    type: object
+  dto.PatientVisitUpdateDTO:
+    properties:
+      vst_quantity:
+        type: number
     type: object
   dto.PharmacyStockCreateDTO:
     properties:
@@ -691,7 +696,7 @@ info:
   title: MoH Emergency Dispatch API
   version: "1.0"
 paths:
-  /api/v1/goods-receipt:
+  /goods-receipt:
     get:
       produces:
       - application/json
@@ -743,7 +748,7 @@ paths:
       summary: Create goods receipt
       tags:
       - GoodsReceipt
-  /api/v1/goods-receipt/{id}:
+  /goods-receipt/{id}:
     delete:
       parameters:
       - description: ID
@@ -839,7 +844,26 @@ paths:
       summary: Update goods receipt
       tags:
       - GoodsReceipt
-  /api/v1/patient-visit:
+  /patient-visit:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.PatientVisitResponseDTO'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List patient visits
+      tags:
+      - PatientVisit
     post:
       consumes:
       - application/json
@@ -872,7 +896,99 @@ paths:
       summary: Create patient visit
       tags:
       - PatientVisit
-  /api/v1/pharmacy-stock:
+  /patient-visit/{id}:
+    delete:
+      parameters:
+      - description: Patient Visit ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete patient visit
+      tags:
+      - PatientVisit
+    get:
+      parameters:
+      - description: Patient Visit ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.PatientVisitResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get patient visit by ID
+      tags:
+      - PatientVisit
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Patient Visit ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Patient visit update payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PatientVisitUpdateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.PatientVisitResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update patient visit
+      tags:
+      - PatientVisit
+  /pharmacy-stock:
     get:
       produces:
       - application/json
@@ -924,7 +1040,7 @@ paths:
       summary: Create pharmacy stock
       tags:
       - PharmacyStock
-  /api/v1/pharmacy-stock/{id}:
+  /pharmacy-stock/{id}:
     delete:
       parameters:
       - description: ID
@@ -1020,7 +1136,7 @@ paths:
       summary: Update pharmacy stock
       tags:
       - PharmacyStock
-  /api/v1/procurement:
+  /procurement:
     get:
       produces:
       - application/json
@@ -1072,7 +1188,7 @@ paths:
       summary: Create procurement plan
       tags:
       - ProcurementPlan
-  /api/v1/procurement/{id}:
+  /procurement/{id}:
     delete:
       parameters:
       - description: ID
@@ -1119,7 +1235,7 @@ paths:
       summary: Get procurement plan
       tags:
       - ProcurementPlan
-  /api/v1/product-amc:
+  /product-amc:
     get:
       produces:
       - application/json
@@ -1171,7 +1287,7 @@ paths:
       summary: Create product AMC
       tags:
       - ProductAmc
-  /api/v1/product-amc/{id}:
+  /product-amc/{id}:
     delete:
       parameters:
       - description: ID
@@ -1267,7 +1383,7 @@ paths:
       summary: Update product AMC
       tags:
       - ProductAmc
-  /api/v1/purchase-order:
+  /purchase-order:
     get:
       produces:
       - application/json
@@ -1319,7 +1435,7 @@ paths:
       summary: Create purchase order
       tags:
       - PurchaseOrder
-  /api/v1/purchase-order/{id}:
+  /purchase-order/{id}:
     delete:
       parameters:
       - description: ID
@@ -1423,7 +1539,7 @@ paths:
       summary: Update purchase order
       tags:
       - PurchaseOrder
-  /api/v1/stock/adjustment:
+  /stock/adjustment:
     get:
       produces:
       - application/json
@@ -1475,7 +1591,7 @@ paths:
       summary: Create stock adjustment
       tags:
       - StockAdjustment
-  /api/v1/stock/adjustment/{id}:
+  /stock/adjustment/{id}:
     delete:
       parameters:
       - description: ID
@@ -1571,7 +1687,7 @@ paths:
       summary: Update stock adjustment
       tags:
       - StockAdjustment
-  /api/v1/stock/dispensed:
+  /stock/dispensed:
     get:
       produces:
       - application/json
@@ -1623,7 +1739,7 @@ paths:
       summary: Create stock dispensed
       tags:
       - StockDispensed
-  /api/v1/stock/dispensed/{id}:
+  /stock/dispensed/{id}:
     delete:
       parameters:
       - description: ID
@@ -1719,7 +1835,7 @@ paths:
       summary: Update stock dispensed
       tags:
       - StockDispensed
-  /api/v1/stock/on-hand:
+  /stock/on-hand:
     get:
       produces:
       - application/json
@@ -1771,7 +1887,7 @@ paths:
       summary: Create stock on hand
       tags:
       - StockOnHand
-  /api/v1/stock/on-hand/{id}:
+  /stock/on-hand/{id}:
     delete:
       parameters:
       - description: ID
@@ -1863,7 +1979,7 @@ paths:
       summary: Update stock on hand
       tags:
       - StockOnHand
-  /api/v1/stock/return:
+  /stock/return:
     get:
       produces:
       - application/json
@@ -1915,7 +2031,7 @@ paths:
       summary: Create stock return
       tags:
       - StockReturn
-  /api/v1/stock/return/{id}:
+  /stock/return/{id}:
     delete:
       parameters:
       - description: ID
@@ -2011,7 +2127,7 @@ paths:
       summary: Update stock return
       tags:
       - StockReturn
-  /api/v1/warehouse-orders:
+  /warehouse-orders:
     get:
       produces:
       - application/json
@@ -2063,7 +2179,7 @@ paths:
       summary: Receive warehouse order
       tags:
       - WarehouseOrder
-  /api/v1/warehouse-orders/{id}:
+  /warehouse-orders/{id}:
     get:
       parameters:
       - description: ID
