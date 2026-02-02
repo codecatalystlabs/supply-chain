@@ -17,7 +17,7 @@ import (
 // @Success 201 {object} dto.StockDispensedResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/stock/dispensed [post]
+// @Router /stock/dispensed [post]
 func CreateStockDispensed(c *gin.Context) {
 	var payload dto.StockDispensedCreateDTO
 	if err := c.ShouldBindJSON(&payload); err != nil {
@@ -49,7 +49,7 @@ func CreateStockDispensed(c *gin.Context) {
 // @Produce json
 // @Success 200 {array} dto.StockDispensedResponseDTO
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/stock/dispensed [get]
+// @Router /stock/dispensed [get]
 func ListStockDispensed(c *gin.Context) {
 	var records []models.StockDispensed
 	if err := config.DB.Find(&records).Error; err != nil {
@@ -72,7 +72,7 @@ func ListStockDispensed(c *gin.Context) {
 // @Success 200 {object} dto.StockDispensedResponseDTO
 // @Failure 404 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/stock/dispensed/{id} [get]
+// @Router /stock/dispensed/{id} [get]
 func GetStockDispensed(c *gin.Context) {
 	id := c.Param("id")
 	var record models.StockDispensed
@@ -93,7 +93,7 @@ func GetStockDispensed(c *gin.Context) {
 // @Failure 400 {object} map[string]string
 // @Failure 404 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/stock/dispensed/{id} [put]
+// @Router /stock/dispensed/{id} [put]
 func UpdateStockDispensed(c *gin.Context) {
 	id := c.Param("id")
 	var payload dto.StockDispensedUpdateDTO
@@ -126,7 +126,7 @@ func UpdateStockDispensed(c *gin.Context) {
 // @Param id path int true "ID"
 // @Success 200 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/stock/dispensed/{id} [delete]
+// @Router /stock/dispensed/{id} [delete]
 func DeleteStockDispensed(c *gin.Context) {
 	id := c.Param("id")
 	if err := config.DB.Delete(&models.StockDispensed{}, id).Error; err != nil {

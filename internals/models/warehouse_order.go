@@ -2,6 +2,8 @@ package models
 
 import "time"
 
+// WarehouseOrder is a legacy model - use FacilityOrder instead
+// Kept for backward compatibility
 type WarehouseOrder struct {
 	ID              uint64    `gorm:"primaryKey" json:"id"`
 	WarehouseCode   string    `gorm:"size:100;not null" json:"warehouse_code"`
@@ -13,9 +15,11 @@ type WarehouseOrder struct {
 }
 
 func (WarehouseOrder) TableName() string {
-	return "Warehouse_Order"
+	return "warehouse_orders"
 }
 
+// WarehouseDelivery is a legacy model - use FacilityDelivery instead
+// Kept for backward compatibility
 type WarehouseDelivery struct {
 	ID          uint64    `gorm:"primaryKey" json:"id"`
 	OrderID     uint64    `gorm:"not null" json:"order_id"`
@@ -26,5 +30,5 @@ type WarehouseDelivery struct {
 }
 
 func (WarehouseDelivery) TableName() string {
-	return "Warehouse_Delivery"
+	return "warehouse_deliveries"
 }

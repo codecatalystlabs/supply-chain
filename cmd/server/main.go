@@ -139,6 +139,70 @@ func main() {
 		wo.GET("/:id", handlers.GetWarehouseOrder)
 	}
 
+	// Facilities
+	facilities := router.Group("/api/v1/facilities")
+	{
+		facilities.POST("/", handlers.CreateFacility)
+		facilities.GET("/", handlers.ListFacilities)
+		facilities.GET("/:id", handlers.GetFacility)
+		facilities.PUT("/:id", handlers.UpdateFacility)
+		facilities.DELETE("/:id", handlers.DeleteFacility)
+	}
+
+	// Pharmacies
+	pharmacies := router.Group("/api/v1/pharmacies")
+	{
+		pharmacies.POST("/", handlers.CreatePharmacy)
+		pharmacies.GET("/", handlers.ListPharmacies)
+		pharmacies.GET("/:id", handlers.GetPharmacy)
+		pharmacies.PUT("/:id", handlers.UpdatePharmacy)
+		pharmacies.DELETE("/:id", handlers.DeletePharmacy)
+	}
+
+	// Warehouses
+	warehouses := router.Group("/api/v1/warehouses")
+	{
+		warehouses.POST("/", handlers.CreateWarehouse)
+		warehouses.GET("/", handlers.ListWarehouses)
+		warehouses.GET("/:id", handlers.GetWarehouse)
+		warehouses.PUT("/:id", handlers.UpdateWarehouse)
+		warehouses.DELETE("/:id", handlers.DeleteWarehouse)
+	}
+
+	// Facility Orders
+	facilityOrders := router.Group("/api/v1/facility-orders")
+	{
+		facilityOrders.POST("/", handlers.CreateFacilityOrder)
+		facilityOrders.GET("/", handlers.ListFacilityOrders)
+		facilityOrders.GET("/:id", handlers.GetFacilityOrder)
+		facilityOrders.PUT("/:id", handlers.UpdateFacilityOrder)
+		facilityOrders.POST("/:id/submit", handlers.SubmitFacilityOrder)
+		facilityOrders.POST("/:id/approve", handlers.ApproveFacilityOrder)
+		facilityOrders.POST("/:id/deliveries", handlers.CreateFacilityDelivery)
+	}
+
+	// Stock Transfers
+	stockTransfers := router.Group("/api/v1/stock/transfers")
+	{
+		stockTransfers.POST("/", handlers.CreateStockTransfer)
+		stockTransfers.GET("/", handlers.ListStockTransfers)
+		stockTransfers.GET("/:id", handlers.GetStockTransfer)
+		stockTransfers.PUT("/:id", handlers.UpdateStockTransfer)
+		stockTransfers.POST("/:id/approve", handlers.ApproveStockTransfer)
+		stockTransfers.POST("/:id/receive", handlers.ReceiveStockTransfer)
+	}
+
+	// EMR Integrations
+	emrIntegrations := router.Group("/api/v1/emr-integrations")
+	{
+		emrIntegrations.POST("/", handlers.CreateEMRIntegration)
+		emrIntegrations.GET("/", handlers.ListEMRIntegrations)
+		emrIntegrations.GET("/:id", handlers.GetEMRIntegration)
+		emrIntegrations.PUT("/:id", handlers.UpdateEMRIntegration)
+		emrIntegrations.POST("/:id/verify", handlers.VerifyEMRIntegration)
+		emrIntegrations.GET("/:id/sync-logs", handlers.GetEMRSyncLogs)
+	}
+
 	// Run server
 	port := os.Getenv("APP_PORT")
 	router.Run(":" + port)

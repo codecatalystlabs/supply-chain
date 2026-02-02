@@ -18,7 +18,7 @@ import (
 // @Success 201 {object} dto.WarehouseOrderResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/warehouse-orders [post]
+// @Router /warehouse-orders [post]
 func ReceiveWarehouseOrder(c *gin.Context) {
 	var payload dto.WarehouseOrderCreateDTO
 	if err := c.ShouldBindJSON(&payload); err != nil {
@@ -64,7 +64,7 @@ func ReceiveWarehouseOrder(c *gin.Context) {
 // @Produce json
 // @Success 200 {array} dto.WarehouseOrderResponseDTO
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/warehouse-orders [get]
+// @Router /warehouse-orders [get]
 func ListWarehouseOrders(c *gin.Context) {
 	var orders []models.WarehouseOrder
 	if err := config.DB.Find(&orders).Error; err != nil {
@@ -86,7 +86,7 @@ func ListWarehouseOrders(c *gin.Context) {
 // @Param id path int true "ID"
 // @Success 200 {object} dto.WarehouseOrderResponseDTO
 // @Failure 404 {object} map[string]string
-// @Router /api/v1/warehouse-orders/{id} [get]
+// @Router /warehouse-orders/{id} [get]
 func GetWarehouseOrder(c *gin.Context) {
 	id := c.Param("id")
 	var order models.WarehouseOrder
