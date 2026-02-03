@@ -17,7 +17,7 @@ import (
 // @Success 201 {object} dto.PharmacyStockResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/pharmacy-stock [post]
+// @Router /pharmacy-stock [post]
 func CreatePharmacyStock(c *gin.Context) {
 	var payload dto.PharmacyStockCreateDTO
 	if err := c.ShouldBindJSON(&payload); err != nil {
@@ -44,7 +44,7 @@ func CreatePharmacyStock(c *gin.Context) {
 // @Produce json
 // @Success 200 {array} dto.PharmacyStockResponseDTO
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/pharmacy-stock [get]
+// @Router /pharmacy-stock [get]
 func ListPharmacyStock(c *gin.Context) {
 	var records []models.PharmacyStock
 	if err := config.DB.Find(&records).Error; err != nil {
@@ -65,7 +65,7 @@ func ListPharmacyStock(c *gin.Context) {
 // @Success 200 {object} dto.PharmacyStockResponseDTO
 // @Failure 404 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/pharmacy-stock/{id} [get]
+// @Router /pharmacy-stock/{id} [get]
 func GetPharmacyStock(c *gin.Context) {
 	id := c.Param("id")
 	var record models.PharmacyStock
@@ -86,7 +86,7 @@ func GetPharmacyStock(c *gin.Context) {
 // @Failure 400 {object} map[string]string
 // @Failure 404 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/pharmacy-stock/{id} [put]
+// @Router /pharmacy-stock/{id} [put]
 func UpdatePharmacyStock(c *gin.Context) {
 	id := c.Param("id")
 	var payload dto.PharmacyStockUpdateDTO
@@ -114,7 +114,7 @@ func UpdatePharmacyStock(c *gin.Context) {
 // @Param id path int true "ID"
 // @Success 200 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/pharmacy-stock/{id} [delete]
+// @Router /pharmacy-stock/{id} [delete]
 func DeletePharmacyStock(c *gin.Context) {
 	id := c.Param("id")
 	if err := config.DB.Delete(&models.PharmacyStock{}, id).Error; err != nil {

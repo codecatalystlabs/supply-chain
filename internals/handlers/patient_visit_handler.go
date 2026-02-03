@@ -18,7 +18,7 @@ import (
 // @Success 201 {object} dto.PatientVisitResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/patient-visit [post]
+// @Router /patient-visit [post]
 func CreatePatientVisit(c *gin.Context) {
 	var payload dto.PatientVisitCreateDTO
 	if err := c.ShouldBindJSON(&payload); err != nil {
@@ -49,6 +49,12 @@ func CreatePatientVisit(c *gin.Context) {
 	c.JSON(http.StatusCreated, mapToPatientVisitResponse(record))
 }
 
+// @Summary List patient visits
+// @Tags PatientVisit
+// @Produce json
+// @Success 200 {array} dto.PatientVisitResponseDTO
+// @Failure 500 {object} map[string]string
+// @Router /api/v1/patient-visit [get]
 func ListPatientVisits(c *gin.Context) {
 	var records []models.PatientVisit
 	if err := config.DB.Find(&records).Error; err != nil {
@@ -62,6 +68,13 @@ func ListPatientVisits(c *gin.Context) {
 	c.JSON(200, resp)
 }
 
+// @Summary Get patient visit by ID
+// @Tags PatientVisit
+// @Produce json
+// @Param id path int true "Patient Visit ID"
+// @Success 200 {object} dto.PatientVisitResponseDTO
+// @Failure 404 {object} map[string]string
+// @Router /api/v1/patient-visit/{id} [get]
 func GetPatientVisit(c *gin.Context) {
 	id := c.Param("id")
 	var record models.PatientVisit
@@ -72,6 +85,17 @@ func GetPatientVisit(c *gin.Context) {
 	c.JSON(200, mapToPatientVisitResponse(record))
 }
 
+// @Summary Update patient visit
+// @Tags PatientVisit
+// @Accept json
+// @Produce json
+// @Param id path int true "Patient Visit ID"
+// @Param payload body dto.PatientVisitUpdateDTO true "Patient visit update payload"
+// @Success 200 {object} dto.PatientVisitResponseDTO
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /api/v1/patient-visit/{id} [put]
 func UpdatePatientVisit(c *gin.Context) {
 	id := c.Param("id")
 	var payload dto.PatientVisitUpdateDTO
@@ -94,6 +118,13 @@ func UpdatePatientVisit(c *gin.Context) {
 	c.JSON(200, mapToPatientVisitResponse(record))
 }
 
+// @Summary Delete patient visit
+// @Tags PatientVisit
+// @Produce json
+// @Param id path int true "Patient Visit ID"
+// @Success 200 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /api/v1/patient-visit/{id} [delete]
 func DeletePatientVisit(c *gin.Context) {
 	id := c.Param("id")
 	if err := config.DB.Delete(&models.PatientVisit{}, id).Error; err != nil {

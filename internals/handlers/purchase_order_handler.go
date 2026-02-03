@@ -22,7 +22,7 @@ import (
 // @Success 201 {object} dto.PurchaseOrderResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/purchase-order [post]
+// @Router /purchase-order [post]
 func CreatePurchaseOrder(c *gin.Context) {
 	var input dto.PurchaseOrderCreateDTO
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -58,7 +58,7 @@ func CreatePurchaseOrder(c *gin.Context) {
 // @Failure 400 {object} map[string]string
 // @Failure 404 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/purchase-order/{id} [get]
+// @Router /purchase-order/{id} [get]
 func GetPurchaseOrder(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.ParseUint(idParam, 10, 64)
@@ -130,7 +130,7 @@ func GetPurchaseOrderByID(c *gin.Context) {
 // @Failure 400 {object} map[string]string
 // @Failure 404 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/purchase-order/{id} [put]
+// @Router /purchase-order/{id} [put]
 func UpdatePurchaseOrder(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.ParseUint(idParam, 10, 64)
@@ -174,7 +174,7 @@ func UpdatePurchaseOrder(c *gin.Context) {
 // @Success 204 {object} nil
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/purchase-order/{id} [delete]
+// @Router /purchase-order/{id} [delete]
 func DeletePurchaseOrder(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.ParseUint(idParam, 10, 64)
@@ -197,7 +197,7 @@ func DeletePurchaseOrder(c *gin.Context) {
 // @Produce json
 // @Success 200 {array} dto.PurchaseOrderResponseDTO
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/purchase-order [get]
+// @Router /purchase-order [get]
 func ListPurchaseOrders(c *gin.Context) {
 	var records []models.PurchaseOrder
 	if err := config.DB.Find(&records).Error; err != nil {

@@ -17,7 +17,7 @@ import (
 // @Success 201 {object} dto.StockReturnResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/stock/return [post]
+// @Router /stock/return [post]
 func CreateStockReturn(c *gin.Context) {
 	var payload dto.StockReturnCreateDTO
 	if err := c.ShouldBindJSON(&payload); err != nil {
@@ -49,7 +49,7 @@ func CreateStockReturn(c *gin.Context) {
 // @Produce json
 // @Success 200 {array} dto.StockReturnResponseDTO
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/stock/return [get]
+// @Router /stock/return [get]
 func ListStockReturns(c *gin.Context) {
 	var records []models.StockReturn
 	if err := config.DB.Find(&records).Error; err != nil {
@@ -70,7 +70,7 @@ func ListStockReturns(c *gin.Context) {
 // @Success 200 {object} dto.StockReturnResponseDTO
 // @Failure 404 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/stock/return/{id} [get]
+// @Router /stock/return/{id} [get]
 func GetStockReturn(c *gin.Context) {
 	id := c.Param("id")
 	var record models.StockReturn
@@ -91,7 +91,7 @@ func GetStockReturn(c *gin.Context) {
 // @Failure 400 {object} map[string]string
 // @Failure 404 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/stock/return/{id} [put]
+// @Router /stock/return/{id} [put]
 func UpdateStockReturn(c *gin.Context) {
 	id := c.Param("id")
 	var payload dto.StockReturnUpdateDTO
@@ -119,7 +119,7 @@ func UpdateStockReturn(c *gin.Context) {
 // @Param id path int true "ID"
 // @Success 200 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/stock/return/{id} [delete]
+// @Router /stock/return/{id} [delete]
 func DeleteStockReturn(c *gin.Context) {
 	id := c.Param("id")
 	if err := config.DB.Delete(&models.StockReturn{}, id).Error; err != nil {

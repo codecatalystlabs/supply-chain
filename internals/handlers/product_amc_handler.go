@@ -17,7 +17,7 @@ import (
 // @Success 201 {object} dto.ProductAmcResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/product-amc [post]
+// @Router /product-amc [post]
 func CreateProductAmc(c *gin.Context) {
 	var payload dto.ProductAmcCreateDTO
 	if err := c.ShouldBindJSON(&payload); err != nil {
@@ -48,7 +48,7 @@ func CreateProductAmc(c *gin.Context) {
 // @Produce json
 // @Success 200 {array} dto.ProductAmcResponseDTO
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/product-amc [get]
+// @Router /product-amc [get]
 func ListProductAmc(c *gin.Context) {
 	var records []models.ProductAmc
 	if err := config.DB.Find(&records).Error; err != nil {
@@ -69,7 +69,7 @@ func ListProductAmc(c *gin.Context) {
 // @Success 200 {object} dto.ProductAmcResponseDTO
 // @Failure 404 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/product-amc/{id} [get]
+// @Router /product-amc/{id} [get]
 func GetProductAmc(c *gin.Context) {
 	id := c.Param("id")
 	var record models.ProductAmc
@@ -90,7 +90,7 @@ func GetProductAmc(c *gin.Context) {
 // @Failure 400 {object} map[string]string
 // @Failure 404 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/product-amc/{id} [put]
+// @Router /product-amc/{id} [put]
 func UpdateProductAmc(c *gin.Context) {
 	id := c.Param("id")
 	var payload dto.ProductAmcUpdateDTO
@@ -118,7 +118,7 @@ func UpdateProductAmc(c *gin.Context) {
 // @Param id path int true "ID"
 // @Success 200 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/product-amc/{id} [delete]
+// @Router /product-amc/{id} [delete]
 func DeleteProductAmc(c *gin.Context) {
 	id := c.Param("id")
 	if err := config.DB.Delete(&models.ProductAmc{}, id).Error; err != nil {

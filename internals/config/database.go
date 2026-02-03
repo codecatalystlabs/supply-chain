@@ -46,21 +46,54 @@ func ConnectDatabase() {
 	log.Println("✅ Database connected")
 
 	// Auto-migrate models
+	// Core entities
+	if err := DB.AutoMigrate(
+		&models.Facility{},
+		&models.Pharmacy{},
+		&models.Warehouse{},
+		&models.EMRIntegration{},
+		&models.EMRSyncLog{},
+	); err != nil {
+		log.Fatal("Failed to migrate core models:", err)
+	}
+	
+	// Procurement and orders
+	if err := DB.AutoMigrate(
+		&models.ProcurementPlan{},
+		&models.ProcurementPlanItem{},
+		&models.FacilityOrder{},
+		&models.FacilityOrderItem{},
+		&models.FacilityDelivery{},
+		&models.FacilityDeliveryItem{},
+	); err != nil {
+		log.Fatal("Failed to migrate order models:", err)
+	}
+	
+	// Stock management
 	if err := DB.AutoMigrate(
 		&models.StockOnHand{},
 		&models.StockDispensed{},
-		&models.PurchaseOrder{},
-		&models.ProcurementPlan{},
-		&models.ProcurementPlanItem{},
-		&models.PatientVisit{},
-		&models.StockReturn{},
-		&models.ProductAmc{},
 		&models.StockAdjustment{},
+		&models.StockTransfer{},
+		&models.StockReturn{},
 		&models.PharmacyStock{},
 		&models.GoodsReceipt{},
+	); err != nil {
+		log.Fatal("Failed to migrate stock models:", err)
+	}
+	
+	// Legacy and other models
+	if err := DB.AutoMigrate(
+		&models.PurchaseOrder{},
+		&models.HealthCommodityOrder{},
+		&models.InterFacilityTransfer{},
+		&models.PatientVisit{},
+		&models.PatientMetric{},
+		&models.ProductAmc{},
+		&models.Prescription{},
 		&models.WarehouseOrder{},
 		&models.WarehouseDelivery{},
 	); err != nil {
-		log.Fatal("Failed to migrate database models:", err)
+		log.Fatal("Failed to migrate legacy models:", err)
 	}
 }

@@ -11,16 +11,31 @@ import (
 func SeedDatabase() {
 	log.Println("🌱 Seeding database with comprehensive data...")
 
-	seedStockOnHand()
-	seedPurchaseOrders()
-	seedProductAmc()
-	seedGoodsReceipts()
-	seedPatientVisits()
-	seedPharmacyStock()
+	// Core entities (must be seeded first)
+	seedWarehouses()
+	seedFacilities()
+	seedPharmacies()
+	seedEMRIntegrations()
+
+	// Procurement and orders
 	seedProcurementPlans()
+	seedFacilityOrders()
+
+	// Stock management
+	seedStockOnHand()
+	seedPharmacyStock()
 	seedStockAdjustments()
+	seedStockTransfers()
 	seedStockDispensed()
 	seedStockReturns()
+	seedGoodsReceipts()
+
+	// Other data
+	seedPurchaseOrders()
+	seedProductAmc()
+	seedPatientVisits()
+
+	// Legacy data
 	seedWarehouseOrders()
 	seedWarehouseDeliveries()
 
@@ -47,11 +62,752 @@ var warehouses = []struct {
 	{"NMS", "National Medical Stores"},
 }
 
+// Seed core entities
+func seedWarehouses() {
+	warehouses := []models.Warehouse{
+		{
+			WarehouseCode: "JMS",
+			WarehouseName: "Joint Medical Stores",
+			WarehouseType: stringPtr("Private"),
+			Address:       stringPtr("Kampala, Uganda"),
+			ContactPhone:  stringPtr("+256-XXX-XXXX"),
+			ContactEmail:  stringPtr("info@jms.co.ug"),
+			IsActive:      true,
+			CreatedAt:     time.Now(),
+		},
+		{
+			WarehouseCode: "NMS",
+			WarehouseName: "National Medical Stores",
+			WarehouseType: stringPtr("National"),
+			Address:       stringPtr("Entebbe, Uganda"),
+			ContactPhone:  stringPtr("+256-XXX-XXXX"),
+			ContactEmail:  stringPtr("info@nms.go.ug"),
+			IsActive:      true,
+			CreatedAt:     time.Now(),
+		},
+	}
+
+	for _, warehouse := range warehouses {
+		if err := DB.Create(&warehouse).Error; err != nil {
+			log.Printf("⚠️ Failed to seed warehouse: %v", err)
+		}
+	}
+	log.Println("✅ Warehouses seeded (2 records)")
+}
+
+func seedFacilities() {
+	facilities := []models.Facility{
+		{
+			FacilityCode:  "HC_KAMPALA_001",
+			FacilityName:  "Kampala Health Center",
+			DHIS2Code:     stringPtr("DHIS2_KLA_001"),
+			LevelOfCare:   stringPtr("HCIV"),
+			District:      stringPtr("Kampala"),
+			Region:        stringPtr("Central"),
+			Zone:          stringPtr("Central"),
+			Address:       stringPtr("Kampala City"),
+			ContactPerson: stringPtr("Dr. John Doe"),
+			ContactPhone:  stringPtr("+256-700-000001"),
+			ContactEmail:  stringPtr("kampala.hc@moh.go.ug"),
+			IsActive:      true,
+			EMRSystemCode: stringPtr("OPENMRS"),
+			EMRSystemName: stringPtr("OpenMRS"),
+			CreatedAt:     time.Now(),
+		},
+		{
+			FacilityCode:  "HC_JINJA_002",
+			FacilityName:  "Jinja Health Center",
+			DHIS2Code:     stringPtr("DHIS2_JNJ_002"),
+			LevelOfCare:   stringPtr("HCIII"),
+			District:      stringPtr("Jinja"),
+			Region:        stringPtr("Eastern"),
+			Zone:          stringPtr("Eastern"),
+			Address:       stringPtr("Jinja Town"),
+			ContactPerson: stringPtr("Dr. Jane Smith"),
+			ContactPhone:  stringPtr("+256-700-000002"),
+			ContactEmail:  stringPtr("jinja.hc@moh.go.ug"),
+			IsActive:      true,
+			EMRSystemCode: stringPtr("DHIS2"),
+			EMRSystemName: stringPtr("DHIS2"),
+			CreatedAt:     time.Now(),
+		},
+		{
+			FacilityCode:  "HC_MBARARA_003",
+			FacilityName:  "Mbarara Health Center",
+			DHIS2Code:     stringPtr("DHIS2_MBR_003"),
+			LevelOfCare:   stringPtr("HCIV"),
+			District:      stringPtr("Mbarara"),
+			Region:        stringPtr("Western"),
+			Zone:          stringPtr("Western"),
+			Address:       stringPtr("Mbarara Town"),
+			ContactPerson: stringPtr("Dr. Peter Okello"),
+			ContactPhone:  stringPtr("+256-700-000003"),
+			ContactEmail:  stringPtr("mbarara.hc@moh.go.ug"),
+			IsActive:      true,
+			EMRSystemCode: stringPtr("OPENMRS"),
+			EMRSystemName: stringPtr("OpenMRS"),
+			CreatedAt:     time.Now(),
+		},
+		{
+			FacilityCode:  "HC_GULU_004",
+			FacilityName:  "Gulu Health Center",
+			DHIS2Code:     stringPtr("DHIS2_GUL_004"),
+			LevelOfCare:   stringPtr("HCIII"),
+			District:      stringPtr("Gulu"),
+			Region:        stringPtr("Northern"),
+			Zone:          stringPtr("Northern"),
+			Address:       stringPtr("Gulu Town"),
+			ContactPerson: stringPtr("Dr. Mary Aceng"),
+			ContactPhone:  stringPtr("+256-700-000004"),
+			ContactEmail:  stringPtr("gulu.hc@moh.go.ug"),
+			IsActive:      true,
+			EMRSystemCode: stringPtr("OPENMRS"),
+			EMRSystemName: stringPtr("OpenMRS"),
+			CreatedAt:     time.Now(),
+		},
+		{
+			FacilityCode:  "HC_MASINDI_005",
+			FacilityName:  "Masindi Health Center",
+			DHIS2Code:     stringPtr("DHIS2_MSD_005"),
+			LevelOfCare:   stringPtr("HCIII"),
+			District:      stringPtr("Masindi"),
+			Region:        stringPtr("Western"),
+			Zone:          stringPtr("Western"),
+			Address:       stringPtr("Masindi Town"),
+			ContactPerson: stringPtr("Dr. James Kigozi"),
+			ContactPhone:  stringPtr("+256-700-000005"),
+			ContactEmail:  stringPtr("masindi.hc@moh.go.ug"),
+			IsActive:      true,
+			EMRSystemCode: stringPtr("OPENMRS"),
+			EMRSystemName: stringPtr("OpenMRS"),
+			CreatedAt:     time.Now(),
+		},
+		{
+			FacilityCode:  "HC_LIRA_006",
+			FacilityName:  "Lira Health Center",
+			DHIS2Code:     stringPtr("DHIS2_LIR_006"),
+			LevelOfCare:   stringPtr("HCIV"),
+			District:      stringPtr("Lira"),
+			Region:        stringPtr("Northern"),
+			Zone:          stringPtr("Northern"),
+			Address:       stringPtr("Lira Town"),
+			ContactPerson: stringPtr("Dr. Sarah Nakato"),
+			ContactPhone:  stringPtr("+256-700-000006"),
+			ContactEmail:  stringPtr("lira.hc@moh.go.ug"),
+			IsActive:      true,
+			EMRSystemCode: stringPtr("DHIS2"),
+			EMRSystemName: stringPtr("DHIS2"),
+			CreatedAt:     time.Now(),
+		},
+	}
+
+	for _, facility := range facilities {
+		if err := DB.Create(&facility).Error; err != nil {
+			log.Printf("⚠️ Failed to seed facility: %v", err)
+		}
+	}
+	log.Println("✅ Facilities seeded (6 records)")
+}
+
+func seedPharmacies() {
+	// Get facilities first
+	var facilities []models.Facility
+	DB.Find(&facilities)
+
+	if len(facilities) == 0 {
+		log.Println("⚠️ No facilities found, skipping pharmacy seeding")
+		return
+	}
+
+	pharmacies := []models.Pharmacy{
+		// Kampala - Multiple pharmacies
+		{
+			FacilityID:   facilities[0].ID, // Kampala
+			PharmacyCode: "MAIN",
+			PharmacyName: "Main Pharmacy",
+			PharmacyType: stringPtr("Main"),
+			IsActive:     true,
+			CreatedAt:    time.Now(),
+		},
+		{
+			FacilityID:   facilities[0].ID, // Kampala
+			PharmacyCode: "PED",
+			PharmacyName: "Pediatric Pharmacy",
+			PharmacyType: stringPtr("Pediatric"),
+			IsActive:     true,
+			CreatedAt:    time.Now(),
+		},
+		{
+			FacilityID:   facilities[0].ID, // Kampala
+			PharmacyCode: "ART",
+			PharmacyName: "ART Pharmacy",
+			PharmacyType: stringPtr("ART"),
+			IsActive:     true,
+			CreatedAt:    time.Now(),
+		},
+		{
+			FacilityID:   facilities[0].ID, // Kampala
+			PharmacyCode: "EMERG",
+			PharmacyName: "Emergency Pharmacy",
+			PharmacyType: stringPtr("Emergency"),
+			IsActive:     true,
+			CreatedAt:    time.Now(),
+		},
+		// Jinja
+		{
+			FacilityID:   facilities[1].ID, // Jinja
+			PharmacyCode: "MAIN",
+			PharmacyName: "Main Pharmacy",
+			PharmacyType: stringPtr("Main"),
+			IsActive:     true,
+			CreatedAt:    time.Now(),
+		},
+		{
+			FacilityID:   facilities[1].ID, // Jinja
+			PharmacyCode: "PED",
+			PharmacyName: "Pediatric Pharmacy",
+			PharmacyType: stringPtr("Pediatric"),
+			IsActive:     true,
+			CreatedAt:    time.Now(),
+		},
+		// Mbarara
+		{
+			FacilityID:   facilities[2].ID, // Mbarara
+			PharmacyCode: "MAIN",
+			PharmacyName: "Main Pharmacy",
+			PharmacyType: stringPtr("Main"),
+			IsActive:     true,
+			CreatedAt:    time.Now(),
+		},
+		{
+			FacilityID:   facilities[2].ID, // Mbarara
+			PharmacyCode: "ART",
+			PharmacyName: "ART Pharmacy",
+			PharmacyType: stringPtr("ART"),
+			IsActive:     true,
+			CreatedAt:    time.Now(),
+		},
+		// Gulu
+		{
+			FacilityID:   facilities[3].ID, // Gulu
+			PharmacyCode: "MAIN",
+			PharmacyName: "Main Pharmacy",
+			PharmacyType: stringPtr("Main"),
+			IsActive:     true,
+			CreatedAt:    time.Now(),
+		},
+		// Masindi
+		{
+			FacilityID:   facilities[4].ID, // Masindi
+			PharmacyCode: "MAIN",
+			PharmacyName: "Main Pharmacy",
+			PharmacyType: stringPtr("Main"),
+			IsActive:     true,
+			CreatedAt:    time.Now(),
+		},
+		// Lira
+		{
+			FacilityID:   facilities[5].ID, // Lira
+			PharmacyCode: "MAIN",
+			PharmacyName: "Main Pharmacy",
+			PharmacyType: stringPtr("Main"),
+			IsActive:     true,
+			CreatedAt:    time.Now(),
+		},
+		{
+			FacilityID:   facilities[5].ID, // Lira
+			PharmacyCode: "PED",
+			PharmacyName: "Pediatric Pharmacy",
+			PharmacyType: stringPtr("Pediatric"),
+			IsActive:     true,
+			CreatedAt:    time.Now(),
+		},
+	}
+
+	for _, pharmacy := range pharmacies {
+		if err := DB.Create(&pharmacy).Error; err != nil {
+			log.Printf("⚠️ Failed to seed pharmacy: %v", err)
+		}
+	}
+	log.Println("✅ Pharmacies seeded (12 records)")
+}
+
+func seedEMRIntegrations() {
+	var facilities []models.Facility
+	DB.Find(&facilities)
+
+	if len(facilities) == 0 {
+		log.Println("⚠️ No facilities found, skipping EMR integration seeding")
+		return
+	}
+
+	integrations := []models.EMRIntegration{
+		{
+			FacilityID:       facilities[0].ID,
+			EMRSystemCode:    "OPENMRS",
+			EMRSystemName:    "OpenMRS",
+			EMRSystemVersion: stringPtr("3.0.0"),
+			APIEndpoint:      stringPtr("https://emr-kampala.moh.go.ug/api"),
+			SyncEnabled:      true,
+			SyncFrequency:    stringPtr("realtime"),
+			IsActive:         true,
+			IsVerified:       true,
+			VerifiedAt:       timePtr(time.Now().AddDate(0, 0, -10)),
+			VerifiedBy:       stringPtr("System Admin"),
+			LastSyncAt:       timePtr(time.Now().AddDate(0, 0, -1)),
+			LastSyncStatus:   stringPtr("success"),
+			CreatedAt:        time.Now().AddDate(0, 0, -10),
+		},
+		{
+			FacilityID:       facilities[1].ID,
+			EMRSystemCode:    "DHIS2",
+			EMRSystemName:    "DHIS2",
+			EMRSystemVersion: stringPtr("2.40"),
+			APIEndpoint:      stringPtr("https://dhis2-jinja.moh.go.ug/api"),
+			SyncEnabled:      true,
+			SyncFrequency:    stringPtr("hourly"),
+			IsActive:         true,
+			IsVerified:       true,
+			VerifiedAt:       timePtr(time.Now().AddDate(0, 0, -8)),
+			VerifiedBy:       stringPtr("System Admin"),
+			LastSyncAt:       timePtr(time.Now().Add(-2 * time.Hour)),
+			LastSyncStatus:   stringPtr("success"),
+			CreatedAt:        time.Now().AddDate(0, 0, -8),
+		},
+		{
+			FacilityID:       facilities[2].ID,
+			EMRSystemCode:    "OPENMRS",
+			EMRSystemName:    "OpenMRS",
+			EMRSystemVersion: stringPtr("3.0.0"),
+			APIEndpoint:      stringPtr("https://emr-mbarara.moh.go.ug/api"),
+			SyncEnabled:      true,
+			SyncFrequency:    stringPtr("realtime"),
+			IsActive:         true,
+			IsVerified:       true,
+			VerifiedAt:       timePtr(time.Now().AddDate(0, 0, -5)),
+			VerifiedBy:       stringPtr("System Admin"),
+			LastSyncAt:       timePtr(time.Now().Add(-1 * time.Hour)),
+			LastSyncStatus:   stringPtr("success"),
+			CreatedAt:        time.Now().AddDate(0, 0, -5),
+		},
+		{
+			FacilityID:       facilities[3].ID,
+			EMRSystemCode:    "OPENMRS",
+			EMRSystemName:    "OpenMRS",
+			EMRSystemVersion: stringPtr("3.0.0"),
+			APIEndpoint:      stringPtr("https://emr-gulu.moh.go.ug/api"),
+			SyncEnabled:      true,
+			SyncFrequency:    stringPtr("daily"),
+			IsActive:         true,
+			IsVerified:       true,
+			VerifiedAt:       timePtr(time.Now().AddDate(0, 0, -3)),
+			VerifiedBy:       stringPtr("System Admin"),
+			LastSyncAt:       timePtr(time.Now().AddDate(0, 0, -1)),
+			LastSyncStatus:   stringPtr("success"),
+			CreatedAt:        time.Now().AddDate(0, 0, -3),
+		},
+		{
+			FacilityID:       facilities[4].ID,
+			EMRSystemCode:    "OPENMRS",
+			EMRSystemName:    "OpenMRS",
+			EMRSystemVersion: stringPtr("3.0.0"),
+			APIEndpoint:      stringPtr("https://emr-masindi.moh.go.ug/api"),
+			SyncEnabled:      true,
+			SyncFrequency:    stringPtr("hourly"),
+			IsActive:         true,
+			IsVerified:       false,
+			CreatedAt:        time.Now().AddDate(0, 0, -2),
+		},
+		{
+			FacilityID:       facilities[5].ID,
+			EMRSystemCode:    "DHIS2",
+			EMRSystemName:    "DHIS2",
+			EMRSystemVersion: stringPtr("2.40"),
+			APIEndpoint:      stringPtr("https://dhis2-lira.moh.go.ug/api"),
+			SyncEnabled:      true,
+			SyncFrequency:    stringPtr("realtime"),
+			IsActive:         true,
+			IsVerified:       true,
+			VerifiedAt:       timePtr(time.Now().AddDate(0, 0, -1)),
+			VerifiedBy:       stringPtr("System Admin"),
+			LastSyncAt:       timePtr(time.Now().Add(-30 * time.Minute)),
+			LastSyncStatus:   stringPtr("partial"),
+			LastSyncMessage:  stringPtr("Some records failed to sync"),
+			CreatedAt:        time.Now().AddDate(0, 0, -1),
+		},
+	}
+
+	for _, integration := range integrations {
+		if err := DB.Create(&integration).Error; err != nil {
+			log.Printf("⚠️ Failed to seed EMR integration: %v", err)
+			continue
+		}
+
+		// Create sync logs for verified integrations
+		if integration.IsVerified && integration.LastSyncAt != nil {
+			syncLog := models.EMRSyncLog{
+				IntegrationID:     integration.ID,
+				SyncType:          "stock",
+				SyncDirection:     "emr_to_central",
+				Status:            *integration.LastSyncStatus,
+				RecordsProcessed:  100,
+				RecordsSuccessful: 95,
+				RecordsFailed:     5,
+				StartedAt:         *integration.LastSyncAt,
+				CompletedAt:       timePtr(integration.LastSyncAt.Add(time.Minute * 5)),
+				DurationSeconds:   intPtr(300),
+			}
+			if *integration.LastSyncStatus == "partial" {
+				syncLog.ErrorMessage = stringPtr("Some records failed validation")
+			}
+			DB.Create(&syncLog)
+		}
+	}
+	log.Println("✅ EMR integrations seeded (6 records with sync logs)")
+}
+
+func seedFacilityOrders() {
+	var facilities []models.Facility
+	var warehouses []models.Warehouse
+	DB.Find(&facilities)
+	DB.Find(&warehouses)
+
+	if len(facilities) == 0 || len(warehouses) == 0 {
+		log.Println("⚠️ No facilities or warehouses found, skipping facility order seeding")
+		return
+	}
+
+	orders := []models.FacilityOrder{
+		// Kampala - JMS - Fulfilled
+		{
+			OrderNumber:        "ORD-KLA-JMS-001",
+			OrderRefNumber:     stringPtr("PO_2025_001"),
+			FacilityID:         facilities[0].ID,
+			FacilityCode:       facilities[0].FacilityCode,
+			WarehouseID:        warehouses[0].ID, // JMS
+			WarehouseCode:      warehouses[0].WarehouseCode,
+			OrderDate:          time.Now().AddDate(0, 0, -10),
+			OrderType:          stringPtr("routine"),
+			OrderStatus:        "fulfilled",
+			Priority:           stringPtr("normal"),
+			FinancialYear:      stringPtr("2024/2025"),
+			OrderCycle:         stringPtr("Q1"),
+			SubmittedBy:        stringPtr("Dr. John Doe"),
+			SubmittedAt:        timePtr(time.Now().AddDate(0, 0, -10)),
+			ApprovedBy:         stringPtr("Pharmacy Manager"),
+			ApprovedAt:         timePtr(time.Now().AddDate(0, 0, -9)),
+			ActualDeliveryDate: timePtr(time.Now().AddDate(0, 0, -7)),
+			TotalItems:         3,
+			TotalQuantity:      5000,
+			SourceSystem:       stringPtr("OPENMRS"),
+			CreatedAt:          time.Now().AddDate(0, 0, -10),
+		},
+		// Jinja - NMS - Processing
+		{
+			OrderNumber:    "ORD-JNJ-NMS-001",
+			OrderRefNumber: stringPtr("PO_2025_002"),
+			FacilityID:     facilities[1].ID,
+			FacilityCode:   facilities[1].FacilityCode,
+			WarehouseID:    warehouses[1].ID, // NMS
+			WarehouseCode:  warehouses[1].WarehouseCode,
+			OrderDate:      time.Now().AddDate(0, 0, -5),
+			OrderType:      stringPtr("routine"),
+			OrderStatus:    "processing",
+			Priority:       stringPtr("normal"),
+			FinancialYear:  stringPtr("2024/2025"),
+			OrderCycle:     stringPtr("Q1"),
+			SubmittedBy:    stringPtr("Dr. Jane Smith"),
+			SubmittedAt:    timePtr(time.Now().AddDate(0, 0, -5)),
+			ApprovedBy:     stringPtr("Pharmacy Manager"),
+			ApprovedAt:     timePtr(time.Now().AddDate(0, 0, -4)),
+			TotalItems:     2,
+			TotalQuantity:  3000,
+			SourceSystem:   stringPtr("DHIS2"),
+			CreatedAt:      time.Now().AddDate(0, 0, -5),
+		},
+		// Mbarara - JMS - Approved
+		{
+			OrderNumber:          "ORD-MBR-JMS-001",
+			OrderRefNumber:       stringPtr("PO_2025_003"),
+			FacilityID:           facilities[2].ID,
+			FacilityCode:         facilities[2].FacilityCode,
+			WarehouseID:          warehouses[0].ID, // JMS
+			WarehouseCode:        warehouses[0].WarehouseCode,
+			OrderDate:            time.Now().AddDate(0, 0, -3),
+			OrderType:            stringPtr("routine"),
+			OrderStatus:          "approved",
+			Priority:             stringPtr("normal"),
+			FinancialYear:        stringPtr("2024/2025"),
+			OrderCycle:           stringPtr("Q1"),
+			SubmittedBy:          stringPtr("Dr. Peter Okello"),
+			SubmittedAt:          timePtr(time.Now().AddDate(0, 0, -3)),
+			ApprovedBy:           stringPtr("Pharmacy Manager"),
+			ApprovedAt:           timePtr(time.Now().AddDate(0, 0, -2)),
+			ExpectedDeliveryDate: timePtr(time.Now().AddDate(0, 0, 7)),
+			TotalItems:           4,
+			TotalQuantity:        6000,
+			SourceSystem:         stringPtr("OPENMRS"),
+			CreatedAt:            time.Now().AddDate(0, 0, -3),
+		},
+		// Gulu - NMS - Pending
+		{
+			OrderNumber:    "ORD-GUL-NMS-001",
+			OrderRefNumber: stringPtr("PO_2025_004"),
+			FacilityID:     facilities[3].ID,
+			FacilityCode:   facilities[3].FacilityCode,
+			WarehouseID:    warehouses[1].ID, // NMS
+			WarehouseCode:  warehouses[1].WarehouseCode,
+			OrderDate:      time.Now().AddDate(0, 0, -1),
+			OrderType:      stringPtr("emergency"),
+			OrderStatus:    "pending",
+			Priority:       stringPtr("urgent"),
+			FinancialYear:  stringPtr("2024/2025"),
+			OrderCycle:     stringPtr("Q1"),
+			TotalItems:     2,
+			TotalQuantity:  1500,
+			SourceSystem:   stringPtr("OPENMRS"),
+			CreatedAt:      time.Now().AddDate(0, 0, -1),
+		},
+		// Lira - JMS - Submitted
+		{
+			OrderNumber:    "ORD-LIR-JMS-001",
+			OrderRefNumber: stringPtr("PO_2025_005"),
+			FacilityID:     facilities[5].ID,
+			FacilityCode:   facilities[5].FacilityCode,
+			WarehouseID:    warehouses[0].ID, // JMS
+			WarehouseCode:  warehouses[0].WarehouseCode,
+			OrderDate:      time.Now().AddDate(0, 0, -2),
+			OrderType:      stringPtr("routine"),
+			OrderStatus:    "submitted",
+			Priority:       stringPtr("normal"),
+			FinancialYear:  stringPtr("2024/2025"),
+			OrderCycle:     stringPtr("Q1"),
+			SubmittedBy:    stringPtr("Dr. Sarah Nakato"),
+			SubmittedAt:    timePtr(time.Now().AddDate(0, 0, -2)),
+			TotalItems:     3,
+			TotalQuantity:  4000,
+			SourceSystem:   stringPtr("DHIS2"),
+			CreatedAt:      time.Now().AddDate(0, 0, -2),
+		},
+	}
+
+	// Product codes for order items
+	productItems := map[int][]struct {
+		ProductCode string
+		Description string
+		Quantity    int
+		UOM         string
+	}{
+		0: { // Order 1
+			{"PROD_PARACETAMOL_500", "Paracetamol 500mg", 2000, "Tablets"},
+			{"PROD_AMOXICILLIN_250", "Amoxicillin 250mg", 2000, "Capsules"},
+			{"PROD_IBUPROFEN_400", "Ibuprofen 400mg", 1000, "Tablets"},
+		},
+		1: { // Order 2
+			{"PROD_AMOXICILLIN_250", "Amoxicillin 250mg", 2000, "Capsules"},
+			{"PROD_COTRIMOXAZOLE_480", "Cotrimoxazole 480mg", 1000, "Tablets"},
+		},
+		2: { // Order 3
+			{"PROD_PARACETAMOL_500", "Paracetamol 500mg", 2000, "Tablets"},
+			{"PROD_METFORMIN_500", "Metformin 500mg", 1500, "Tablets"},
+			{"PROD_IBUPROFEN_400", "Ibuprofen 400mg", 1500, "Tablets"},
+			{"PROD_COTRIMOXAZOLE_480", "Cotrimoxazole 480mg", 1000, "Tablets"},
+		},
+		3: { // Order 4
+			{"PROD_PARACETAMOL_500", "Paracetamol 500mg", 1000, "Tablets"},
+			{"PROD_AMOXICILLIN_250", "Amoxicillin 250mg", 500, "Capsules"},
+		},
+		4: { // Order 5
+			{"PROD_PARACETAMOL_500", "Paracetamol 500mg", 1500, "Tablets"},
+			{"PROD_IBUPROFEN_400", "Ibuprofen 400mg", 1500, "Tablets"},
+			{"PROD_METFORMIN_500", "Metformin 500mg", 1000, "Tablets"},
+		},
+	}
+
+	for idx, order := range orders {
+		if err := DB.Create(&order).Error; err != nil {
+			log.Printf("⚠️ Failed to seed facility order: %v", err)
+			continue
+		}
+
+		// Add order items
+		if items, ok := productItems[idx]; ok {
+			for _, itemData := range items {
+				item := models.FacilityOrderItem{
+					OrderID:            order.ID,
+					ProductCode:        itemData.ProductCode,
+					ProductDescription: stringPtr(itemData.Description),
+					UOM:                stringPtr(itemData.UOM),
+					OrderedQuantity:    itemData.Quantity,
+					Status:             "pending",
+					CreatedAt:          time.Now(),
+				}
+
+				// Set honored quantity for fulfilled orders
+				if order.OrderStatus == "fulfilled" {
+					item.HonoredQuantity = intPtr(itemData.Quantity)
+					item.DeliveredQuantity = intPtr(itemData.Quantity)
+					item.Status = "fulfilled"
+				} else if order.OrderStatus == "processing" {
+					item.HonoredQuantity = intPtr(itemData.Quantity)
+					item.Status = "partially_fulfilled"
+				}
+
+				if err := DB.Create(&item).Error; err != nil {
+					log.Printf("⚠️ Failed to seed facility order item: %v", err)
+				}
+			}
+		}
+	}
+	log.Println("✅ Facility orders seeded (5 orders with items)")
+}
+
+func seedStockTransfers() {
+	var facilities []models.Facility
+	var pharmacies []models.Pharmacy
+	DB.Find(&facilities)
+	DB.Find(&pharmacies)
+
+	if len(facilities) < 2 {
+		log.Println("⚠️ Insufficient facilities found, skipping stock transfer seeding")
+		return
+	}
+
+	transfers := []models.StockTransfer{
+		// Inter-facility transfer - Completed
+		{
+			TransferRef:    "TRF-INT-001",
+			TransferType:   "inter_facility",
+			FromFacilityID: facilities[0].ID, // Kampala
+			ToFacilityID:   facilities[1].ID, // Jinja
+			ProductCode:    "PROD_PARACETAMOL_500",
+			BatchNumber:    stringPtr("BATCH_2025_001"),
+			Quantity:       500,
+			ExpiryDate:     timePtr(time.Now().AddDate(1, 0, 0)),
+			TransferDate:   time.Now().AddDate(0, 0, -3),
+			Status:         "completed",
+			RequestedBy:    stringPtr("Dr. John Doe"),
+			ApprovedBy:     stringPtr("Pharmacy Manager"),
+			ReceivedBy:     stringPtr("Dr. Jane Smith"),
+			ReceivedAt:     timePtr(time.Now().AddDate(0, 0, -2)),
+			Notes:          stringPtr("Emergency stock transfer"),
+			CreatedAt:      time.Now().AddDate(0, 0, -3),
+		},
+		// Intra-facility transfer - Completed
+		{
+			TransferRef:    "TRF-INTRA-001",
+			TransferType:   "intra_facility",
+			FromFacilityID: facilities[0].ID,  // Kampala
+			FromPharmacyID: &pharmacies[0].ID, // Main Pharmacy
+			ToFacilityID:   facilities[0].ID,  // Kampala (same facility)
+			ToPharmacyID:   &pharmacies[1].ID, // Pediatric Pharmacy
+			ProductCode:    "PROD_IBUPROFEN_400",
+			BatchNumber:    stringPtr("BATCH_2025_002"),
+			Quantity:       200,
+			ExpiryDate:     timePtr(time.Now().AddDate(1, 6, 0)),
+			TransferDate:   time.Now().AddDate(0, 0, -1),
+			Status:         "completed",
+			RequestedBy:    stringPtr("Pediatric Pharmacy Manager"),
+			ApprovedBy:     stringPtr("Main Pharmacy Manager"),
+			ReceivedBy:     stringPtr("Pediatric Pharmacy Staff"),
+			ReceivedAt:     timePtr(time.Now()),
+			Notes:          stringPtr("Transfer to pediatric pharmacy for pediatric patients"),
+			CreatedAt:      time.Now().AddDate(0, 0, -1),
+		},
+		// Inter-facility transfer - In Transit
+		{
+			TransferRef:    "TRF-INT-002",
+			TransferType:   "inter_facility",
+			FromFacilityID: facilities[2].ID, // Mbarara
+			ToFacilityID:   facilities[3].ID, // Gulu
+			ProductCode:    "PROD_AMOXICILLIN_250",
+			BatchNumber:    stringPtr("BATCH_2025_003"),
+			Quantity:       750,
+			ExpiryDate:     timePtr(time.Now().AddDate(2, 0, 0)),
+			TransferDate:   time.Now().AddDate(0, 0, -2),
+			Status:         "in_transit",
+			RequestedBy:    stringPtr("Dr. Peter Okello"),
+			ApprovedBy:     stringPtr("Pharmacy Manager"),
+			Notes:          stringPtr("Routine stock redistribution"),
+			CreatedAt:      time.Now().AddDate(0, 0, -2),
+		},
+		// Intra-facility transfer - Pending
+		{
+			TransferRef:    "TRF-INTRA-002",
+			TransferType:   "intra_facility",
+			FromFacilityID: facilities[0].ID,  // Kampala
+			FromPharmacyID: &pharmacies[0].ID, // Main Pharmacy
+			ToFacilityID:   facilities[0].ID,  // Kampala
+			ToPharmacyID:   &pharmacies[2].ID, // ART Pharmacy
+			ProductCode:    "PROD_COTRIMOXAZOLE_480",
+			BatchNumber:    stringPtr("BATCH_2025_004"),
+			Quantity:       300,
+			ExpiryDate:     timePtr(time.Now().AddDate(1, 3, 0)),
+			TransferDate:   time.Now(),
+			Status:         "pending",
+			RequestedBy:    stringPtr("ART Pharmacy Manager"),
+			Notes:          stringPtr("Request for ART pharmacy stock replenishment"),
+			CreatedAt:      time.Now(),
+		},
+		// Inter-facility transfer - Pending
+		{
+			TransferRef:    "TRF-INT-003",
+			TransferType:   "inter_facility",
+			FromFacilityID: facilities[5].ID, // Lira
+			ToFacilityID:   facilities[4].ID, // Masindi
+			ProductCode:    "PROD_METFORMIN_500",
+			BatchNumber:    stringPtr("BATCH_2025_005"),
+			Quantity:       400,
+			ExpiryDate:     timePtr(time.Now().AddDate(1, 9, 0)),
+			TransferDate:   time.Now(),
+			Status:         "pending",
+			RequestedBy:    stringPtr("Dr. Sarah Nakato"),
+			Notes:          stringPtr("Request for emergency stock"),
+			CreatedAt:      time.Now(),
+		},
+		// Intra-facility transfer - In Transit
+		{
+			TransferRef:    "TRF-INTRA-003",
+			TransferType:   "intra_facility",
+			FromFacilityID: facilities[1].ID,  // Jinja
+			FromPharmacyID: &pharmacies[4].ID, // Main Pharmacy
+			ToFacilityID:   facilities[1].ID,  // Jinja
+			ToPharmacyID:   &pharmacies[5].ID, // Pediatric Pharmacy
+			ProductCode:    "PROD_PARACETAMOL_500",
+			BatchNumber:    stringPtr("BATCH_2025_001"),
+			Quantity:       150,
+			ExpiryDate:     timePtr(time.Now().AddDate(1, 0, 0)),
+			TransferDate:   time.Now().AddDate(0, 0, -1),
+			Status:         "in_transit",
+			RequestedBy:    stringPtr("Pediatric Pharmacy Staff"),
+			ApprovedBy:     stringPtr("Main Pharmacy Manager"),
+			Notes:          stringPtr("Transfer for pediatric patients"),
+			CreatedAt:      time.Now().AddDate(0, 0, -1),
+		},
+	}
+
+	for _, transfer := range transfers {
+		if err := DB.Create(&transfer).Error; err != nil {
+			log.Printf("⚠️ Failed to seed stock transfer: %v", err)
+		}
+	}
+	log.Println("✅ Stock transfers seeded (6 records: 3 inter-facility, 3 intra-facility)")
+}
+
 func seedStockOnHand() {
+	var facilities []models.Facility
+	DB.Find(&facilities)
+
+	if len(facilities) == 0 {
+		log.Println("⚠️ No facilities found, skipping stock on hand seeding")
+		return
+	}
+
 	stocks := []models.StockOnHand{
+		// Kampala
 		{
 			SrcSystemCode:   "HEALTHSYS-01",
-			SrcFacilityCode: "HC_KAMPALA_001",
+			SrcFacilityCode: facilities[0].FacilityCode,
 			SrcTimestamp:    time.Now(),
 			SrcProductCode:  "PROD_PARACETAMOL_500",
 			SrcBatchNumber:  "BATCH_2025_001",
@@ -60,7 +816,7 @@ func seedStockOnHand() {
 		},
 		{
 			SrcSystemCode:   "HEALTHSYS-01",
-			SrcFacilityCode: "HC_KAMPALA_001",
+			SrcFacilityCode: facilities[0].FacilityCode,
 			SrcTimestamp:    time.Now(),
 			SrcProductCode:  "PROD_IBUPROFEN_400",
 			SrcBatchNumber:  "BATCH_2025_002",
@@ -69,7 +825,17 @@ func seedStockOnHand() {
 		},
 		{
 			SrcSystemCode:   "HEALTHSYS-01",
-			SrcFacilityCode: "HC_JINJA_002",
+			SrcFacilityCode: facilities[0].FacilityCode,
+			SrcTimestamp:    time.Now(),
+			SrcProductCode:  "PROD_AMOXICILLIN_250",
+			SrcBatchNumber:  "BATCH_2025_003",
+			SrcQuantity:     1200,
+			SrcExpiryDate:   time.Now().AddDate(2, 0, 0),
+		},
+		// Jinja
+		{
+			SrcSystemCode:   "HEALTHSYS-01",
+			SrcFacilityCode: facilities[1].FacilityCode,
 			SrcTimestamp:    time.Now(),
 			SrcProductCode:  "PROD_AMOXICILLIN_250",
 			SrcBatchNumber:  "BATCH_2025_003",
@@ -78,7 +844,26 @@ func seedStockOnHand() {
 		},
 		{
 			SrcSystemCode:   "HEALTHSYS-01",
-			SrcFacilityCode: "HC_MBARARA_003",
+			SrcFacilityCode: facilities[1].FacilityCode,
+			SrcTimestamp:    time.Now(),
+			SrcProductCode:  "PROD_PARACETAMOL_500",
+			SrcBatchNumber:  "BATCH_2025_001",
+			SrcQuantity:     800,
+			SrcExpiryDate:   time.Now().AddDate(1, 0, 0),
+		},
+		{
+			SrcSystemCode:   "HEALTHSYS-01",
+			SrcFacilityCode: facilities[1].FacilityCode,
+			SrcTimestamp:    time.Now(),
+			SrcProductCode:  "PROD_COTRIMOXAZOLE_480",
+			SrcBatchNumber:  "BATCH_2025_004",
+			SrcQuantity:     600,
+			SrcExpiryDate:   time.Now().AddDate(1, 3, 0),
+		},
+		// Mbarara
+		{
+			SrcSystemCode:   "HEALTHSYS-01",
+			SrcFacilityCode: facilities[2].FacilityCode,
 			SrcTimestamp:    time.Now(),
 			SrcProductCode:  "PROD_COTRIMOXAZOLE_480",
 			SrcBatchNumber:  "BATCH_2025_004",
@@ -87,12 +872,60 @@ func seedStockOnHand() {
 		},
 		{
 			SrcSystemCode:   "HEALTHSYS-01",
-			SrcFacilityCode: "HC_GULU_004",
+			SrcFacilityCode: facilities[2].FacilityCode,
+			SrcTimestamp:    time.Now(),
+			SrcProductCode:  "PROD_METFORMIN_500",
+			SrcBatchNumber:  "BATCH_2025_005",
+			SrcQuantity:     1500,
+			SrcExpiryDate:   time.Now().AddDate(1, 9, 0),
+		},
+		// Gulu
+		{
+			SrcSystemCode:   "HEALTHSYS-01",
+			SrcFacilityCode: facilities[3].FacilityCode,
 			SrcTimestamp:    time.Now(),
 			SrcProductCode:  "PROD_METFORMIN_500",
 			SrcBatchNumber:  "BATCH_2025_005",
 			SrcQuantity:     2000,
 			SrcExpiryDate:   time.Now().AddDate(1, 9, 0),
+		},
+		{
+			SrcSystemCode:   "HEALTHSYS-01",
+			SrcFacilityCode: facilities[3].FacilityCode,
+			SrcTimestamp:    time.Now(),
+			SrcProductCode:  "PROD_PARACETAMOL_500",
+			SrcBatchNumber:  "BATCH_2025_001",
+			SrcQuantity:     600,
+			SrcExpiryDate:   time.Now().AddDate(1, 0, 0),
+		},
+		// Masindi
+		{
+			SrcSystemCode:   "HEALTHSYS-01",
+			SrcFacilityCode: facilities[4].FacilityCode,
+			SrcTimestamp:    time.Now(),
+			SrcProductCode:  "PROD_IBUPROFEN_400",
+			SrcBatchNumber:  "BATCH_2025_002",
+			SrcQuantity:     400,
+			SrcExpiryDate:   time.Now().AddDate(1, 6, 0),
+		},
+		// Lira
+		{
+			SrcSystemCode:   "HEALTHSYS-01",
+			SrcFacilityCode: facilities[5].FacilityCode,
+			SrcTimestamp:    time.Now(),
+			SrcProductCode:  "PROD_AMOXICILLIN_250",
+			SrcBatchNumber:  "BATCH_2025_003",
+			SrcQuantity:     1800,
+			SrcExpiryDate:   time.Now().AddDate(2, 0, 0),
+		},
+		{
+			SrcSystemCode:   "HEALTHSYS-01",
+			SrcFacilityCode: facilities[5].FacilityCode,
+			SrcTimestamp:    time.Now(),
+			SrcProductCode:  "PROD_COTRIMOXAZOLE_480",
+			SrcBatchNumber:  "BATCH_2025_004",
+			SrcQuantity:     900,
+			SrcExpiryDate:   time.Now().AddDate(1, 8, 0),
 		},
 	}
 
@@ -101,7 +934,7 @@ func seedStockOnHand() {
 			log.Printf("⚠️ Failed to seed stock on hand: %v", err)
 		}
 	}
-	log.Println("✅ Stock on hand data seeded (5 records)")
+	log.Println("✅ Stock on hand data seeded (12 records)")
 }
 
 func seedPurchaseOrders() {
@@ -342,10 +1175,19 @@ func seedPatientVisits() {
 }
 
 func seedPharmacyStock() {
+	var facilities []models.Facility
+	DB.Find(&facilities)
+
+	if len(facilities) == 0 {
+		log.Println("⚠️ No facilities found, skipping pharmacy stock seeding")
+		return
+	}
+
 	stocks := []models.PharmacyStock{
+		// Kampala
 		{
 			PhaSystemCode:   "HEALTHSYS-01",
-			PhaFacilityCode: "HC_KAMPALA_001",
+			PhaFacilityCode: facilities[0].FacilityCode,
 			PhaTimestamp:    time.Now(),
 			PhaProductCode:  "PROD_PARACETAMOL_500",
 			PhaBatchNumber:  "BATCH_2025_001",
@@ -354,7 +1196,26 @@ func seedPharmacyStock() {
 		},
 		{
 			PhaSystemCode:   "HEALTHSYS-01",
-			PhaFacilityCode: "HC_JINJA_002",
+			PhaFacilityCode: facilities[0].FacilityCode,
+			PhaTimestamp:    time.Now(),
+			PhaProductCode:  "PROD_IBUPROFEN_400",
+			PhaBatchNumber:  "BATCH_2025_002",
+			PhaQuantity:     280,
+			PhaExpiryDate:   time.Now().AddDate(1, 6, 0),
+		},
+		{
+			PhaSystemCode:   "HEALTHSYS-01",
+			PhaFacilityCode: facilities[0].FacilityCode,
+			PhaTimestamp:    time.Now(),
+			PhaProductCode:  "PROD_AMOXICILLIN_250",
+			PhaBatchNumber:  "BATCH_2025_003",
+			PhaQuantity:     1200,
+			PhaExpiryDate:   time.Now().AddDate(2, 0, 0),
+		},
+		// Jinja
+		{
+			PhaSystemCode:   "HEALTHSYS-01",
+			PhaFacilityCode: facilities[1].FacilityCode,
 			PhaTimestamp:    time.Now(),
 			PhaProductCode:  "PROD_AMOXICILLIN_250",
 			PhaBatchNumber:  "BATCH_2025_003",
@@ -363,11 +1224,78 @@ func seedPharmacyStock() {
 		},
 		{
 			PhaSystemCode:   "HEALTHSYS-01",
-			PhaFacilityCode: "HC_MBARARA_003",
+			PhaFacilityCode: facilities[1].FacilityCode,
+			PhaTimestamp:    time.Now(),
+			PhaProductCode:  "PROD_PARACETAMOL_500",
+			PhaBatchNumber:  "BATCH_2025_001",
+			PhaQuantity:     800,
+			PhaExpiryDate:   time.Now().AddDate(1, 0, 0),
+		},
+		// Mbarara
+		{
+			PhaSystemCode:   "HEALTHSYS-01",
+			PhaFacilityCode: facilities[2].FacilityCode,
 			PhaTimestamp:    time.Now(),
 			PhaProductCode:  "PROD_COTRIMOXAZOLE_480",
 			PhaBatchNumber:  "BATCH_2025_004",
 			PhaQuantity:     2800,
+			PhaExpiryDate:   time.Now().AddDate(1, 8, 0),
+		},
+		{
+			PhaSystemCode:   "HEALTHSYS-01",
+			PhaFacilityCode: facilities[2].FacilityCode,
+			PhaTimestamp:    time.Now(),
+			PhaProductCode:  "PROD_METFORMIN_500",
+			PhaBatchNumber:  "BATCH_2025_005",
+			PhaQuantity:     1500,
+			PhaExpiryDate:   time.Now().AddDate(1, 9, 0),
+		},
+		// Gulu
+		{
+			PhaSystemCode:   "HEALTHSYS-01",
+			PhaFacilityCode: facilities[3].FacilityCode,
+			PhaTimestamp:    time.Now(),
+			PhaProductCode:  "PROD_METFORMIN_500",
+			PhaBatchNumber:  "BATCH_2025_005",
+			PhaQuantity:     2000,
+			PhaExpiryDate:   time.Now().AddDate(1, 9, 0),
+		},
+		{
+			PhaSystemCode:   "HEALTHSYS-01",
+			PhaFacilityCode: facilities[3].FacilityCode,
+			PhaTimestamp:    time.Now(),
+			PhaProductCode:  "PROD_PARACETAMOL_500",
+			PhaBatchNumber:  "BATCH_2025_001",
+			PhaQuantity:     600,
+			PhaExpiryDate:   time.Now().AddDate(1, 0, 0),
+		},
+		// Masindi
+		{
+			PhaSystemCode:   "HEALTHSYS-01",
+			PhaFacilityCode: facilities[4].FacilityCode,
+			PhaTimestamp:    time.Now(),
+			PhaProductCode:  "PROD_IBUPROFEN_400",
+			PhaBatchNumber:  "BATCH_2025_002",
+			PhaQuantity:     400,
+			PhaExpiryDate:   time.Now().AddDate(1, 6, 0),
+		},
+		// Lira
+		{
+			PhaSystemCode:   "HEALTHSYS-01",
+			PhaFacilityCode: facilities[5].FacilityCode,
+			PhaTimestamp:    time.Now(),
+			PhaProductCode:  "PROD_AMOXICILLIN_250",
+			PhaBatchNumber:  "BATCH_2025_003",
+			PhaQuantity:     1800,
+			PhaExpiryDate:   time.Now().AddDate(2, 0, 0),
+		},
+		{
+			PhaSystemCode:   "HEALTHSYS-01",
+			PhaFacilityCode: facilities[5].FacilityCode,
+			PhaTimestamp:    time.Now(),
+			PhaProductCode:  "PROD_COTRIMOXAZOLE_480",
+			PhaBatchNumber:  "BATCH_2025_004",
+			PhaQuantity:     900,
 			PhaExpiryDate:   time.Now().AddDate(1, 8, 0),
 		},
 	}
@@ -377,83 +1305,287 @@ func seedPharmacyStock() {
 			log.Printf("⚠️ Failed to seed pharmacy stock: %v", err)
 		}
 	}
-	log.Println("✅ Pharmacy stock data seeded (3 records)")
+	log.Println("✅ Pharmacy stock data seeded (12 records)")
 }
 
 func seedProcurementPlans() {
+	var warehouses []models.Warehouse
+	DB.Find(&warehouses)
+
+	if len(warehouses) == 0 {
+		log.Println("⚠️ No warehouses found, skipping procurement plan seeding")
+		return
+	}
+
 	plans := []models.ProcurementPlan{
 		{
-			PlanSystemCode: "HEALTHSYS-01",
-			StoreCode:      "JMS",
-			CreatedAt:      time.Now(),
-			Notes:          stringPtr("Q1 2025 procurement plan for JMS"),
+			PlanSystemCode:  "HEALTHSYS-01",
+			WarehouseID:     &warehouses[0].ID, // JMS
+			StoreCode:       warehouses[0].WarehouseCode,
+			CreatedAt:       time.Now(),
+			Notes:           stringPtr("Q1 2025 procurement plan for JMS"),
+			FinancialYear:   "2024/2025",
+			PlanPeriodType:  stringPtr("Quarterly"),
+			PlanPeriodStart: timePtr(time.Now()),
+			PlanPeriodEnd:   timePtr(time.Now().AddDate(0, 3, 0)),
+			ApprovalStatus:  stringPtr("approved"),
 		},
 		{
-			PlanSystemCode: "HEALTHSYS-01",
-			StoreCode:      "NMS",
-			CreatedAt:      time.Now(),
-			Notes:          stringPtr("Q1 2025 procurement plan for NMS"),
+			PlanSystemCode:  "HEALTHSYS-01",
+			WarehouseID:     &warehouses[1].ID, // NMS
+			StoreCode:       warehouses[1].WarehouseCode,
+			CreatedAt:       time.Now(),
+			Notes:           stringPtr("Q1 2025 procurement plan for NMS"),
+			FinancialYear:   "2024/2025",
+			PlanPeriodType:  stringPtr("Quarterly"),
+			PlanPeriodStart: timePtr(time.Now()),
+			PlanPeriodEnd:   timePtr(time.Now().AddDate(0, 3, 0)),
+			ApprovalStatus:  stringPtr("approved"),
+		},
+		{
+			PlanSystemCode:  "HEALTHSYS-01",
+			WarehouseID:     &warehouses[0].ID, // JMS - Q2
+			StoreCode:       warehouses[0].WarehouseCode,
+			CreatedAt:       time.Now().AddDate(0, -1, 0),
+			Notes:           stringPtr("Q2 2025 procurement plan for JMS"),
+			FinancialYear:   "2024/2025",
+			PlanPeriodType:  stringPtr("Quarterly"),
+			PlanPeriodStart: timePtr(time.Now().AddDate(0, 3, 0)),
+			PlanPeriodEnd:   timePtr(time.Now().AddDate(0, 6, 0)),
+			ApprovalStatus:  stringPtr("draft"),
 		},
 	}
 
-	for _, plan := range plans {
+	planItems := map[int][]models.ProcurementPlanItem{
+		0: { // JMS Q1
+			{
+				ProductCode:        "PROD_PARACETAMOL_500",
+				ProductDescription: stringPtr("Paracetamol 500mg"),
+				Quantity:           5000,
+				NeededBy:           time.Now().AddDate(0, 1, 0),
+				Status:             "planned",
+				UOM:                stringPtr("Tablets"),
+			},
+			{
+				ProductCode:        "PROD_AMOXICILLIN_250",
+				ProductDescription: stringPtr("Amoxicillin 250mg"),
+				Quantity:           8000,
+				NeededBy:           time.Now().AddDate(0, 1, 0),
+				Status:             "ordered",
+				UOM:                stringPtr("Capsules"),
+			},
+			{
+				ProductCode:        "PROD_IBUPROFEN_400",
+				ProductDescription: stringPtr("Ibuprofen 400mg"),
+				Quantity:           3000,
+				NeededBy:           time.Now().AddDate(0, 1, 0),
+				Status:             "planned",
+				UOM:                stringPtr("Tablets"),
+			},
+		},
+		1: { // NMS Q1
+			{
+				ProductCode:        "PROD_PARACETAMOL_500",
+				ProductDescription: stringPtr("Paracetamol 500mg"),
+				Quantity:           6000,
+				NeededBy:           time.Now().AddDate(0, 1, 0),
+				Status:             "ordered",
+				UOM:                stringPtr("Tablets"),
+			},
+			{
+				ProductCode:        "PROD_AMOXICILLIN_250",
+				ProductDescription: stringPtr("Amoxicillin 250mg"),
+				Quantity:           10000,
+				NeededBy:           time.Now().AddDate(0, 1, 0),
+				Status:             "ordered",
+				UOM:                stringPtr("Capsules"),
+			},
+			{
+				ProductCode:        "PROD_COTRIMOXAZOLE_480",
+				ProductDescription: stringPtr("Cotrimoxazole 480mg"),
+				Quantity:           4000,
+				NeededBy:           time.Now().AddDate(0, 1, 0),
+				Status:             "planned",
+				UOM:                stringPtr("Tablets"),
+			},
+			{
+				ProductCode:        "PROD_METFORMIN_500",
+				ProductDescription: stringPtr("Metformin 500mg"),
+				Quantity:           5000,
+				NeededBy:           time.Now().AddDate(0, 1, 0),
+				Status:             "planned",
+				UOM:                stringPtr("Tablets"),
+			},
+		},
+		2: { // JMS Q2
+			{
+				ProductCode:        "PROD_PARACETAMOL_500",
+				ProductDescription: stringPtr("Paracetamol 500mg"),
+				Quantity:           4500,
+				NeededBy:           time.Now().AddDate(0, 4, 0),
+				Status:             "planned",
+				UOM:                stringPtr("Tablets"),
+			},
+			{
+				ProductCode:        "PROD_AMOXICILLIN_250",
+				ProductDescription: stringPtr("Amoxicillin 250mg"),
+				Quantity:           7000,
+				NeededBy:           time.Now().AddDate(0, 4, 0),
+				Status:             "planned",
+				UOM:                stringPtr("Capsules"),
+			},
+		},
+	}
+
+	for idx, plan := range plans {
 		if err := DB.Create(&plan).Error; err != nil {
 			log.Printf("⚠️ Failed to seed procurement plan: %v", err)
 			continue
 		}
 
 		// Add plan items
-		items := []models.ProcurementPlanItem{
-			{
-				ProcurementID: plan.ID,
-				ProductCode:   "PROD_PARACETAMOL_500",
-				Quantity:      5000,
-				NeededBy:      time.Now().AddDate(0, 1, 0),
-				Status:        "planned",
-			},
-			{
-				ProcurementID: plan.ID,
-				ProductCode:   "PROD_AMOXICILLIN_250",
-				Quantity:      8000,
-				NeededBy:      time.Now().AddDate(0, 1, 0),
-				Status:        "ordered",
-			},
-		}
-
-		for _, item := range items {
-			if err := DB.Create(&item).Error; err != nil {
-				log.Printf("⚠️ Failed to seed procurement plan item: %v", err)
+		if items, ok := planItems[idx]; ok {
+			for _, item := range items {
+				item.ProcurementID = plan.ID
+				if err := DB.Create(&item).Error; err != nil {
+					log.Printf("⚠️ Failed to seed procurement plan item: %v", err)
+				}
 			}
 		}
 	}
-	log.Println("✅ Procurement plan data seeded (2 plans with 4 items)")
+	log.Println("✅ Procurement plan data seeded (3 plans with 9 items)")
 }
 
 func seedStockAdjustments() {
+	var facilities []models.Facility
+	var pharmacies []models.Pharmacy
+	DB.Find(&facilities)
+	DB.Find(&pharmacies)
+
+	if len(facilities) == 0 {
+		log.Println("⚠️ No facilities found, skipping stock adjustment seeding")
+		return
+	}
+
 	adjustments := []models.StockAdjustment{
+		// Facility-level adjustments
 		{
 			AdjSystemCode:       "HEALTHSYS-01",
-			AdjFacilityCode:     "HC_KAMPALA_001",
+			AdjFacilityCode:     facilities[0].FacilityCode,
 			AdjTimestamp:        time.Now(),
-			AdjAdjustmentDate:   time.Now().AddDate(0, 0, -2),
+			AdjAdjustmentDate:   time.Now().AddDate(0, 0, -5),
 			AdjAdjustmentType:   "inventory_count",
 			AdjAdjustmentReason: "Physical count variance",
 			AdjProductCode:      "PROD_PARACETAMOL_500",
 			AdjBatchNumber:      "BATCH_2025_001",
 			AdjQuantity:         -50,
 			AdjExpiryDate:       time.Now().AddDate(1, 0, 0),
+			AdjReferenceNumber:  stringPtr("PHY-COUNT-2025-001"),
+			AdjApprovedBy:       stringPtr("Pharmacy Manager"),
 		},
 		{
 			AdjSystemCode:       "HEALTHSYS-01",
-			AdjFacilityCode:     "HC_JINJA_002",
+			AdjFacilityCode:     facilities[1].FacilityCode,
 			AdjTimestamp:        time.Now(),
-			AdjAdjustmentDate:   time.Now().AddDate(0, 0, -1),
+			AdjAdjustmentDate:   time.Now().AddDate(0, 0, -4),
 			AdjAdjustmentType:   "damage",
 			AdjAdjustmentReason: "Damaged during storage",
 			AdjProductCode:      "PROD_AMOXICILLIN_250",
 			AdjBatchNumber:      "BATCH_2025_003",
 			AdjQuantity:         -100,
 			AdjExpiryDate:       time.Now().AddDate(2, 0, 0),
+			AdjReferenceNumber:  stringPtr("DAMAGE-2025-001"),
+			AdjApprovedBy:       stringPtr("Pharmacy Manager"),
+		},
+		{
+			AdjSystemCode:       "HEALTHSYS-01",
+			AdjFacilityCode:     facilities[2].FacilityCode,
+			AdjTimestamp:        time.Now(),
+			AdjAdjustmentDate:   time.Now().AddDate(0, 0, -3),
+			AdjAdjustmentType:   "found",
+			AdjAdjustmentReason: "Found during stock take",
+			AdjProductCode:      "PROD_COTRIMOXAZOLE_480",
+			AdjBatchNumber:      "BATCH_2025_004",
+			AdjQuantity:         25,
+			AdjExpiryDate:       time.Now().AddDate(1, 3, 0),
+			AdjReferenceNumber:  stringPtr("FOUND-2025-001"),
+			AdjApprovedBy:       stringPtr("Pharmacy Manager"),
+		},
+		{
+			AdjSystemCode:       "HEALTHSYS-01",
+			AdjFacilityCode:     facilities[3].FacilityCode,
+			AdjTimestamp:        time.Now(),
+			AdjAdjustmentDate:   time.Now().AddDate(0, 0, -2),
+			AdjAdjustmentType:   "theft",
+			AdjAdjustmentReason: "Theft reported",
+			AdjProductCode:      "PROD_METFORMIN_500",
+			AdjBatchNumber:      "BATCH_2025_005",
+			AdjQuantity:         -30,
+			AdjExpiryDate:       time.Now().AddDate(1, 9, 0),
+			AdjReferenceNumber:  stringPtr("THEFT-2025-001"),
+			AdjApprovedBy:       stringPtr("Pharmacy Manager"),
+		},
+		// Pharmacy-level adjustments
+		{
+			AdjSystemCode:       "HEALTHSYS-01",
+			AdjFacilityCode:     facilities[0].FacilityCode,
+			AdjPharmacyID:       &pharmacies[0].ID, // Main Pharmacy
+			AdjTimestamp:        time.Now(),
+			AdjAdjustmentDate:   time.Now().AddDate(0, 0, -3),
+			AdjAdjustmentType:   "expiry",
+			AdjAdjustmentReason: "Expired products removed",
+			AdjProductCode:      "PROD_IBUPROFEN_400",
+			AdjBatchNumber:      "BATCH_2024_001",
+			AdjQuantity:         -25,
+			AdjExpiryDate:       time.Now().AddDate(0, 0, -10), // Already expired
+			AdjReferenceNumber:  stringPtr("EXPIRY-2025-001"),
+			AdjApprovedBy:       stringPtr("Pharmacy Manager"),
+			AdjNotes:            stringPtr("Expired products disposed according to protocol"),
+		},
+		{
+			AdjSystemCode:       "HEALTHSYS-01",
+			AdjFacilityCode:     facilities[0].FacilityCode,
+			AdjPharmacyID:       &pharmacies[1].ID, // Pediatric Pharmacy
+			AdjTimestamp:        time.Now(),
+			AdjAdjustmentDate:   time.Now().AddDate(0, 0, -2),
+			AdjAdjustmentType:   "damage",
+			AdjAdjustmentReason: "Damaged packaging",
+			AdjProductCode:      "PROD_PARACETAMOL_500",
+			AdjBatchNumber:      "BATCH_2025_001",
+			AdjQuantity:         -10,
+			AdjExpiryDate:       time.Now().AddDate(1, 0, 0),
+			AdjReferenceNumber:  stringPtr("DAMAGE-PED-2025-001"),
+			AdjApprovedBy:       stringPtr("Pediatric Pharmacy Manager"),
+		},
+		{
+			AdjSystemCode:       "HEALTHSYS-01",
+			AdjFacilityCode:     facilities[1].FacilityCode,
+			AdjPharmacyID:       &pharmacies[4].ID, // Main Pharmacy Jinja
+			AdjTimestamp:        time.Now(),
+			AdjAdjustmentDate:   time.Now().AddDate(0, 0, -1),
+			AdjAdjustmentType:   "inventory_count",
+			AdjAdjustmentReason: "Physical count variance",
+			AdjProductCode:      "PROD_AMOXICILLIN_250",
+			AdjBatchNumber:      "BATCH_2025_003",
+			AdjQuantity:         -15,
+			AdjExpiryDate:       time.Now().AddDate(2, 0, 0),
+			AdjReferenceNumber:  stringPtr("PHY-COUNT-JNJ-2025-001"),
+			AdjApprovedBy:       stringPtr("Pharmacy Manager"),
+		},
+		{
+			AdjSystemCode:       "HEALTHSYS-01",
+			AdjFacilityCode:     facilities[2].FacilityCode,
+			AdjPharmacyID:       &pharmacies[6].ID, // Main Pharmacy Mbarara
+			AdjTimestamp:        time.Now(),
+			AdjAdjustmentDate:   time.Now().AddDate(0, 0, -1),
+			AdjAdjustmentType:   "found",
+			AdjAdjustmentReason: "Found during pharmacy stock take",
+			AdjProductCode:      "PROD_COTRIMOXAZOLE_480",
+			AdjBatchNumber:      "BATCH_2025_004",
+			AdjQuantity:         20,
+			AdjExpiryDate:       time.Now().AddDate(1, 3, 0),
+			AdjReferenceNumber:  stringPtr("FOUND-MBR-2025-001"),
+			AdjApprovedBy:       stringPtr("Pharmacy Manager"),
 		},
 	}
 
@@ -462,7 +1594,7 @@ func seedStockAdjustments() {
 			log.Printf("⚠️ Failed to seed stock adjustment: %v", err)
 		}
 	}
-	log.Println("✅ Stock adjustment data seeded (2 records)")
+	log.Println("✅ Stock adjustment data seeded (8 records: 4 facility-level, 4 pharmacy-level)")
 }
 
 func seedStockDispensed() {
@@ -614,7 +1746,15 @@ func seedWarehouseDeliveries() {
 	log.Println("✅ Warehouse delivery data seeded (3 records)")
 }
 
-// Helper function to create string pointer
+// Helper functions
 func stringPtr(s string) *string {
 	return &s
+}
+
+func timePtr(t time.Time) *time.Time {
+	return &t
+}
+
+func intPtr(i int) *int {
+	return &i
 }

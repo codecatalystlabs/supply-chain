@@ -11,8 +11,13 @@ type StockDispensed struct {
 	DspProductCode       string  `gorm:"size:100;not null"`
 	DspBatchNumber       string  `gorm:"size:100;not null"`
 	DspDispensedQuantity float64 `gorm:"not null"`
-	DspPatientHash       string  `gorm:"size:100;not null"`
-	DspExpiryDate        time.Time
+	// Optional link to a Prescription and the prescribed quantity
+	DspPrescriptionID     *uint64  `gorm:"column:dsp_prescription_id" json:"dsp_prescription_id,omitempty"`
+	DspPrescribedQuantity *float64 `gorm:"column:dsp_prescribed_quantity" json:"dsp_prescribed_quantity,omitempty"`
+	// Comment for cases where dispensed < prescribed
+	DspComment     *string `gorm:"column:dsp_comment;size:255" json:"dsp_comment,omitempty"`
+	DspPatientHash string  `gorm:"size:100;not null"`
+	DspExpiryDate  time.Time
 	BaseModel
 }
 
