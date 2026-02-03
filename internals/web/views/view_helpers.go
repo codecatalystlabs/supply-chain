@@ -8,12 +8,18 @@ import (
 
 // ViewData represents the common data structure for all views
 type ViewData struct {
-	Title       string
-	Message     string
-	Data        interface{}
-	Errors      map[string]string
-	Success     bool
-	CurrentUser interface{}
+	Title             string            // Page title
+	Message           string            // Display message
+	Data              interface{}       // Page-specific data
+	Errors            map[string]string // Form errors
+	Success           bool              // Success flag
+	CurrentUser       interface{}       // Current user info
+	Username          string            // User display name for header
+	IsAdmin           bool              // User is admin
+	CanManageServices bool              // User can manage services
+	CanExploreData    bool              // User can explore data
+	Content           string            // Content template name for dynamic layout (deprecated)
+	ContentBlock      string            // Content block name to render
 }
 
 // RenderLogin renders the login page

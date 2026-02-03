@@ -33,10 +33,35 @@ func SetupWebRoutes(router *gin.Engine) {
 		// Authentication routes
 		portal.GET("/login", controllers.ShowLoginPage)
 		portal.POST("/login", controllers.HandleLogin)
-
-		// Protected web routes (dashboard, etc)
-		// TODO: Add auth middleware to protect these routes
-		portal.GET("/dashboard", controllers.ShowDashboard)
 		portal.GET("/logout", controllers.Logout)
+
+		// Dashboard
+		portal.GET("/dashboard", controllers.ShowDashboard)
+
+		// Inventory Management
+		portal.GET("/inventory", controllers.ShowInventory)
+		portal.GET("/stock", controllers.ShowStockList)
+
+		// Facilities
+		portal.GET("/facilities", controllers.ShowFacilities)
+		portal.GET("/facility-orders", controllers.ShowFacilityOrders)
+
+		// Warehouses
+		portal.GET("/warehouses", controllers.ShowWarehouses)
+		portal.GET("/warehouse-orders", controllers.ShowWarehouseOrders)
+		portal.GET("/goods-receipt", controllers.ShowGoodsReceipt)
+
+		// Procurement
+		portal.GET("/procurement", controllers.ShowProcurement)
+		portal.GET("/purchase-orders", controllers.ShowPurchaseOrders)
+		portal.GET("/procurement-plans", controllers.ShowProcurementPlans)
+
+		// Pharmacies
+		portal.GET("/pharmacies", controllers.ShowPharmacies)
+		portal.GET("/pharmacy-stock", controllers.ShowPharmacyStock)
+
+		// Reports
+		portal.GET("/patient-visits", controllers.ShowPatientVisits)
+		portal.GET("/product-amc", controllers.ShowProductAMC)
 	}
 }

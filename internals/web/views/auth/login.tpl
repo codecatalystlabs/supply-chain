@@ -125,10 +125,34 @@
         background: #fff;
       }
       
+      .signin-box .form-control {
+        border: 1px solid #ddd !important;
+        border-radius: 4px !important;
+      }
+      
+      .signin-box .form-control:focus {
+        border-color: #4CAF50 !important;
+        box-shadow: 0 0 5px rgba(76, 175, 80, 0.3) !important;
+      }
+      
       .btn-signin {
         font-weight: 600;
         padding: 10px 15px !important;
         letter-spacing: 0.5px;
+        background: #4CAF50 !important;
+        color: white !important;
+        border: none !important;
+        transition: all 0.3s ease;
+      }
+      
+      .btn-signin:hover {
+        background: #45a049 !important;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+      }
+      
+      .btn-signin:active {
+        background: #3d8b40 !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
       }
     </style>
 

@@ -9,7 +9,7 @@
     <meta name="description" content="LLin CP">
     <meta name="author" content="LLin CP">
 
-    <title>{{.title}} </title>
+    <title>{{.Title}} </title>
 
     <!-- vendor css -->
   <link href="/cp/static/lib/font-awesome/css/font-awesome.css" rel="stylesheet">
@@ -120,9 +120,9 @@
         <div class="slim-header-left">
           <h2 class="slim-logo">
             <a href="/">
-              <img src="/cp/static/img/coat_fine.png" alt="MOH Logo" style="height: 58px; margin-right: 4px; vertical-align: middle;padding-top:1px !important;">
+              <img src="/cp/static/img/coat_fine.png" alt="SCM Logo" style="height: 58px; margin-right: 4px; vertical-align: middle;padding-top:1px !important;">
               {{/* <span style="font-size: 16px; font-weight: 600; color: #333;">..<span>.</span></span> */}}
-              <span style="font-size: 14px; font-weight: 600; color: #333; font-family: 'Inter', sans-serif; letter-spacing: 0.3px;">LLINs&nbsp;eCHIS</span>
+              <span style="font-size: 14px; font-weight: 600; color: #333; font-family: 'Inter', sans-serif; letter-spacing: 0.3px;">Supply Chain Management</span>
             </a>
           </h2>
           <a href="#" id="slimSidebarMenu" class="slim-sidebar-menu" 
@@ -135,7 +135,7 @@
           <div class="dropdown dropdown-c">
             <a href="#" class="logged-user" data-toggle="dropdown">
               {{/* <img src="/static/img/img1.jpg" alt=""> */}}
-              <span>{{.username}}</span>
+              <span>{{if .Username}}{{.Username}}{{else}}User{{end}}</span>
               <i class="fa fa-angle-down"></i>
             </a>
             <div class="dropdown-menu dropdown-menu-right">
@@ -159,7 +159,8 @@
             <a href="/cp/home" class="sidebar-nav-link"><i class="icon ion-ios-home-outline"></i> Home</a>
           </li>
           
-          <!-- Dynamic Services Menu -->
+          <!-- Dynamic Services Menu - Disabled for now -->
+          {{/*
           {{if .services}}
             <li class="sidebar-nav-item with-sub">
               <a href="#" class="sidebar-nav-link"><i class="icon ion-ios-gear-outline"></i>Services</a>
@@ -178,6 +179,7 @@
               </ul>
             </li>
           {{end}}
+          */}}
           
           {{/* <!-- Static Management Menu - Only visible to users with management permissions -->
           {{if or .canManageUsers .canManageRoles .canManagePermissions}}
@@ -203,7 +205,7 @@
           </li>
           {{end}} */}}
 
-          {{if .isAdmin}}
+          {{if .IsAdmin}}
           <li class="sidebar-nav-item with-sub">
             <a href="#" class="sidebar-nav-link"><i class="icon ion-ios-people-outline"></i> User Management</a>
             <ul class="nav sidebar-nav-sub">
@@ -229,7 +231,7 @@
             </ul>
           </li>
 
-          {{if and .isAdmin .canExploreData}}
+          {{if and .IsAdmin .CanExploreData}}
           <li class="sidebar-nav-item with-sub">
             <a href="#" class="sidebar-nav-link"><i class="icon ion-grid"></i> Data Exploration</a>
             <ul class="nav sidebar-nav-sub">
@@ -254,13 +256,17 @@
             {{block "breadcrumb" .}}
             <ol class="breadcrumb slim-breadcrumb">
               <li class="breadcrumb-item"><a href="/">Home</a></li>
-              <li class="breadcrumb-item active" aria-current="page">{{.title}}</li>
+              <li class="breadcrumb-item active" aria-current="page">{{.Title}}</li>
             </ol>
             {{end}}
           </div>
 
-          {{block "main_content" .}}
-
+          {{block "content" .}}
+          <div class="card">
+            <div class="card-body">
+              <p class="text-muted">No content specified</p>
+            </div>
+          </div>
           {{end}}
 
 
@@ -277,7 +283,7 @@
 
         <div class="slim-footer mg-t-0">
           <div class="container-fluid">
-            <p><strong>Ministry of Health</strong> | All Rights Reserved. LLINs eCHIS.</p>
+            <p><strong>Supply Chain Management System</strong> | All Rights Reserved. © 2026</p>
           </div><!-- container-fluid -->
         </div><!-- slim-footer -->
       </div><!-- slim-mainpanel -->
