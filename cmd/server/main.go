@@ -16,9 +16,9 @@ import (
 	_ "supply-chain/docs" // 👈 REQUIRED for Swagger
 )
 
-// @title MoH Emergency Dispatch API
+// @title MoH Supply Chian Repository API
 // @version 1.0
-// @description Backend API for emergency call & dispatch system
+// @description Backend API for Supply Chain Repository / Bridge 
 // @termsOfService https://health.go.ug
 
 // @contact.name DHI

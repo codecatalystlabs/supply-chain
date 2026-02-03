@@ -19,6 +19,177 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/patient-visit": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PatientVisit"
+                ],
+                "summary": "List patient visits",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.PatientVisitResponseDTO"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/patient-visit/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PatientVisit"
+                ],
+                "summary": "Get patient visit by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Patient Visit ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.PatientVisitResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PatientVisit"
+                ],
+                "summary": "Update patient visit",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Patient Visit ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Patient visit update payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PatientVisitUpdateDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.PatientVisitResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PatientVisit"
+                ],
+                "summary": "Delete patient visit",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Patient Visit ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/emr-integrations": {
             "get": {
                 "produces": [
@@ -73,15 +244,18 @@ const docTemplate = `{
                 "tags": [
                     "EMRIntegration"
                 ],
-                "summary": "Create EMR integration",
+                "summary": "Create EMR integrations",
                 "parameters": [
                     {
-                        "description": "Integration payload",
+                        "description": "Integrations payload",
                         "name": "payload",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.EMRIntegrationCreateDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.EMRIntegrationCreateDTO"
+                            }
                         }
                     }
                 ],
@@ -89,7 +263,10 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/dto.EMRIntegrationResponseDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.EMRIntegrationResponseDTO"
+                            }
                         }
                     },
                     "400": {
@@ -379,15 +556,18 @@ const docTemplate = `{
                 "tags": [
                     "Facility"
                 ],
-                "summary": "Create facility",
+                "summary": "Create facilities",
                 "parameters": [
                     {
-                        "description": "Facility payload",
+                        "description": "Facilities payload",
                         "name": "payload",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.FacilityCreateDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.FacilityCreateDTO"
+                            }
                         }
                     }
                 ],
@@ -395,7 +575,10 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/dto.FacilityResponseDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.FacilityResponseDTO"
+                            }
                         }
                     },
                     "400": {
@@ -993,15 +1176,18 @@ const docTemplate = `{
                 "tags": [
                     "GoodsReceipt"
                 ],
-                "summary": "Create goods receipt",
+                "summary": "Create goods receipts",
                 "parameters": [
                     {
-                        "description": "Goods receipt payload",
+                        "description": "Goods receipts payload",
                         "name": "payload",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.GoodsReceiptCreateDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.GoodsReceiptCreateDTO"
+                            }
                         }
                     }
                 ],
@@ -1009,7 +1195,10 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/dto.GoodsReceiptResponseDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.GoodsReceiptResponseDTO"
+                            }
                         }
                     },
                     "400": {
@@ -1190,15 +1379,18 @@ const docTemplate = `{
                 "tags": [
                     "PatientVisit"
                 ],
-                "summary": "Create patient visit",
+                "summary": "Create patient visits",
                 "parameters": [
                     {
-                        "description": "Patient visit payload",
+                        "description": "Patient visits payload",
                         "name": "payload",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.PatientVisitCreateDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.PatientVisitCreateDTO"
+                            }
                         }
                     }
                 ],
@@ -1206,7 +1398,10 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/dto.PatientVisitResponseDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.PatientVisitResponseDTO"
+                            }
                         }
                     },
                     "400": {
@@ -1284,15 +1479,18 @@ const docTemplate = `{
                 "tags": [
                     "Pharmacy"
                 ],
-                "summary": "Create pharmacy",
+                "summary": "Create pharmacies",
                 "parameters": [
                     {
-                        "description": "Pharmacy payload",
+                        "description": "Pharmacies payload",
                         "name": "payload",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.PharmacyCreateDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.PharmacyCreateDTO"
+                            }
                         }
                     }
                 ],
@@ -1300,7 +1498,10 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/dto.PharmacyResponseDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.PharmacyResponseDTO"
+                            }
                         }
                     },
                     "400": {
@@ -1513,12 +1714,15 @@ const docTemplate = `{
                 "summary": "Create pharmacy stock",
                 "parameters": [
                     {
-                        "description": "Pharmacy stock payload",
+                        "description": "Pharmacy stock payloads",
                         "name": "payload",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.PharmacyStockCreateDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.PharmacyStockCreateDTO"
+                            }
                         }
                     }
                 ],
@@ -1526,7 +1730,10 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/dto.PharmacyStockResponseDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.PharmacyStockResponseDTO"
+                            }
                         }
                     },
                     "400": {
@@ -1736,15 +1943,18 @@ const docTemplate = `{
                 "tags": [
                     "ProcurementPlan"
                 ],
-                "summary": "Create procurement plan",
+                "summary": "Create procurement plans",
                 "parameters": [
                     {
-                        "description": "Procurement plan payload",
+                        "description": "Procurement plans payload",
                         "name": "payload",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.ProcurementPlanCreateDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.ProcurementPlanCreateDTO"
+                            }
                         }
                     }
                 ],
@@ -1752,7 +1962,10 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/dto.ProcurementPlanResponseDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.ProcurementPlanResponseDTO"
+                            }
                         }
                     },
                     "400": {
@@ -1891,12 +2104,15 @@ const docTemplate = `{
                 "summary": "Create product AMC",
                 "parameters": [
                     {
-                        "description": "Product AMC payload",
+                        "description": "Product AMC payloads",
                         "name": "payload",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.ProductAmcCreateDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.ProductAmcCreateDTO"
+                            }
                         }
                     }
                 ],
@@ -1904,7 +2120,10 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/dto.ProductAmcResponseDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.ProductAmcResponseDTO"
+                            }
                         }
                     },
                     "400": {
@@ -2114,15 +2333,18 @@ const docTemplate = `{
                 "tags": [
                     "PurchaseOrder"
                 ],
-                "summary": "Create purchase order",
+                "summary": "Create purchase orders",
                 "parameters": [
                     {
-                        "description": "Purchase order payload",
+                        "description": "Purchase orders payload",
                         "name": "payload",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.PurchaseOrderCreateDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.PurchaseOrderCreateDTO"
+                            }
                         }
                     }
                 ],
@@ -2130,7 +2352,10 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/dto.PurchaseOrderResponseDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.PurchaseOrderResponseDTO"
+                            }
                         }
                     },
                     "400": {
@@ -2369,12 +2594,15 @@ const docTemplate = `{
                 "summary": "Create stock adjustment",
                 "parameters": [
                     {
-                        "description": "Stock adjustment payload",
+                        "description": "Stock adjustment payloads",
                         "name": "payload",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.StockAdjustmentCreateDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.StockAdjustmentCreateDTO"
+                            }
                         }
                     }
                 ],
@@ -2382,7 +2610,10 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/dto.StockAdjustmentResponseDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.StockAdjustmentResponseDTO"
+                            }
                         }
                     },
                     "400": {
@@ -2595,12 +2826,15 @@ const docTemplate = `{
                 "summary": "Create stock dispensed",
                 "parameters": [
                     {
-                        "description": "Stock dispensed payload",
+                        "description": "Stock dispensed payloads",
                         "name": "payload",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.StockDispensedCreateDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.StockDispensedCreateDTO"
+                            }
                         }
                     }
                 ],
@@ -2608,7 +2842,10 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/dto.StockDispensedResponseDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.StockDispensedResponseDTO"
+                            }
                         }
                     },
                     "400": {
@@ -2821,12 +3058,15 @@ const docTemplate = `{
                 "summary": "Create stock on hand",
                 "parameters": [
                     {
-                        "description": "Stock payload",
+                        "description": "Stock payloads",
                         "name": "payload",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.StockOnHandCreateDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.StockOnHandCreateDTO"
+                            }
                         }
                     }
                 ],
@@ -2834,7 +3074,10 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/dto.StockOnHandResponseDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.StockOnHandResponseDTO"
+                            }
                         }
                     },
                     "400": {
@@ -3041,12 +3284,15 @@ const docTemplate = `{
                 "summary": "Create stock return",
                 "parameters": [
                     {
-                        "description": "Stock return payload",
+                        "description": "Stock return payloads",
                         "name": "payload",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.StockReturnCreateDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.StockReturnCreateDTO"
+                            }
                         }
                     }
                 ],
@@ -3054,7 +3300,10 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/dto.StockReturnResponseDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.StockReturnResponseDTO"
+                            }
                         }
                     },
                     "400": {
@@ -3293,12 +3542,15 @@ const docTemplate = `{
                 "summary": "Create stock transfer",
                 "parameters": [
                     {
-                        "description": "Transfer payload",
+                        "description": "Transfer payloads",
                         "name": "payload",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.StockTransferCreateDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.StockTransferCreateDTO"
+                            }
                         }
                     }
                 ],
@@ -3306,7 +3558,10 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/dto.StockTransferResponseDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.StockTransferResponseDTO"
+                            }
                         }
                     },
                     "400": {
@@ -3716,15 +3971,18 @@ const docTemplate = `{
                 "tags": [
                     "Warehouse"
                 ],
-                "summary": "Create warehouse",
+                "summary": "Create warehouses",
                 "parameters": [
                     {
-                        "description": "Warehouse payload",
+                        "description": "Warehouses payload",
                         "name": "payload",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.WarehouseCreateDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.WarehouseCreateDTO"
+                            }
                         }
                     }
                 ],
@@ -3732,7 +3990,10 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/dto.WarehouseResponseDTO"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.WarehouseResponseDTO"
+                            }
                         }
                     },
                     "400": {
@@ -4918,6 +5179,14 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.PatientVisitUpdateDTO": {
+            "type": "object",
+            "properties": {
+                "vst_quantity": {
+                    "type": "number"
+                }
+            }
+        },
         "dto.PharmacyCreateDTO": {
             "type": "object",
             "required": [
@@ -6074,11 +6343,11 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:5500",
+	Host:             "localhost:8080",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
-	Title:            "MoH Emergency Dispatch API",
-	Description:      "Backend API for emergency call & dispatch system",
+	Title:            "MoH Supply Chian Repository API",
+	Description:      "Backend API for Supply Chain Repository / Bridge",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

@@ -10,58 +10,63 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// @Summary Create pharmacy
+// @Summary Create pharmacies
 // @Tags Pharmacy
 // @Accept json
 // @Produce json
-// @Param payload body dto.PharmacyCreateDTO true "Pharmacy payload"
-// @Success 201 {object} dto.PharmacyResponseDTO
+// @Param payload body []dto.PharmacyCreateDTO true "Pharmacies payload"
+// @Success 201 {array} dto.PharmacyResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /pharmacies [post]
 func CreatePharmacy(c *gin.Context) {
-	var payload dto.PharmacyCreateDTO
-	if err := c.ShouldBindJSON(&payload); err != nil {
+	var payloads []dto.PharmacyCreateDTO
+	if err := c.ShouldBindJSON(&payloads); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Verify facility exists
-	var facility models.Facility
-	if err := config.DB.First(&facility, payload.FacilityID).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Facility not found"})
-		return
+	var responses []dto.PharmacyResponseDTO
+	for _, payload := range payloads {
+		// Verify facility exists
+		var facility models.Facility
+		if err := config.DB.First(&facility, payload.FacilityID).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Facility not found"})
+			return
+		}
+
+		// Check if pharmacy code already exists in this facility
+		var existing models.Pharmacy
+		if err := config.DB.Where("facility_id = ? AND pharmacy_code = ?", payload.FacilityID, payload.PharmacyCode).First(&existing).Error; err == nil {
+			c.JSON(http.StatusConflict, gin.H{"error": "Pharmacy code already exists in this facility"})
+			return
+		}
+
+		isActive := true
+		if payload.IsActive != nil {
+			isActive = *payload.IsActive
+		}
+
+		pharmacy := models.Pharmacy{
+			FacilityID:   payload.FacilityID,
+			PharmacyCode: payload.PharmacyCode,
+			PharmacyName: payload.PharmacyName,
+			PharmacyType: payload.PharmacyType,
+			IsActive:     isActive,
+			CreatedAt:    time.Now(),
+		}
+
+		if err := config.DB.Create(&pharmacy).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Load facility for response
+		config.DB.Preload("Facility").First(&pharmacy, pharmacy.ID)
+		responses = append(responses, mapToPharmacyResponse(pharmacy))
 	}
 
-	// Check if pharmacy code already exists in this facility
-	var existing models.Pharmacy
-	if err := config.DB.Where("facility_id = ? AND pharmacy_code = ?", payload.FacilityID, payload.PharmacyCode).First(&existing).Error; err == nil {
-		c.JSON(http.StatusConflict, gin.H{"error": "Pharmacy code already exists in this facility"})
-		return
-	}
-
-	isActive := true
-	if payload.IsActive != nil {
-		isActive = *payload.IsActive
-	}
-
-	pharmacy := models.Pharmacy{
-		FacilityID:   payload.FacilityID,
-		PharmacyCode: payload.PharmacyCode,
-		PharmacyName: payload.PharmacyName,
-		PharmacyType: payload.PharmacyType,
-		IsActive:     isActive,
-		CreatedAt:    time.Now(),
-	}
-
-	if err := config.DB.Create(&pharmacy).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Load facility for response
-	config.DB.Preload("Facility").First(&pharmacy, pharmacy.ID)
-	c.JSON(http.StatusCreated, mapToPharmacyResponse(pharmacy))
+	c.JSON(http.StatusCreated, responses)
 }
 
 // @Summary List pharmacies

@@ -10,58 +10,62 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// @Summary Create facility
+// @Summary Create facilities
 // @Tags Facility
 // @Accept json
 // @Produce json
-// @Param payload body dto.FacilityCreateDTO true "Facility payload"
-// @Success 201 {object} dto.FacilityResponseDTO
+// @Param payload body []dto.FacilityCreateDTO true "Facilities payload"
+// @Success 201 {array} dto.FacilityResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /facilities [post]
 func CreateFacility(c *gin.Context) {
-	var payload dto.FacilityCreateDTO
-	if err := c.ShouldBindJSON(&payload); err != nil {
+	var payloads []dto.FacilityCreateDTO
+	if err := c.ShouldBindJSON(&payloads); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Check if facility code already exists
-	var existing models.Facility
-	if err := config.DB.Where("facility_code = ?", payload.FacilityCode).First(&existing).Error; err == nil {
-		c.JSON(http.StatusConflict, gin.H{"error": "Facility code already exists"})
-		return
+	var responses []dto.FacilityResponseDTO
+	for _, payload := range payloads {
+		// Check if facility code already exists
+		var existing models.Facility
+		if err := config.DB.Where("facility_code = ?", payload.FacilityCode).First(&existing).Error; err == nil {
+			c.JSON(http.StatusConflict, gin.H{"error": "Facility code already exists"})
+			return
+		}
+
+		isActive := true
+		if payload.IsActive != nil {
+			isActive = *payload.IsActive
+		}
+
+		facility := models.Facility{
+			FacilityCode:  payload.FacilityCode,
+			FacilityName:  payload.FacilityName,
+			DHIS2Code:     payload.DHIS2Code,
+			LevelOfCare:   payload.LevelOfCare,
+			District:      payload.District,
+			Region:        payload.Region,
+			Zone:          payload.Zone,
+			Address:       payload.Address,
+			ContactPerson: payload.ContactPerson,
+			ContactPhone:  payload.ContactPhone,
+			ContactEmail:  payload.ContactEmail,
+			EMRSystemCode: payload.EMRSystemCode,
+			EMRSystemName: payload.EMRSystemName,
+			IsActive:      isActive,
+			CreatedAt:     time.Now(),
+		}
+
+		if err := config.DB.Create(&facility).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		responses = append(responses, mapToFacilityResponse(facility))
 	}
 
-	isActive := true
-	if payload.IsActive != nil {
-		isActive = *payload.IsActive
-	}
-
-	facility := models.Facility{
-		FacilityCode:  payload.FacilityCode,
-		FacilityName:  payload.FacilityName,
-		DHIS2Code:     payload.DHIS2Code,
-		LevelOfCare:   payload.LevelOfCare,
-		District:      payload.District,
-		Region:        payload.Region,
-		Zone:          payload.Zone,
-		Address:       payload.Address,
-		ContactPerson: payload.ContactPerson,
-		ContactPhone:  payload.ContactPhone,
-		ContactEmail:  payload.ContactEmail,
-		EMRSystemCode: payload.EMRSystemCode,
-		EMRSystemName: payload.EMRSystemName,
-		IsActive:      isActive,
-		CreatedAt:     time.Now(),
-	}
-
-	if err := config.DB.Create(&facility).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusCreated, mapToFacilityResponse(facility))
+	c.JSON(http.StatusCreated, responses)
 }
 
 // @Summary List facilities

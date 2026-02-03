@@ -14,54 +14,60 @@ import (
 // @Tags StockAdjustment
 // @Accept json
 // @Produce json
-// @Param payload body dto.StockAdjustmentCreateDTO true "Stock adjustment payload"
-// @Success 201 {object} dto.StockAdjustmentResponseDTO
+// @Param payload body []dto.StockAdjustmentCreateDTO true "Stock adjustment payloads"
+// @Success 201 {array} dto.StockAdjustmentResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /stock/adjustment [post]
 func CreateStockAdjustment(c *gin.Context) {
-	var payload dto.StockAdjustmentCreateDTO
-	if err := c.ShouldBindJSON(&payload); err != nil {
+	var payloads []dto.StockAdjustmentCreateDTO
+	if err := c.ShouldBindJSON(&payloads); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	// Verify facility exists
-	var facility models.Facility
-	if err := config.DB.Where("facility_code = ?", payload.AdjFacilityCode).First(&facility).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Facility not found"})
-		return
-	}
 
-	// Verify pharmacy exists if provided
-	if payload.AdjPharmacyID != nil {
-		var pharmacy models.Pharmacy
-		if err := config.DB.Where("id = ? AND facility_id = ?", *payload.AdjPharmacyID, facility.ID).First(&pharmacy).Error; err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Pharmacy not found or doesn't belong to facility"})
+	var responses []dto.StockAdjustmentResponseDTO
+	for _, payload := range payloads {
+		// Verify facility exists
+		var facility models.Facility
+		if err := config.DB.Where("facility_code = ?", payload.AdjFacilityCode).First(&facility).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Facility not found for " + payload.AdjFacilityCode})
 			return
 		}
+
+		// Verify pharmacy exists if provided
+		if payload.AdjPharmacyID != nil {
+			var pharmacy models.Pharmacy
+			if err := config.DB.Where("id = ? AND facility_id = ?", *payload.AdjPharmacyID, facility.ID).First(&pharmacy).Error; err != nil {
+				c.JSON(http.StatusNotFound, gin.H{"error": "Pharmacy not found or doesn't belong to facility for " + payload.AdjFacilityCode})
+				return
+			}
+		}
+
+		record := models.StockAdjustment{
+			AdjSystemCode:       payload.AdjSystemCode,
+			AdjFacilityCode:     payload.AdjFacilityCode,
+			AdjPharmacyID:       payload.AdjPharmacyID,
+			AdjTimestamp:        time.Now(),
+			AdjAdjustmentDate:   payload.AdjAdjustmentDate,
+			AdjAdjustmentType:   payload.AdjAdjustmentType,
+			AdjAdjustmentReason: payload.AdjAdjustmentReason,
+			AdjProductCode:      payload.AdjProductCode,
+			AdjBatchNumber:      payload.AdjBatchNumber,
+			AdjQuantity:         payload.AdjQuantity,
+			AdjExpiryDate:       payload.AdjExpiryDate,
+			AdjReferenceNumber:  payload.AdjReferenceNumber,
+			AdjApprovedBy:       payload.AdjApprovedBy,
+			AdjNotes:            payload.AdjNotes,
+		}
+		if err := config.DB.Create(&record).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		responses = append(responses, mapToStockAdjustmentResponse(record))
 	}
 
-	record := models.StockAdjustment{
-		AdjSystemCode:       payload.AdjSystemCode,
-		AdjFacilityCode:     payload.AdjFacilityCode,
-		AdjPharmacyID:       payload.AdjPharmacyID,
-		AdjTimestamp:        time.Now(),
-		AdjAdjustmentDate:   payload.AdjAdjustmentDate,
-		AdjAdjustmentType:   payload.AdjAdjustmentType,
-		AdjAdjustmentReason: payload.AdjAdjustmentReason,
-		AdjProductCode:      payload.AdjProductCode,
-		AdjBatchNumber:      payload.AdjBatchNumber,
-		AdjQuantity:         payload.AdjQuantity,
-		AdjExpiryDate:       payload.AdjExpiryDate,
-		AdjReferenceNumber:  payload.AdjReferenceNumber,
-		AdjApprovedBy:       payload.AdjApprovedBy,
-		AdjNotes:            payload.AdjNotes,
-	}
-	if err := config.DB.Create(&record).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusCreated, mapToStockAdjustmentResponse(record))
+	c.JSON(http.StatusCreated, responses)
 }
 
 // @Summary List stock adjustments

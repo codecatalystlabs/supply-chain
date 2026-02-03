@@ -10,52 +10,56 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// @Summary Create warehouse
+// @Summary Create warehouses
 // @Tags Warehouse
 // @Accept json
 // @Produce json
-// @Param payload body dto.WarehouseCreateDTO true "Warehouse payload"
-// @Success 201 {object} dto.WarehouseResponseDTO
+// @Param payload body []dto.WarehouseCreateDTO true "Warehouses payload"
+// @Success 201 {array} dto.WarehouseResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /warehouses [post]
 func CreateWarehouse(c *gin.Context) {
-	var payload dto.WarehouseCreateDTO
-	if err := c.ShouldBindJSON(&payload); err != nil {
+	var payloads []dto.WarehouseCreateDTO
+	if err := c.ShouldBindJSON(&payloads); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Check if warehouse code already exists
-	var existing models.Warehouse
-	if err := config.DB.Where("warehouse_code = ?", payload.WarehouseCode).First(&existing).Error; err == nil {
-		c.JSON(http.StatusConflict, gin.H{"error": "Warehouse code already exists"})
-		return
+	var responses []dto.WarehouseResponseDTO
+	for _, payload := range payloads {
+		// Check if warehouse code already exists
+		var existing models.Warehouse
+		if err := config.DB.Where("warehouse_code = ?", payload.WarehouseCode).First(&existing).Error; err == nil {
+			c.JSON(http.StatusConflict, gin.H{"error": "Warehouse code already exists"})
+			return
+		}
+
+		isActive := true
+		if payload.IsActive != nil {
+			isActive = *payload.IsActive
+		}
+
+		warehouse := models.Warehouse{
+			WarehouseCode: payload.WarehouseCode,
+			WarehouseName: payload.WarehouseName,
+			WarehouseType: payload.WarehouseType,
+			Address:       payload.Address,
+			ContactPerson: payload.ContactPerson,
+			ContactPhone:  payload.ContactPhone,
+			ContactEmail:  payload.ContactEmail,
+			IsActive:      isActive,
+			CreatedAt:     time.Now(),
+		}
+
+		if err := config.DB.Create(&warehouse).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		responses = append(responses, mapToWarehouseResponse(warehouse))
 	}
 
-	isActive := true
-	if payload.IsActive != nil {
-		isActive = *payload.IsActive
-	}
-
-	warehouse := models.Warehouse{
-		WarehouseCode: payload.WarehouseCode,
-		WarehouseName: payload.WarehouseName,
-		WarehouseType: payload.WarehouseType,
-		Address:       payload.Address,
-		ContactPerson: payload.ContactPerson,
-		ContactPhone:  payload.ContactPhone,
-		ContactEmail:  payload.ContactEmail,
-		IsActive:      isActive,
-		CreatedAt:     time.Now(),
-	}
-
-	if err := config.DB.Create(&warehouse).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusCreated, mapToWarehouseResponse(warehouse))
+	c.JSON(http.StatusCreated, responses)
 }
 
 // @Summary List warehouses

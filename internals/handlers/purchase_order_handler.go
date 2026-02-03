@@ -14,39 +14,43 @@ import (
 )
 
 /* ========== CREATE PURCHASE ORDER ========== */
-// @Summary Create purchase order
+// @Summary Create purchase orders
 // @Tags PurchaseOrder
 // @Accept json
 // @Produce json
-// @Param payload body dto.PurchaseOrderCreateDTO true "Purchase order payload"
-// @Success 201 {object} dto.PurchaseOrderResponseDTO
+// @Param payload body []dto.PurchaseOrderCreateDTO true "Purchase orders payload"
+// @Success 201 {array} dto.PurchaseOrderResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /purchase-order [post]
 func CreatePurchaseOrder(c *gin.Context) {
-	var input dto.PurchaseOrderCreateDTO
-	if err := c.ShouldBindJSON(&input); err != nil {
+	var inputs []dto.PurchaseOrderCreateDTO
+	if err := c.ShouldBindJSON(&inputs); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	record := models.PurchaseOrder{
-		OrdSystemCode:      input.OrdSystemCode,
-		OrdFacilityCode:    input.OrdFacilityCode,
-		OrdTimestamp:       time.Now(),
-		OrdOrderDate:       input.OrdOrderDate,
-		OrdOrderRefNumber:  input.OrdOrderRefNumber,
-		OrdOrderNumber:     input.OrdOrderNumber,
-		OrdProductCode:     input.OrdProductCode,
-		OrdOrderedQuantity: input.OrdOrderedQuantity,
-	}
+	var responses []dto.PurchaseOrderResponseDTO
+	for _, input := range inputs {
+		record := models.PurchaseOrder{
+			OrdSystemCode:      input.OrdSystemCode,
+			OrdFacilityCode:    input.OrdFacilityCode,
+			OrdTimestamp:       time.Now(),
+			OrdOrderDate:       input.OrdOrderDate,
+			OrdOrderRefNumber:  input.OrdOrderRefNumber,
+			OrdOrderNumber:     input.OrdOrderNumber,
+			OrdProductCode:     input.OrdProductCode,
+			OrdOrderedQuantity: input.OrdOrderedQuantity,
+		}
 
-	if err := config.DB.Create(&record).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		if err := config.DB.Create(&record).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		responses = append(responses, mapToPurchaseOrderResponse(record))
 	}
 	
-	c.JSON(http.StatusCreated, mapToPurchaseOrderResponse(record))
+	c.JSON(http.StatusCreated, responses)
 }
 
 /* ========== GET PURCHASE ORDER BY ID ========== */

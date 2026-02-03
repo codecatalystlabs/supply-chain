@@ -9,39 +9,45 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// @Summary Create goods receipt
+// @Summary Create goods receipts
 // @Tags GoodsReceipt
 // @Accept json
 // @Produce json
-// @Param payload body dto.GoodsReceiptCreateDTO true "Goods receipt payload"
-// @Success 201 {object} dto.GoodsReceiptResponseDTO
+// @Param payload body []dto.GoodsReceiptCreateDTO true "Goods receipts payload"
+// @Success 201 {array} dto.GoodsReceiptResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /goods-receipt [post]
 func CreateGoodsReceipt(c *gin.Context) {
-	var payload dto.GoodsReceiptCreateDTO
-	if err := c.ShouldBindJSON(&payload); err != nil {
+	var payloads []dto.GoodsReceiptCreateDTO
+	if err := c.ShouldBindJSON(&payloads); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	record := models.GoodsReceipt{
-		GrnSystemCode:            payload.GrnSystemCode,
-		GrnFacilityCode:          payload.GrnFacilityCode,
-		GrnReceiptDate:           payload.GrnReceiptDate,
-		GrnFacilityReceiptNumber: payload.GrnFacilityReceiptNumber,
-		GrnWarehouseRefNumber:    payload.GrnWarehouseRefNumber,
-		GrnOrderNumber:           payload.GrnOrderNumber,
-		GrnProductCode:           payload.GrnProductCode,
-		GrnBatchNumber:           payload.GrnBatchNumber,
-		GrnQuantity:              payload.GrnQuantity,
-		GrnExpiryDate:            payload.GrnExpiryDate,
-		GrnSupplierCode:          payload.GrnSupplierCode,
+
+	var responses []dto.GoodsReceiptResponseDTO
+	for _, payload := range payloads {
+		record := models.GoodsReceipt{
+			GrnSystemCode:            payload.GrnSystemCode,
+			GrnFacilityCode:          payload.GrnFacilityCode,
+			GrnReceiptDate:           payload.GrnReceiptDate,
+			GrnFacilityReceiptNumber: payload.GrnFacilityReceiptNumber,
+			GrnWarehouseRefNumber:    payload.GrnWarehouseRefNumber,
+			GrnOrderNumber:           payload.GrnOrderNumber,
+			GrnProductCode:           payload.GrnProductCode,
+			GrnBatchNumber:           payload.GrnBatchNumber,
+			GrnQuantity:              payload.GrnQuantity,
+			GrnExpiryDate:            payload.GrnExpiryDate,
+			GrnSupplierCode:          payload.GrnSupplierCode,
+		}
+		if err := config.DB.Create(&record).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		responses = append(responses, mapToGoodsReceiptResponse(record))
 	}
-	if err := config.DB.Create(&record).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusCreated, mapToGoodsReceiptResponse(record))
+
+	c.JSON(http.StatusCreated, responses)
 }
 
 // @Summary List goods receipts

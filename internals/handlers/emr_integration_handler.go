@@ -10,66 +10,70 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// @Summary Create EMR integration
+// @Summary Create EMR integrations
 // @Tags EMRIntegration
 // @Accept json
 // @Produce json
-// @Param payload body dto.EMRIntegrationCreateDTO true "Integration payload"
-// @Success 201 {object} dto.EMRIntegrationResponseDTO
+// @Param payload body []dto.EMRIntegrationCreateDTO true "Integrations payload"
+// @Success 201 {array} dto.EMRIntegrationResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /emr-integrations [post]
 func CreateEMRIntegration(c *gin.Context) {
-	var payload dto.EMRIntegrationCreateDTO
-	if err := c.ShouldBindJSON(&payload); err != nil {
+	var payloads []dto.EMRIntegrationCreateDTO
+	if err := c.ShouldBindJSON(&payloads); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Verify facility exists
-	var facility models.Facility
-	if err := config.DB.First(&facility, payload.FacilityID).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Facility not found"})
-		return
+	var responses []dto.EMRIntegrationResponseDTO
+	for _, payload := range payloads {
+		// Verify facility exists
+		var facility models.Facility
+		if err := config.DB.First(&facility, payload.FacilityID).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Facility not found"})
+			return
+		}
+
+		// Check if integration already exists for this facility
+		var existing models.EMRIntegration
+		if err := config.DB.Where("facility_id = ?", payload.FacilityID).First(&existing).Error; err == nil {
+			c.JSON(http.StatusConflict, gin.H{"error": "EMR integration already exists for this facility"})
+			return
+		}
+
+		syncEnabled := true
+		if payload.SyncEnabled != nil {
+			syncEnabled = *payload.SyncEnabled
+		}
+
+		integration := models.EMRIntegration{
+			FacilityID:       payload.FacilityID,
+			EMRSystemCode:    payload.EMRSystemCode,
+			EMRSystemName:    payload.EMRSystemName,
+			EMRSystemVersion: payload.EMRSystemVersion,
+			APIEndpoint:      payload.APIEndpoint,
+			APIKey:           payload.APIKey,
+			APISecret:        payload.APISecret,
+			WebhookURL:       payload.WebhookURL,
+			SyncEnabled:      syncEnabled,
+			SyncFrequency:    payload.SyncFrequency,
+			AuthType:         payload.AuthType,
+			AuthConfig:       payload.AuthConfig,
+			IsActive:         true,
+			IsVerified:       false,
+			Notes:            payload.Notes,
+			CreatedAt:        time.Now(),
+		}
+
+		if err := config.DB.Create(&integration).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		responses = append(responses, mapToEMRIntegrationResponse(integration))
 	}
 
-	// Check if integration already exists for this facility
-	var existing models.EMRIntegration
-	if err := config.DB.Where("facility_id = ?", payload.FacilityID).First(&existing).Error; err == nil {
-		c.JSON(http.StatusConflict, gin.H{"error": "EMR integration already exists for this facility"})
-		return
-	}
-
-	syncEnabled := true
-	if payload.SyncEnabled != nil {
-		syncEnabled = *payload.SyncEnabled
-	}
-
-	integration := models.EMRIntegration{
-		FacilityID:       payload.FacilityID,
-		EMRSystemCode:    payload.EMRSystemCode,
-		EMRSystemName:    payload.EMRSystemName,
-		EMRSystemVersion: payload.EMRSystemVersion,
-		APIEndpoint:      payload.APIEndpoint,
-		APIKey:           payload.APIKey,
-		APISecret:        payload.APISecret,
-		WebhookURL:       payload.WebhookURL,
-		SyncEnabled:      syncEnabled,
-		SyncFrequency:    payload.SyncFrequency,
-		AuthType:         payload.AuthType,
-		AuthConfig:       payload.AuthConfig,
-		IsActive:         true,
-		IsVerified:       false,
-		Notes:            payload.Notes,
-		CreatedAt:        time.Now(),
-	}
-
-	if err := config.DB.Create(&integration).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusCreated, mapToEMRIntegrationResponse(integration))
+	c.JSON(http.StatusCreated, responses)
 }
 
 // @Summary List EMR integrations

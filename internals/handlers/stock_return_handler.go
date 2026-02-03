@@ -13,35 +13,39 @@ import (
 // @Tags StockReturn
 // @Accept json
 // @Produce json
-// @Param payload body dto.StockReturnCreateDTO true "Stock return payload"
-// @Success 201 {object} dto.StockReturnResponseDTO
+// @Param payload body []dto.StockReturnCreateDTO true "Stock return payloads"
+// @Success 201 {array} dto.StockReturnResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /stock/return [post]
 func CreateStockReturn(c *gin.Context) {
-	var payload dto.StockReturnCreateDTO
-	if err := c.ShouldBindJSON(&payload); err != nil {
+	var payloads []dto.StockReturnCreateDTO
+	if err := c.ShouldBindJSON(&payloads); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	record := models.StockReturn{
-		RtnSystemCode:   payload.RtnSystemCode,
-		RtnFacilityCode: payload.RtnFacilityCode,
-		RtnReturnDate:   payload.RtnReturnDate,
-		RtnReturnNumber: payload.RtnReturnNumber,
-		RtnProductCode:  payload.RtnProductCode,
-		RtnBatchNumber:  payload.RtnBatchNumber,
-		RtnUnitCode:     payload.RtnUnitCode,
-		RtnQuantity:     payload.RtnQuantity,
+	var responses []dto.StockReturnResponseDTO
+	for _, payload := range payloads {
+		record := models.StockReturn{
+			RtnSystemCode:   payload.RtnSystemCode,
+			RtnFacilityCode: payload.RtnFacilityCode,
+			RtnReturnDate:   payload.RtnReturnDate,
+			RtnReturnNumber: payload.RtnReturnNumber,
+			RtnProductCode:  payload.RtnProductCode,
+			RtnBatchNumber:  payload.RtnBatchNumber,
+			RtnUnitCode:     payload.RtnUnitCode,
+			RtnQuantity:     payload.RtnQuantity,
+		}
+
+		if err := config.DB.Create(&record).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		responses = append(responses, mapToStockReturnResponse(record))
 	}
 
-	if err := config.DB.Create(&record).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusCreated, mapToStockReturnResponse(record))
+	c.JSON(http.StatusCreated, responses)
 }
 
 // @Summary List stock returns

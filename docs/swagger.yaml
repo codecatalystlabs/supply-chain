@@ -680,6 +680,11 @@ definitions:
       vst_visit_date:
         type: string
     type: object
+  dto.PatientVisitUpdateDTO:
+    properties:
+      vst_quantity:
+        type: number
+    type: object
   dto.PharmacyCreateDTO:
     properties:
       facility_id:
@@ -1456,16 +1461,128 @@ definitions:
       warehouse_type:
         type: string
     type: object
-host: localhost:5500
+host: localhost:8080
 info:
   contact:
     email: ict@moh.go.ug
     name: DHI
-  description: Backend API for emergency call & dispatch system
+  description: Backend API for Supply Chain Repository / Bridge
   termsOfService: https://health.go.ug
-  title: MoH Emergency Dispatch API
+  title: MoH Supply Chian Repository API
   version: "1.0"
 paths:
+  /api/v1/patient-visit:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.PatientVisitResponseDTO'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List patient visits
+      tags:
+      - PatientVisit
+  /api/v1/patient-visit/{id}:
+    delete:
+      parameters:
+      - description: Patient Visit ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete patient visit
+      tags:
+      - PatientVisit
+    get:
+      parameters:
+      - description: Patient Visit ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.PatientVisitResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get patient visit by ID
+      tags:
+      - PatientVisit
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Patient Visit ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Patient visit update payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PatientVisitUpdateDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.PatientVisitResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update patient visit
+      tags:
+      - PatientVisit
   /emr-integrations:
     get:
       parameters:
@@ -1499,19 +1616,23 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: Integration payload
+      - description: Integrations payload
         in: body
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/dto.EMRIntegrationCreateDTO'
+          items:
+            $ref: '#/definitions/dto.EMRIntegrationCreateDTO'
+          type: array
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/dto.EMRIntegrationResponseDTO'
+            items:
+              $ref: '#/definitions/dto.EMRIntegrationResponseDTO'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -1524,7 +1645,7 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: Create EMR integration
+      summary: Create EMR integrations
       tags:
       - EMRIntegration
   /emr-integrations/{id}:
@@ -1699,19 +1820,23 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: Facility payload
+      - description: Facilities payload
         in: body
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/dto.FacilityCreateDTO'
+          items:
+            $ref: '#/definitions/dto.FacilityCreateDTO'
+          type: array
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/dto.FacilityResponseDTO'
+            items:
+              $ref: '#/definitions/dto.FacilityResponseDTO'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -1724,7 +1849,7 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: Create facility
+      summary: Create facilities
       tags:
       - Facility
   /facilities/{id}:
@@ -2101,19 +2226,23 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: Goods receipt payload
+      - description: Goods receipts payload
         in: body
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/dto.GoodsReceiptCreateDTO'
+          items:
+            $ref: '#/definitions/dto.GoodsReceiptCreateDTO'
+          type: array
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/dto.GoodsReceiptResponseDTO'
+            items:
+              $ref: '#/definitions/dto.GoodsReceiptResponseDTO'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -2126,7 +2255,7 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: Create goods receipt
+      summary: Create goods receipts
       tags:
       - GoodsReceipt
   /goods-receipt/{id}:
@@ -2230,19 +2359,23 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: Patient visit payload
+      - description: Patient visits payload
         in: body
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/dto.PatientVisitCreateDTO'
+          items:
+            $ref: '#/definitions/dto.PatientVisitCreateDTO'
+          type: array
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/dto.PatientVisitResponseDTO'
+            items:
+              $ref: '#/definitions/dto.PatientVisitResponseDTO'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -2255,7 +2388,7 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: Create patient visit
+      summary: Create patient visits
       tags:
       - PatientVisit
   /pharmacies:
@@ -2291,19 +2424,23 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: Pharmacy payload
+      - description: Pharmacies payload
         in: body
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/dto.PharmacyCreateDTO'
+          items:
+            $ref: '#/definitions/dto.PharmacyCreateDTO'
+          type: array
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/dto.PharmacyResponseDTO'
+            items:
+              $ref: '#/definitions/dto.PharmacyResponseDTO'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -2316,7 +2453,7 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: Create pharmacy
+      summary: Create pharmacies
       tags:
       - Pharmacy
   /pharmacies/{id}:
@@ -2439,19 +2576,23 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: Pharmacy stock payload
+      - description: Pharmacy stock payloads
         in: body
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/dto.PharmacyStockCreateDTO'
+          items:
+            $ref: '#/definitions/dto.PharmacyStockCreateDTO'
+          type: array
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/dto.PharmacyStockResponseDTO'
+            items:
+              $ref: '#/definitions/dto.PharmacyStockResponseDTO'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -2587,19 +2728,23 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: Procurement plan payload
+      - description: Procurement plans payload
         in: body
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/dto.ProcurementPlanCreateDTO'
+          items:
+            $ref: '#/definitions/dto.ProcurementPlanCreateDTO'
+          type: array
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/dto.ProcurementPlanResponseDTO'
+            items:
+              $ref: '#/definitions/dto.ProcurementPlanResponseDTO'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -2612,7 +2757,7 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: Create procurement plan
+      summary: Create procurement plans
       tags:
       - ProcurementPlan
   /procurement/{id}:
@@ -2686,19 +2831,23 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: Product AMC payload
+      - description: Product AMC payloads
         in: body
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/dto.ProductAmcCreateDTO'
+          items:
+            $ref: '#/definitions/dto.ProductAmcCreateDTO'
+          type: array
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/dto.ProductAmcResponseDTO'
+            items:
+              $ref: '#/definitions/dto.ProductAmcResponseDTO'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -2834,19 +2983,23 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: Purchase order payload
+      - description: Purchase orders payload
         in: body
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/dto.PurchaseOrderCreateDTO'
+          items:
+            $ref: '#/definitions/dto.PurchaseOrderCreateDTO'
+          type: array
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/dto.PurchaseOrderResponseDTO'
+            items:
+              $ref: '#/definitions/dto.PurchaseOrderResponseDTO'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -2859,7 +3012,7 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: Create purchase order
+      summary: Create purchase orders
       tags:
       - PurchaseOrder
   /purchase-order/{id}:
@@ -2999,19 +3152,23 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: Stock adjustment payload
+      - description: Stock adjustment payloads
         in: body
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/dto.StockAdjustmentCreateDTO'
+          items:
+            $ref: '#/definitions/dto.StockAdjustmentCreateDTO'
+          type: array
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/dto.StockAdjustmentResponseDTO'
+            items:
+              $ref: '#/definitions/dto.StockAdjustmentResponseDTO'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -3147,19 +3304,23 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: Stock dispensed payload
+      - description: Stock dispensed payloads
         in: body
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/dto.StockDispensedCreateDTO'
+          items:
+            $ref: '#/definitions/dto.StockDispensedCreateDTO'
+          type: array
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/dto.StockDispensedResponseDTO'
+            items:
+              $ref: '#/definitions/dto.StockDispensedResponseDTO'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -3295,19 +3456,23 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: Stock payload
+      - description: Stock payloads
         in: body
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/dto.StockOnHandCreateDTO'
+          items:
+            $ref: '#/definitions/dto.StockOnHandCreateDTO'
+          type: array
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/dto.StockOnHandResponseDTO'
+            items:
+              $ref: '#/definitions/dto.StockOnHandResponseDTO'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -3439,19 +3604,23 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: Stock return payload
+      - description: Stock return payloads
         in: body
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/dto.StockReturnCreateDTO'
+          items:
+            $ref: '#/definitions/dto.StockReturnCreateDTO'
+          type: array
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/dto.StockReturnResponseDTO'
+            items:
+              $ref: '#/definitions/dto.StockReturnResponseDTO'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -3604,19 +3773,23 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: Transfer payload
+      - description: Transfer payloads
         in: body
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/dto.StockTransferCreateDTO'
+          items:
+            $ref: '#/definitions/dto.StockTransferCreateDTO'
+          type: array
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/dto.StockTransferResponseDTO'
+            items:
+              $ref: '#/definitions/dto.StockTransferResponseDTO'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -3882,19 +4055,23 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: Warehouse payload
+      - description: Warehouses payload
         in: body
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/dto.WarehouseCreateDTO'
+          items:
+            $ref: '#/definitions/dto.WarehouseCreateDTO'
+          type: array
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/dto.WarehouseResponseDTO'
+            items:
+              $ref: '#/definitions/dto.WarehouseResponseDTO'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -3907,7 +4084,7 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: Create warehouse
+      summary: Create warehouses
       tags:
       - Warehouse
   /warehouses/{id}:

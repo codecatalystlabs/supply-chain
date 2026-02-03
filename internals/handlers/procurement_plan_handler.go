@@ -11,52 +11,60 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// @Summary Create procurement plan
+// @Summary Create procurement plans
 // @Tags ProcurementPlan
 // @Accept json
 // @Produce json
-// @Param payload body dto.ProcurementPlanCreateDTO true "Procurement plan payload"
-// @Success 201 {object} dto.ProcurementPlanResponseDTO
+// @Param payload body []dto.ProcurementPlanCreateDTO true "Procurement plans payload"
+// @Success 201 {array} dto.ProcurementPlanResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /procurement [post]
 func CreateProcurementPlan(c *gin.Context) {
-	var payload dto.ProcurementPlanCreateDTO
-	if err := c.ShouldBindJSON(&payload); err != nil {
+	var payloads []dto.ProcurementPlanCreateDTO
+	if err := c.ShouldBindJSON(&payloads); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	plan := models.ProcurementPlan{
-		PlanSystemCode: payload.PlanSystemCode,
-		StoreCode:      payload.StoreCode,
-		CreatedAt:      time.Now(),
-		Notes:          payload.Notes,
-	}
-
-	if err := config.DB.Create(&plan).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	// create items
-	for _, it := range payload.Items {
-		item := models.ProcurementPlanItem{
-			ProcurementID: plan.ID,
-			ProductCode:   it.ProductCode,
-			Quantity:      it.Quantity,
-			NeededBy:      it.NeededBy,
-			Status:        "planned",
+	var responses []dto.ProcurementPlanResponseDTO
+	for _, payload := range payloads {
+		plan := models.ProcurementPlan{
+			PlanSystemCode: payload.PlanSystemCode,
+			StoreCode:      payload.StoreCode,
+			CreatedAt:      time.Now(),
+			Notes:          payload.Notes,
 		}
-		_ = config.DB.Create(&item)
+
+		if err := config.DB.Create(&plan).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// create items
+		for _, it := range payload.Items {
+			item := models.ProcurementPlanItem{
+				ProcurementID: plan.ID,
+				ProductCode:   it.ProductCode,
+				Quantity:      it.Quantity,
+				NeededBy:      it.NeededBy,
+				Status:        "planned",
+			}
+			if err := config.DB.Create(&item).Error; err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+		}
+
+		// load items
+		var items []models.ProcurementPlanItem
+		config.DB.Where("procurement_id = ?", plan.ID).Find(&items)
+
+		resp := mapToProcurementPlanResponse(plan, items)
+		responses = append(responses, resp)
 	}
 
-	// load items
-	var items []models.ProcurementPlanItem
-	config.DB.Where("procurement_id = ?", plan.ID).Find(&items)
-
-	resp := mapToProcurementPlanResponse(plan, items)
-	c.JSON(http.StatusCreated, resp)
+	c.JSON(http.StatusCreated, responses)
 }
 
 // @Summary List procurement plans

@@ -13,34 +13,39 @@ import (
 // @Tags ProductAmc
 // @Accept json
 // @Produce json
-// @Param payload body dto.ProductAmcCreateDTO true "Product AMC payload"
-// @Success 201 {object} dto.ProductAmcResponseDTO
+// @Param payload body []dto.ProductAmcCreateDTO true "Product AMC payloads"
+// @Success 201 {array} dto.ProductAmcResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /product-amc [post]
 func CreateProductAmc(c *gin.Context) {
-	var payload dto.ProductAmcCreateDTO
-	if err := c.ShouldBindJSON(&payload); err != nil {
+	var payloads []dto.ProductAmcCreateDTO
+	if err := c.ShouldBindJSON(&payloads); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	record := models.ProductAmc{
-		AmcSystemCode:   payload.AmcSystemCode,
-		AmcFacilityCode: payload.AmcFacilityCode,
-		AmcDate:         payload.AmcDate,
-		AmcProductCode:  payload.AmcProductCode,
-		AmcProductName:  payload.AmcProductName,
-		AmcMonth:        payload.AmcMonth,
-		AmcYear:         payload.AmcYear,
-		AmcValue:        payload.AmcValue,
+	var responses []dto.ProductAmcResponseDTO
+	for _, payload := range payloads {
+		record := models.ProductAmc{
+			AmcSystemCode:   payload.AmcSystemCode,
+			AmcFacilityCode: payload.AmcFacilityCode,
+			AmcDate:         payload.AmcDate,
+			AmcProductCode:  payload.AmcProductCode,
+			AmcProductName:  payload.AmcProductName,
+			AmcMonth:        payload.AmcMonth,
+			AmcYear:         payload.AmcYear,
+			AmcValue:        payload.AmcValue,
+		}
+
+		if err := config.DB.Create(&record).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		responses = append(responses, mapToProductAmcResponse(record))
 	}
 
-	if err := config.DB.Create(&record).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusCreated, mapToProductAmcResponse(record))
+	c.JSON(http.StatusCreated, responses)
 }
 
 // @Summary List product AMC

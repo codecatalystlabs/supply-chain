@@ -15,86 +15,91 @@ import (
 // @Tags StockTransfer
 // @Accept json
 // @Produce json
-// @Param payload body dto.StockTransferCreateDTO true "Transfer payload"
-// @Success 201 {object} dto.StockTransferResponseDTO
+// @Param payload body []dto.StockTransferCreateDTO true "Transfer payloads"
+// @Success 201 {array} dto.StockTransferResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /stock/transfers [post]
 func CreateStockTransfer(c *gin.Context) {
-	var payload dto.StockTransferCreateDTO
-	if err := c.ShouldBindJSON(&payload); err != nil {
+	var payloads []dto.StockTransferCreateDTO
+	if err := c.ShouldBindJSON(&payloads); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Validate transfer type requirements
-	if payload.TransferType == "intra_facility" {
-		if payload.FromPharmacyID == nil || payload.ToPharmacyID == nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "FromPharmacyID and ToPharmacyID are required for intra-facility transfers"})
+	var responses []dto.StockTransferResponseDTO
+	for _, payload := range payloads {
+		// Validate transfer type requirements
+		if payload.TransferType == "intra_facility" {
+			if payload.FromPharmacyID == nil || payload.ToPharmacyID == nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "FromPharmacyID and ToPharmacyID are required for intra-facility transfers"})
+				return
+			}
+			if payload.FromFacilityID != payload.ToFacilityID {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "FromFacilityID and ToFacilityID must be the same for intra-facility transfers"})
+				return
+			}
+		}
+
+		// Verify facilities exist
+		var fromFacility, toFacility models.Facility
+		if err := config.DB.First(&fromFacility, payload.FromFacilityID).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "From facility not found"})
 			return
 		}
-		if payload.FromFacilityID != payload.ToFacilityID {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "FromFacilityID and ToFacilityID must be the same for intra-facility transfers"})
+		if err := config.DB.First(&toFacility, payload.ToFacilityID).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "To facility not found"})
 			return
 		}
-	}
 
-	// Verify facilities exist
-	var fromFacility, toFacility models.Facility
-	if err := config.DB.First(&fromFacility, payload.FromFacilityID).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "From facility not found"})
-		return
-	}
-	if err := config.DB.First(&toFacility, payload.ToFacilityID).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "To facility not found"})
-		return
-	}
+		// Verify pharmacies exist if provided
+		if payload.FromPharmacyID != nil {
+			var fromPharmacy models.Pharmacy
+			if err := config.DB.Where("id = ? AND facility_id = ?", *payload.FromPharmacyID, payload.FromFacilityID).First(&fromPharmacy).Error; err != nil {
+				c.JSON(http.StatusNotFound, gin.H{"error": "From pharmacy not found or does not belong to from facility"})
+				return
+			}
+		}
+		if payload.ToPharmacyID != nil {
+			var toPharmacy models.Pharmacy
+			if err := config.DB.Where("id = ? AND facility_id = ?", *payload.ToPharmacyID, payload.ToFacilityID).First(&toPharmacy).Error; err != nil {
+				c.JSON(http.StatusNotFound, gin.H{"error": "To pharmacy not found or does not belong to to facility"})
+				return
+			}
+		}
 
-	// Verify pharmacies exist if provided
-	if payload.FromPharmacyID != nil {
-		var fromPharmacy models.Pharmacy
-		if err := config.DB.Where("id = ? AND facility_id = ?", *payload.FromPharmacyID, payload.FromFacilityID).First(&fromPharmacy).Error; err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error": "From pharmacy not found or does not belong to from facility"})
+		// Generate transfer reference
+		transferRef := fmt.Sprintf("TRF-%s-%s-%d", fromFacility.FacilityCode, toFacility.FacilityCode, time.Now().Unix())
+
+		transfer := models.StockTransfer{
+			TransferRef:    transferRef,
+			TransferType:   payload.TransferType,
+			FromFacilityID: payload.FromFacilityID,
+			FromPharmacyID: payload.FromPharmacyID,
+			ToFacilityID:   payload.ToFacilityID,
+			ToPharmacyID:   payload.ToPharmacyID,
+			ProductCode:    payload.ProductCode,
+			BatchNumber:    payload.BatchNumber,
+			Quantity:       payload.Quantity,
+			ExpiryDate:     payload.ExpiryDate,
+			TransferDate:   payload.TransferDate,
+			Status:         "pending",
+			RequestedBy:    payload.RequestedBy,
+			Notes:          payload.Notes,
+			CreatedAt:      time.Now(),
+		}
+
+		if err := config.DB.Create(&transfer).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-	}
-	if payload.ToPharmacyID != nil {
-		var toPharmacy models.Pharmacy
-		if err := config.DB.Where("id = ? AND facility_id = ?", *payload.ToPharmacyID, payload.ToFacilityID).First(&toPharmacy).Error; err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error": "To pharmacy not found or does not belong to to facility"})
-			return
-		}
+
+		// Reload with relationships
+		config.DB.Preload("FromFacility").Preload("ToFacility").Preload("FromPharmacy").Preload("ToPharmacy").First(&transfer, transfer.ID)
+		responses = append(responses, mapToStockTransferResponse(transfer))
 	}
 
-	// Generate transfer reference
-	transferRef := fmt.Sprintf("TRF-%s-%s-%d", fromFacility.FacilityCode, toFacility.FacilityCode, time.Now().Unix())
-
-	transfer := models.StockTransfer{
-		TransferRef:    transferRef,
-		TransferType:   payload.TransferType,
-		FromFacilityID: payload.FromFacilityID,
-		FromPharmacyID: payload.FromPharmacyID,
-		ToFacilityID:   payload.ToFacilityID,
-		ToPharmacyID:   payload.ToPharmacyID,
-		ProductCode:    payload.ProductCode,
-		BatchNumber:    payload.BatchNumber,
-		Quantity:       payload.Quantity,
-		ExpiryDate:     payload.ExpiryDate,
-		TransferDate:   payload.TransferDate,
-		Status:         "pending",
-		RequestedBy:    payload.RequestedBy,
-		Notes:          payload.Notes,
-		CreatedAt:      time.Now(),
-	}
-
-	if err := config.DB.Create(&transfer).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Reload with relationships
-	config.DB.Preload("FromFacility").Preload("ToFacility").Preload("FromPharmacy").Preload("ToPharmacy").First(&transfer, transfer.ID)
-	c.JSON(http.StatusCreated, mapToStockTransferResponse(transfer))
+	c.JSON(http.StatusCreated, responses)
 }
 
 // @Summary List stock transfers

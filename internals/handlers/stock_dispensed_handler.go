@@ -13,35 +13,39 @@ import (
 // @Tags StockDispensed
 // @Accept json
 // @Produce json
-// @Param payload body dto.StockDispensedCreateDTO true "Stock dispensed payload"
-// @Success 201 {object} dto.StockDispensedResponseDTO
+// @Param payload body []dto.StockDispensedCreateDTO true "Stock dispensed payloads"
+// @Success 201 {array} dto.StockDispensedResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /stock/dispensed [post]
 func CreateStockDispensed(c *gin.Context) {
-	var payload dto.StockDispensedCreateDTO
-	if err := c.ShouldBindJSON(&payload); err != nil {
+	var payloads []dto.StockDispensedCreateDTO
+	if err := c.ShouldBindJSON(&payloads); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	record := models.StockDispensed{
-		DspSystemCode:        payload.DspSystemCode,
-		DspFacilityCode:      payload.DspFacilityCode,
-		DspDispenseDate:      payload.DspDispenseDate,
-		DspProductCode:       payload.DspProductCode,
-		DspBatchNumber:       payload.DspBatchNumber,
-		DspDispensedQuantity: payload.DspDispensedQuantity,
-		DspPatientHash:       payload.DspPatientHash,
-		DspExpiryDate:        payload.DspExpiryDate,
+	var responses []dto.StockDispensedResponseDTO
+	for _, payload := range payloads {
+		record := models.StockDispensed{
+			DspSystemCode:        payload.DspSystemCode,
+			DspFacilityCode:      payload.DspFacilityCode,
+			DspDispenseDate:      payload.DspDispenseDate,
+			DspProductCode:       payload.DspProductCode,
+			DspBatchNumber:       payload.DspBatchNumber,
+			DspDispensedQuantity: payload.DspDispensedQuantity,
+			DspPatientHash:       payload.DspPatientHash,
+			DspExpiryDate:        payload.DspExpiryDate,
+		}
+
+		if err := config.DB.Create(&record).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		responses = append(responses, mapToStockDispensedResponse(record))
 	}
 
-	if err := config.DB.Create(&record).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusCreated, mapToStockDispensedResponse(record))
+	c.JSON(http.StatusCreated, responses)
 }
 
 // @Summary List stock dispensed
