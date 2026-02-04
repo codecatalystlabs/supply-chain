@@ -10,15 +10,15 @@ import (
 // ShowPatientVisits displays patient visit records
 func ShowPatientVisits(c *gin.Context) {
 	viewData := &views.ViewData{
-		Title:   "Patient Visits",
+		Title: "Patient Visits",
 	}
 	services.GetTemplateService().RenderTemplate(c, "patient-visits.tpl", viewData)
 }
 
-// ShowProductAMC displays product AMC (Average Monthly Consumption)
+// ShowProductAMC displays product
 func ShowProductAMC(c *gin.Context) {
 	viewData := &views.ViewData{
-		Title:   "Product AMC",
+		Title: "Product AMC",
 	}
 	services.GetTemplateService().RenderTemplate(c, "product-amc.tpl", viewData)
 }

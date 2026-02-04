@@ -122,7 +122,7 @@
             <a href="/">
               <img src="/cp/static/img/coat_fine.png" alt="SCM Logo" style="height: 58px; margin-right: 4px; vertical-align: middle;padding-top:1px !important;">
               {{/* <span style="font-size: 16px; font-weight: 600; color: #333;">..<span>.</span></span> */}}
-              <span style="font-size: 14px; font-weight: 600; color: #333; font-family: 'Inter', sans-serif; letter-spacing: 0.3px;">Supply Chain Management</span>
+              <span style="font-size: 14px; font-weight: 600; color: #333; font-family: 'Inter', sans-serif; letter-spacing: 0.3px;">SCM</span>
             </a>
           </h2>
           <a href="#" id="slimSidebarMenu" class="slim-sidebar-menu" 
@@ -159,92 +159,55 @@
             <a href="/cp/home" class="sidebar-nav-link"><i class="icon ion-ios-home-outline"></i> Home</a>
           </li>
           
-          <!-- Dynamic Services Menu - Disabled for now -->
-          {{/*
-          {{if .services}}
-            <li class="sidebar-nav-item with-sub">
-              <a href="#" class="sidebar-nav-link"><i class="icon ion-ios-gear-outline"></i>Services</a>
-              <ul class="nav sidebar-nav-sub">
-              {{range .services}}
-                <li class="nav-sub-item">
-                  <a href="{{if and .RedirectUrl .OpenInIframe}}/services/{{.Id}}{{else if .RedirectUrl}}{{.RedirectUrl}}{{else}}/services/{{.Id}}{{end}}" 
-                     class="nav-sub-link"
-                     {{if and .RedirectUrl (not .OpenInIframe)}}target="_blank"{{end}}>
-                    <i class="icon {{if .Icon}}{{.Icon}}{{else}}ion-ios-link-outline{{end}}"></i> 
-                    {{.Name}}
-                    {{if and .RedirectUrl (not .OpenInIframe)}}<i class="fa fa-external-link ml-1" style="font-size: 10px; opacity: 0.7;"></i>{{end}}
-                  </a>
-                </li>
-              {{end}}
-              </ul>
-            </li>
-          {{end}}
-          */}}
-          
-          {{/* <!-- Static Management Menu - Only visible to users with management permissions -->
-          {{if or .canManageUsers .canManageRoles .canManagePermissions}}
+          <!-- Facilities & Warehouses -->
           <li class="sidebar-nav-item with-sub">
-            <a href="#" class="sidebar-nav-link"><i class="icon ion-ios-people-outline"></i> User Management</a>
+            <a href="#" class="sidebar-nav-link"><i class="icon ion-ios-location"></i> Facilities & Warehouses</a>
             <ul class="nav sidebar-nav-sub">
-              {{if .canManageUsers}}
-              <li class="nav-sub-item"><a href="/admin/users/" class="nav-sub-link">Manage Users</a></li>
-              {{end}}
-              {{if .canManageRoles}}
-              <li class="nav-sub-item"><a href="/admin/roles/" class="nav-sub-link">Manage Roles</a></li>
-              {{end}}
-              {{if .canManagePermissions}}
-              <li class="nav-sub-item"><a href="/admin/permissions/" class="nav-sub-link">Manage Permissions</a></li>
-              {{end}}
+              <li class="nav-sub-item"><a href="/cp/facilities" class="nav-sub-link">Health Facilities</a></li>
+              <li class="nav-sub-item"><a href="/cp/warehouses" class="nav-sub-link">Warehouses</a></li>
+              <li class="nav-sub-item"><a href="/cp/pharmacies" class="nav-sub-link">Pharmacies</a></li>
             </ul>
           </li>
-          {{end}} */}}
-          
-          {{/* {{if .canManageServices}}
+
+          <!-- Inventory & Stock -->
+          <li class="sidebar-nav-item with-sub">
+            <a href="#" class="sidebar-nav-link"><i class="icon ion-ios-box"></i> Inventory & Stock</a>
+            <ul class="nav sidebar-nav-sub">
+              <li class="nav-sub-item"><a href="/cp/inventory" class="nav-sub-link">Inventory</a></li>
+              <li class="nav-sub-item"><a href="/cp/pharmacy-stock" class="nav-sub-link">Pharmacy Stock</a></li>
+              <li class="nav-sub-item"><a href="/cp/stock-on-hand" class="nav-sub-link">Stock on Hand</a></li>
+              <li class="nav-sub-item"><a href="/cp/stock-dispensed" class="nav-sub-link">Stock Dispensed</a></li>
+              <li class="nav-sub-item"><a href="/cp/stock-adjustments" class="nav-sub-link">Stock Adjustments</a></li>
+              <li class="nav-sub-item"><a href="/cp/stock-returns" class="nav-sub-link">Stock Returns</a></li>
+              <li class="nav-sub-item"><a href="/cp/stock-transfers" class="nav-sub-link">Stock Transfers</a></li>
+            </ul>
+          </li>
+
+          <!-- Procurement & Orders -->
+          <li class="sidebar-nav-item with-sub">
+            <a href="#" class="sidebar-nav-link"><i class="icon ion-ios-cart"></i> Procurement & Orders</a>
+            <ul class="nav sidebar-nav-sub">
+              <li class="nav-sub-item"><a href="/cp/procurement-plans" class="nav-sub-link">Procurement Plans</a></li>
+              <li class="nav-sub-item"><a href="/cp/purchase-orders" class="nav-sub-link">Purchase Orders</a></li>
+              <li class="nav-sub-item"><a href="/cp/facility-orders" class="nav-sub-link">Facility Orders</a></li>
+              <li class="nav-sub-item"><a href="/cp/warehouse-orders" class="nav-sub-link">Warehouse Orders</a></li>
+              <li class="nav-sub-item"><a href="/cp/goods-receipts" class="nav-sub-link">Goods Receipts</a></li>
+            </ul>
+          </li>
+
+          <!-- Patient Management -->
+          <li class="sidebar-nav-item with-sub">
+            <a href="#" class="sidebar-nav-link"><i class="icon ion-ios-people"></i> Patient Management</a>
+            <ul class="nav sidebar-nav-sub">
+              <li class="nav-sub-item"><a href="/cp/patient-visits" class="nav-sub-link">Patient Visits</a></li>
+              <li class="nav-sub-item"><a href="/cp/product-amc" class="nav-sub-link">Product AMC</a></li>
+            </ul>
+          </li>
+
+          <!-- Reports -->
           <li class="sidebar-nav-item">
-            <a href="/cp/services" class="sidebar-nav-link"><i class="icon ion-ios-cog-outline"></i> Service Management</a>
-          </li>
-          {{end}} */}}
-
-          {{if .IsAdmin}}
-          <li class="sidebar-nav-item with-sub">
-            <a href="#" class="sidebar-nav-link"><i class="icon ion-ios-people-outline"></i> User Management</a>
-            <ul class="nav sidebar-nav-sub">
-              <li class="nav-sub-item"><a href="/cp/admin/users/" class="nav-sub-link">Manage Users</a></li>
-              <li class="nav-sub-item"><a href="/cp/admin/roles/" class="nav-sub-link">Manage Roles</a></li>
-              <li class="nav-sub-item"><a href="/cp/admin/permissions/" class="nav-sub-link">Manage Permissions</a></li>
-            </ul>
-          </li>
-          {{end}}
-          
-          <li class="sidebar-nav-item with-sub">
-            <a href="#" class="sidebar-nav-link"><i class="icon ion-ios-pulse"></i> Dashboards</a>
-            <ul class="nav sidebar-nav-sub">
-              <li class="nav-sub-item"><a href="/cp/dashboards/district" class="nav-sub-link">District</a></li>
-              <li class="nav-sub-item"><a href="/cp/dashboards/admin-unit" class="nav-sub-link">Administrative Units</a></li>
-            </ul>
-          </li>
-
-          <li class="sidebar-nav-item with-sub">
-            <a href="#" class="sidebar-nav-link"><i class="icon ion-stats-bars"></i> Reports</a>
-            <ul class="nav sidebar-nav-sub">
-              <li class="nav-sub-item"><a href="/cp/reports/vht" class="nav-sub-link">VHT</a></li>
-            </ul>
-          </li>
-
-          {{if and .IsAdmin .CanExploreData}}
-          <li class="sidebar-nav-item with-sub">
-            <a href="#" class="sidebar-nav-link"><i class="icon ion-grid"></i> Data Exploration</a>
-            <ul class="nav sidebar-nav-sub">
-              <li class="nav-sub-item"><a href="/cp/admin/data-cleaning/duplicates" class="nav-sub-link">Flag Duplicates</a></li>
-              <li class="nav-sub-item"><a href="/cp/admin/data-cleaning/training-mode" class="nav-sub-link">Misplaced Data</a></li>
-              <li class="nav-sub-item"><a href="/cp/admin/data-cleaning/vht-submissions" class="nav-sub-link">VHT Submissions</a></li>
-            </ul>
-          </li>
-          {{end}}
-
-          {{/* <li class="sidebar-nav-item">
             <a href="/cp/reports" class="sidebar-nav-link"><i class="icon ion-stats-bars"></i> Reports</a>
-          </li> */}}
+          </li>
 
           {{block "extra_menu" .}}{{end}}
         </ul>
@@ -283,7 +246,7 @@
 
         <div class="slim-footer mg-t-0">
           <div class="container-fluid">
-            <p><strong>Supply Chain Management System</strong> | All Rights Reserved. © 2026</p>
+            <p><strong>Supply Chain Management</strong> | All Rights Reserved. © 2026</p>
           </div><!-- container-fluid -->
         </div><!-- slim-footer -->
       </div><!-- slim-mainpanel -->

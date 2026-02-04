@@ -3,7 +3,7 @@
 {{define "content"}}
 <div class="card">
   <div class="card-header">
-    <h6 class="card-title">Product AMC (Average Monthly Consumption)</h6>
+    <h6 class="card-title">Product AMC</h6>
   </div>
   <div class="card-body">
     <table class="table table-hover table-striped">

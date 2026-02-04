@@ -18,7 +18,7 @@ func SetupPatientRoutes(api *gin.RouterGroup) {
 		patientVisit.DELETE("/:id", handlers.DeletePatientVisit)
 	}
 
-	// Product AMC (Average Monthly Consumption)
+	// Product AMC
 	productAmc := api.Group("/product-amc")
 	{
 		productAmc.POST("/", handlers.CreateProductAmc)
