@@ -29,6 +29,27 @@
       .sidebar-nav-sub {
         display: none;
         background-color: rgba(0,0,0,0.03);
+        padding: 2px 0;
+        margin: 0;
+      }
+      
+      .nav-sub-item {
+        margin: 0;
+      }
+      
+      .nav-sub-item:not(:last-child) {
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+      }
+      
+      .nav-sub-link {
+        padding: 8px 15px 8px 35px !important;
+        font-size: 12px;
+        display: block;
+        transition: background-color 0.2s ease;
+      }
+      
+      .nav-sub-link:hover {
+        background-color: rgba(255,255,255,0.15);
       }
       
       .sidebar-nav-sub-sub {
