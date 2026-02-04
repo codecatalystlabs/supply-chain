@@ -32,7 +32,12 @@
           </tr>
           {{end}}
         {{else}}
-          <tr><td colspan="6" class="empty-state"><i class="icon ion-ios-information-outline" style="font-size: 24px; display: block; margin-bottom: 8px;"></i>No facilities found</td></tr>
+          <tr>
+            <td colspan="6" class="empty-state">
+              <i class="icon ion-ios-information-outline" style="font-size: 24px; display: block; margin-bottom: 8px;"></i>
+              No health facilities found
+            </td>
+          </tr>
         {{end}}
       </tbody>
     </table>

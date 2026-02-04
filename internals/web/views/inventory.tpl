@@ -31,7 +31,12 @@
           </tr>
           {{end}}
         {{else}}
-          <tr><td colspan="5" class="text-center text-muted">No inventory items found</td></tr>
+          <tr>
+            <td colspan="6" class="empty-state">
+              <i class="icon ion-ios-information-outline" style="font-size: 24px; display: block; margin-bottom: 8px;"></i>
+              No inventory items found
+            </td>
+          </tr>
         {{end}}
       </tbody>
     </table>

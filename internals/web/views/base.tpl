@@ -385,9 +385,9 @@
 
         </div><!-- container -->
 
-        <div class="slim-footer mg-t-0">
-          <div class="container-fluid">
-            <p><strong>Supply Chain Management</strong> | All Rights Reserved. © 2026</p>
+        <div class="slim-footer mg-t-0" style="padding: 3px 0 !important;">
+          <div class="container-fluid" style="height: 30px !important;">
+            <p style="margin: 0 !important; font-size: 10px; color: #6c757d; line-height: 1.2;"><strong>Supply Chain Management</strong> | All Rights Reserved. © 2026</p>
           </div><!-- container-fluid -->
         </div><!-- slim-footer -->
       </div><!-- slim-mainpanel -->
