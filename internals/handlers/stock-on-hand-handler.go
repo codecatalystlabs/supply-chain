@@ -12,39 +12,51 @@ import (
 )
 
 /* ========= CREATE ========= */
-// @Summary Create stock on hand
+// @Summary Create stock on hand (bulk)
 // @Tags StockOnHand
 // @Accept json
 // @Produce json
-// @Param payload body dto.StockOnHandCreateDTO true "Stock payload"
-// @Success 201 {object} dto.StockOnHandResponseDTO
+// @Param payload body []dto.StockOnHandCreateDTO true "List of stock on hand payloads"
+// @Success 201 {array} dto.StockOnHandResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /stock/on-hand [post]
 func CreateStockOnHand(c *gin.Context) {
-	var payload dto.StockOnHandCreateDTO
+	var payloads []dto.StockOnHandCreateDTO
 
-	if err := c.ShouldBindJSON(&payload); err != nil {
+	if err := c.ShouldBindJSON(&payloads); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	record := models.StockOnHand{
-		SrcSystemCode:   payload.SrcSystemCode,
-		SrcFacilityCode: payload.SrcFacilityCode,
-		SrcProductCode:  payload.SrcProductCode,
-		SrcBatchNumber:  payload.SrcBatchNumber,
-		SrcQuantity:     payload.SrcQuantity,
-		SrcExpiryDate:   payload.SrcExpiryDate,
-		SrcTimestamp:    time.Now(),
-	}
-
-	if err := config.DB.Create(&record).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if len(payloads) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "payload must be a non-empty array"})
 		return
 	}
 
-	c.JSON(http.StatusCreated, mapToStockOnHandResponse(record))
+	now := time.Now()
+	var created []dto.StockOnHandResponseDTO
+
+	for _, payload := range payloads {
+		record := models.StockOnHand{
+			SrcSystemCode:   payload.SrcSystemCode,
+			SrcFacilityCode: payload.SrcFacilityCode,
+			SrcProductCode:  payload.SrcProductCode,
+			SrcBatchNumber:  payload.SrcBatchNumber,
+			SrcQuantity:     payload.SrcQuantity,
+			SrcExpiryDate:   payload.SrcExpiryDate,
+			SrcTimestamp:    now,
+		}
+
+		if err := config.DB.Create(&record).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		created = append(created, mapToStockOnHandResponse(record))
+	}
+
+	c.JSON(http.StatusCreated, created)
 }
 
 /* ========= LIST ========= */

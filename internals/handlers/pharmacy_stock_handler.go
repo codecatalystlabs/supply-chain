@@ -9,34 +9,45 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// @Summary Create pharmacy stock
+// @Summary Create pharmacy stock (bulk)
 // @Tags PharmacyStock
 // @Accept json
 // @Produce json
-// @Param payload body dto.PharmacyStockCreateDTO true "Pharmacy stock payload"
-// @Success 201 {object} dto.PharmacyStockResponseDTO
+// @Param payload body []dto.PharmacyStockCreateDTO true "List of pharmacy stock payloads"
+// @Success 201 {array} dto.PharmacyStockResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /pharmacy-stock [post]
 func CreatePharmacyStock(c *gin.Context) {
-	var payload dto.PharmacyStockCreateDTO
-	if err := c.ShouldBindJSON(&payload); err != nil {
+	var payloads []dto.PharmacyStockCreateDTO
+	if err := c.ShouldBindJSON(&payloads); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	record := models.PharmacyStock{
-		PhaSystemCode:   payload.PhaSystemCode,
-		PhaFacilityCode: payload.PhaFacilityCode,
-		PhaProductCode:  payload.PhaProductCode,
-		PhaBatchNumber:  payload.PhaBatchNumber,
-		PhaQuantity:     payload.PhaQuantity,
-		PhaExpiryDate:   payload.PhaExpiryDate,
-	}
-	if err := config.DB.Create(&record).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
+	if len(payloads) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "payload must be a non-empty array"})
 		return
 	}
-	c.JSON(http.StatusCreated, mapToPharmacyStockResponse(record))
+
+	var created []dto.PharmacyStockResponseDTO
+	for _, payload := range payloads {
+		record := models.PharmacyStock{
+			PhaSystemCode:   payload.PhaSystemCode,
+			PhaFacilityCode: payload.PhaFacilityCode,
+			PhaProductCode:  payload.PhaProductCode,
+			PhaBatchNumber:  payload.PhaBatchNumber,
+			PhaQuantity:     payload.PhaQuantity,
+			PhaExpiryDate:   payload.PhaExpiryDate,
+		}
+		if err := config.DB.Create(&record).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		created = append(created, mapToPharmacyStockResponse(record))
+	}
+
+	c.JSON(http.StatusCreated, created)
 }
 
 // @Summary List pharmacy stock

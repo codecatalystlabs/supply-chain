@@ -28,10 +28,15 @@ func CreateProcurementPlan(c *gin.Context) {
 	}
 
 	plan := models.ProcurementPlan{
-		PlanSystemCode: payload.PlanSystemCode,
-		StoreCode:      payload.StoreCode,
-		CreatedAt:      time.Now(),
-		Notes:          payload.Notes,
+		PlanSystemCode:  payload.PlanSystemCode,
+		StoreCode:       payload.StoreCode,
+		FacilityID:      payload.FacilityID,
+		FinancialYear:   payload.FinancialYear,
+		PlanPeriodType:  payload.PlanPeriodType,
+		PlanPeriodStart: payload.PlanPeriodStart,
+		PlanPeriodEnd:   payload.PlanPeriodEnd,
+		CreatedAt:       time.Now(),
+		Notes:           payload.Notes,
 	}
 
 	if err := config.DB.Create(&plan).Error; err != nil {
@@ -128,11 +133,18 @@ func mapToProcurementPlanResponse(p models.ProcurementPlan, items []models.Procu
 		})
 	}
 	return dto.ProcurementPlanResponseDTO{
-		ID:             p.ID,
-		PlanSystemCode: p.PlanSystemCode,
-		StoreCode:      p.StoreCode,
-		CreatedAt:      p.CreatedAt,
-		Notes:          p.Notes,
-		Items:          itResp,
+		ID:              p.ID,
+		PlanSystemCode:  p.PlanSystemCode,
+		StoreCode:       p.StoreCode,
+		FacilityID:      p.FacilityID,
+		FacilityCode:    p.FacilityCode,
+		FacilityName:    p.FacilityName,
+		FinancialYear:   p.FinancialYear,
+		PlanPeriodType:  p.PlanPeriodType,
+		PlanPeriodStart: p.PlanPeriodStart,
+		PlanPeriodEnd:   p.PlanPeriodEnd,
+		CreatedAt:       p.CreatedAt,
+		Notes:           p.Notes,
+		Items:           itResp,
 	}
 }

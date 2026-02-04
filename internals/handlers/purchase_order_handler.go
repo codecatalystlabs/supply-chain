@@ -14,39 +14,51 @@ import (
 )
 
 /* ========== CREATE PURCHASE ORDER ========== */
-// @Summary Create purchase order
+// @Summary Create purchase orders (bulk)
 // @Tags PurchaseOrder
 // @Accept json
 // @Produce json
-// @Param payload body dto.PurchaseOrderCreateDTO true "Purchase order payload"
-// @Success 201 {object} dto.PurchaseOrderResponseDTO
+// @Param payload body []dto.PurchaseOrderCreateDTO true "List of purchase order payloads"
+// @Success 201 {array} dto.PurchaseOrderResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /purchase-order [post]
 func CreatePurchaseOrder(c *gin.Context) {
-	var input dto.PurchaseOrderCreateDTO
-	if err := c.ShouldBindJSON(&input); err != nil {
+	var inputs []dto.PurchaseOrderCreateDTO
+	if err := c.ShouldBindJSON(&inputs); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	record := models.PurchaseOrder{
-		OrdSystemCode:      input.OrdSystemCode,
-		OrdFacilityCode:    input.OrdFacilityCode,
-		OrdTimestamp:       time.Now(),
-		OrdOrderDate:       input.OrdOrderDate,
-		OrdOrderRefNumber:  input.OrdOrderRefNumber,
-		OrdOrderNumber:     input.OrdOrderNumber,
-		OrdProductCode:     input.OrdProductCode,
-		OrdOrderedQuantity: input.OrdOrderedQuantity,
-	}
-
-	if err := config.DB.Create(&record).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if len(inputs) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "payload must be a non-empty array"})
 		return
 	}
 
-	c.JSON(http.StatusCreated, mapToPurchaseOrderResponse(record))
+	now := time.Now()
+	var created []dto.PurchaseOrderResponseDTO
+
+	for _, input := range inputs {
+		record := models.PurchaseOrder{
+			OrdSystemCode:      input.OrdSystemCode,
+			OrdFacilityCode:    input.OrdFacilityCode,
+			OrdTimestamp:       now,
+			OrdOrderDate:       input.OrdOrderDate,
+			OrdOrderRefNumber:  input.OrdOrderRefNumber,
+			OrdOrderNumber:     input.OrdOrderNumber,
+			OrdProductCode:     input.OrdProductCode,
+			OrdOrderedQuantity: input.OrdOrderedQuantity,
+		}
+
+		if err := config.DB.Create(&record).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		created = append(created, mapToPurchaseOrderResponse(record))
+	}
+
+	c.JSON(http.StatusCreated, created)
 }
 
 /* ========== GET PURCHASE ORDER BY ID ========== */

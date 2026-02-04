@@ -9,39 +9,49 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// @Summary Create stock dispensed
+// @Summary Create stock dispensed (bulk)
 // @Tags StockDispensed
 // @Accept json
 // @Produce json
-// @Param payload body dto.StockDispensedCreateDTO true "Stock dispensed payload"
-// @Success 201 {object} dto.StockDispensedResponseDTO
+// @Param payload body []dto.StockDispensedCreateDTO true "List of stock dispensed payloads"
+// @Success 201 {array} dto.StockDispensedResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /stock/dispensed [post]
 func CreateStockDispensed(c *gin.Context) {
-	var payload dto.StockDispensedCreateDTO
-	if err := c.ShouldBindJSON(&payload); err != nil {
+	var payloads []dto.StockDispensedCreateDTO
+	if err := c.ShouldBindJSON(&payloads); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	record := models.StockDispensed{
-		DspSystemCode:        payload.DspSystemCode,
-		DspFacilityCode:      payload.DspFacilityCode,
-		DspDispenseDate:      payload.DspDispenseDate,
-		DspProductCode:       payload.DspProductCode,
-		DspBatchNumber:       payload.DspBatchNumber,
-		DspDispensedQuantity: payload.DspDispensedQuantity,
-		DspPatientHash:       payload.DspPatientHash,
-		DspExpiryDate:        payload.DspExpiryDate,
-	}
-
-	if err := config.DB.Create(&record).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if len(payloads) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "payload must be a non-empty array"})
 		return
 	}
 
-	c.JSON(http.StatusCreated, mapToStockDispensedResponse(record))
+	var created []dto.StockDispensedResponseDTO
+	for _, payload := range payloads {
+		record := models.StockDispensed{
+			DspSystemCode:        payload.DspSystemCode,
+			DspFacilityCode:      payload.DspFacilityCode,
+			DspDispenseDate:      payload.DspDispenseDate,
+			DspProductCode:       payload.DspProductCode,
+			DspBatchNumber:       payload.DspBatchNumber,
+			DspDispensedQuantity: payload.DspDispensedQuantity,
+			DspPatientHash:       payload.DspPatientHash,
+			DspExpiryDate:        payload.DspExpiryDate,
+		}
+
+		if err := config.DB.Create(&record).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		created = append(created, mapToStockDispensedResponse(record))
+	}
+
+	c.JSON(http.StatusCreated, created)
 }
 
 // @Summary List stock dispensed

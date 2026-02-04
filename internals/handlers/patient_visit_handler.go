@@ -10,43 +10,54 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// @Summary Create patient visit
+// @Summary Create patient visits (bulk)
 // @Tags PatientVisit
 // @Accept json
 // @Produce json
-// @Param payload body dto.PatientVisitCreateDTO true "Patient visit payload"
-// @Success 201 {object} dto.PatientVisitResponseDTO
+// @Param payload body []dto.PatientVisitCreateDTO true "List of patient visit payloads"
+// @Success 201 {array} dto.PatientVisitResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /patient-visit [post]
 func CreatePatientVisit(c *gin.Context) {
-	var payload dto.PatientVisitCreateDTO
-	if err := c.ShouldBindJSON(&payload); err != nil {
+	var payloads []dto.PatientVisitCreateDTO
+	if err := c.ShouldBindJSON(&payloads); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	record := models.PatientVisit{
-		VstSystemCode:      payload.VstSystemCode,
-		VstFacilityCode:    payload.VstFacilityCode,
-		VstTimestamp:       time.Now(),
-		VstVisitDate:       payload.VstVisitDate,
-		VstPatientCode:     payload.VstPatientCode,
-		VstSex:             payload.VstSex,
-		VstAge:             payload.VstAge,
-		VstProductCode:     payload.VstProductCode,
-		VstBatchNumber:     payload.VstBatchNumber,
-		VstQuantity:        payload.VstQuantity,
-		VstRegimenCode:     payload.VstRegimenCode,
-		VstPatientCategory: payload.VstPatientCategory,
-	}
-
-	if err := config.DB.Create(&record).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if len(payloads) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "payload must be a non-empty array"})
 		return
 	}
 
-	c.JSON(http.StatusCreated, mapToPatientVisitResponse(record))
+	now := time.Now()
+	var created []dto.PatientVisitResponseDTO
+	for _, payload := range payloads {
+		record := models.PatientVisit{
+			VstSystemCode:      payload.VstSystemCode,
+			VstFacilityCode:    payload.VstFacilityCode,
+			VstTimestamp:       now,
+			VstVisitDate:       payload.VstVisitDate,
+			VstPatientCode:     payload.VstPatientCode,
+			VstSex:             payload.VstSex,
+			VstAge:             payload.VstAge,
+			VstProductCode:     payload.VstProductCode,
+			VstBatchNumber:     payload.VstBatchNumber,
+			VstQuantity:        payload.VstQuantity,
+			VstRegimenCode:     payload.VstRegimenCode,
+			VstPatientCategory: payload.VstPatientCategory,
+		}
+
+		if err := config.DB.Create(&record).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		created = append(created, mapToPatientVisitResponse(record))
+	}
+
+	c.JSON(http.StatusCreated, created)
 }
 
 // @Summary List patient visits
@@ -54,7 +65,7 @@ func CreatePatientVisit(c *gin.Context) {
 // @Produce json
 // @Success 200 {array} dto.PatientVisitResponseDTO
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/patient-visit [get]
+// @Router /patient-visit [get]
 func ListPatientVisits(c *gin.Context) {
 	var records []models.PatientVisit
 	if err := config.DB.Find(&records).Error; err != nil {
@@ -74,7 +85,7 @@ func ListPatientVisits(c *gin.Context) {
 // @Param id path int true "Patient Visit ID"
 // @Success 200 {object} dto.PatientVisitResponseDTO
 // @Failure 404 {object} map[string]string
-// @Router /api/v1/patient-visit/{id} [get]
+// @Router /patient-visit/{id} [get]
 func GetPatientVisit(c *gin.Context) {
 	id := c.Param("id")
 	var record models.PatientVisit
@@ -95,7 +106,7 @@ func GetPatientVisit(c *gin.Context) {
 // @Failure 400 {object} map[string]string
 // @Failure 404 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/patient-visit/{id} [put]
+// @Router /patient-visit/{id} [put]
 func UpdatePatientVisit(c *gin.Context) {
 	id := c.Param("id")
 	var payload dto.PatientVisitUpdateDTO
@@ -124,7 +135,7 @@ func UpdatePatientVisit(c *gin.Context) {
 // @Param id path int true "Patient Visit ID"
 // @Success 200 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/v1/patient-visit/{id} [delete]
+// @Router /patient-visit/{id} [delete]
 func DeletePatientVisit(c *gin.Context) {
 	id := c.Param("id")
 	if err := config.DB.Delete(&models.PatientVisit{}, id).Error; err != nil {

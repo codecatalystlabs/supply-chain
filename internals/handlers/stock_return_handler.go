@@ -9,39 +9,49 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// @Summary Create stock return
+// @Summary Create stock returns (bulk)
 // @Tags StockReturn
 // @Accept json
 // @Produce json
-// @Param payload body dto.StockReturnCreateDTO true "Stock return payload"
-// @Success 201 {object} dto.StockReturnResponseDTO
+// @Param payload body []dto.StockReturnCreateDTO true "List of stock return payloads"
+// @Success 201 {array} dto.StockReturnResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
 // @Router /stock/return [post]
 func CreateStockReturn(c *gin.Context) {
-	var payload dto.StockReturnCreateDTO
-	if err := c.ShouldBindJSON(&payload); err != nil {
+	var payloads []dto.StockReturnCreateDTO
+	if err := c.ShouldBindJSON(&payloads); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	record := models.StockReturn{
-		RtnSystemCode:   payload.RtnSystemCode,
-		RtnFacilityCode: payload.RtnFacilityCode,
-		RtnReturnDate:   payload.RtnReturnDate,
-		RtnReturnNumber: payload.RtnReturnNumber,
-		RtnProductCode:  payload.RtnProductCode,
-		RtnBatchNumber:  payload.RtnBatchNumber,
-		RtnUnitCode:     payload.RtnUnitCode,
-		RtnQuantity:     payload.RtnQuantity,
-	}
-
-	if err := config.DB.Create(&record).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if len(payloads) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "payload must be a non-empty array"})
 		return
 	}
 
-	c.JSON(http.StatusCreated, mapToStockReturnResponse(record))
+	var created []dto.StockReturnResponseDTO
+	for _, payload := range payloads {
+		record := models.StockReturn{
+			RtnSystemCode:   payload.RtnSystemCode,
+			RtnFacilityCode: payload.RtnFacilityCode,
+			RtnReturnDate:   payload.RtnReturnDate,
+			RtnReturnNumber: payload.RtnReturnNumber,
+			RtnProductCode:  payload.RtnProductCode,
+			RtnBatchNumber:  payload.RtnBatchNumber,
+			RtnUnitCode:     payload.RtnUnitCode,
+			RtnQuantity:     payload.RtnQuantity,
+		}
+
+		if err := config.DB.Create(&record).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		created = append(created, mapToStockReturnResponse(record))
+	}
+
+	c.JSON(http.StatusCreated, created)
 }
 
 // @Summary List stock returns

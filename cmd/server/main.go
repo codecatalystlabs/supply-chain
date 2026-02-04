@@ -152,7 +152,6 @@ func main() {
 	// Pharmacies
 	pharmacies := router.Group("/api/v1/pharmacies")
 	{
-		pharmacies.POST("/", handlers.CreatePharmacy)
 		pharmacies.GET("/", handlers.ListPharmacies)
 		pharmacies.GET("/:id", handlers.GetPharmacy)
 		pharmacies.PUT("/:id", handlers.UpdatePharmacy)
