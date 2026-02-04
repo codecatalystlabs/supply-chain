@@ -76,6 +76,14 @@ func ListFacilities(c *gin.Context) {
 	var facilities []models.Facility
 	query := config.DB
 
+	// Apply facility filter if user is facility-scoped
+	if user, exists := c.Get("user"); exists {
+		u := user.(*models.User)
+		if u.FacilityID != nil && !u.HasRole("super_admin") {
+			query = query.Where("id = ?", *u.FacilityID)
+		}
+	}
+
 	// Apply filters
 	if active := c.Query("active"); active != "" {
 		if active == "true" {

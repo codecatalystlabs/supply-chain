@@ -2,6 +2,7 @@ package config
 
 import (
 	"log"
+	"strings"
 	"time"
 
 	"supply-chain/internals/models"
@@ -9,19 +10,47 @@ import (
 
 // SeedDatabase populates the database with comprehensive sample data
 func SeedDatabase() {
-	log.Println("🌱 Seeding database with comprehensive data...")
+	log.Println("🌱 ========================================")
+	log.Println("🌱 SEEDING DATABASE - STARTING")
+	log.Println("🌱 ========================================")
+
+	// Wrap in recover to catch any panics
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("❌ PANIC during seeding: %v", r)
+		}
+		log.Println("🌱 ========================================")
+		log.Println("🌱 SEEDING DATABASE - COMPLETED")
+		log.Println("🌱 ========================================")
+	}()
+
+	// Check if DB is initialized
+	if DB == nil {
+		log.Println("❌ ERROR: Database connection is nil! Cannot seed.")
+		return
+	}
+	log.Println("✅ Database connection verified")
+
+	// RBAC (must be seeded first) - this includes all relationship seeding
+	// NOTE: All RBAC seeding functions are defined below in this file.
+	// A reference implementation also exists in internals/seeder/rbac_seeder.go
+	log.Println("📋 Starting RBAC seeding...")
+	seedRBAC()
 
 	// Core entities (must be seeded first)
+	log.Println("📋 Starting core entities seeding...")
 	seedWarehouses()
 	seedFacilities()
 	seedPharmacies()
 	seedEMRIntegrations()
 
 	// Procurement and orders
+	log.Println("📋 Starting procurement and orders seeding...")
 	seedProcurementPlans()
 	seedFacilityOrders()
 
 	// Stock management
+	log.Println("📋 Starting stock management seeding...")
 	seedStockOnHand()
 	seedPharmacyStock()
 	seedStockAdjustments()
@@ -31,15 +60,749 @@ func SeedDatabase() {
 	seedGoodsReceipts()
 
 	// Other data
+	log.Println("📋 Starting other data seeding...")
 	seedPurchaseOrders()
 	seedProductAmc()
 	seedPatientVisits()
 
 	// Legacy data
+	log.Println("📋 Starting legacy data seeding...")
 	seedWarehouseOrders()
 	seedWarehouseDeliveries()
 
+	// Final summary
+	log.Println("")
+	log.Println("🌱 ========================================")
+	log.Println("🌱 SEEDING SUMMARY")
+	log.Println("🌱 ========================================")
+
+	// Count all seeded data
+	var roleCount, permCount, userCount int64
+	var facilityCount, warehouseCount, pharmacyCount int64
+	var stockOnHandCount, stockDispensedCount int64
+	var procurementPlanCount, purchaseOrderCount int64
+	var rolePermCount, userRoleCount, userPermCount int64
+
+	DB.Model(&models.Role{}).Count(&roleCount)
+	DB.Model(&models.Permission{}).Count(&permCount)
+	DB.Model(&models.User{}).Count(&userCount)
+	DB.Model(&models.Facility{}).Count(&facilityCount)
+	DB.Model(&models.Warehouse{}).Count(&warehouseCount)
+	DB.Model(&models.Pharmacy{}).Count(&pharmacyCount)
+	DB.Model(&models.StockOnHand{}).Count(&stockOnHandCount)
+	DB.Model(&models.StockDispensed{}).Count(&stockDispensedCount)
+	DB.Model(&models.ProcurementPlan{}).Count(&procurementPlanCount)
+	DB.Model(&models.PurchaseOrder{}).Count(&purchaseOrderCount)
+
+	// Count join tables (CRITICAL for RBAC to work!)
+	DB.Table("role_permissions").Count(&rolePermCount)
+	DB.Table("user_roles").Count(&userRoleCount)
+	DB.Table("user_permissions").Count(&userPermCount)
+
+	log.Printf("✅ RBAC: %d roles, %d permissions, %d users", roleCount, permCount, userCount)
+	log.Printf("🔗 RBAC Join Tables: %d role_permissions, %d user_roles, %d user_permissions", rolePermCount, userRoleCount, userPermCount)
+	if rolePermCount == 0 || userRoleCount == 0 {
+		log.Println("⚠️  WARNING: Join tables are empty! RBAC will not work!")
+		log.Println("⚠️  Check the RBAC seeding logs above for errors.")
+	}
+	log.Printf("✅ Core: %d facilities, %d warehouses, %d pharmacies", facilityCount, warehouseCount, pharmacyCount)
+	log.Printf("✅ Stock: %d on-hand records, %d dispensed records", stockOnHandCount, stockDispensedCount)
+	log.Printf("✅ Orders: %d procurement plans, %d purchase orders", procurementPlanCount, purchaseOrderCount)
+	log.Println("🌱 ========================================")
 	log.Println("✅ Database seeding completed successfully")
+}
+
+// seedRBAC seeds roles and permissions
+// NOTE: A reference implementation also exists in internals/seeder/rbac_seeder.go
+// This version is kept here to avoid circular import issues
+func seedRBAC() {
+	log.Println("🔐 seedRBAC() function called")
+
+	// Check DB connection
+	if DB == nil {
+		log.Println("❌ ERROR: DB is nil in seedRBAC!")
+		return
+	}
+	log.Println("✅ DB connection is not nil")
+
+	// Test database connection with a simple query BEFORE defining array
+	log.Println("🔍 Testing database connection with simple query...")
+	var testCount int64
+	if err := DB.Model(&models.Permission{}).Count(&testCount).Error; err != nil {
+		log.Printf("❌ Database test query failed: %v", err)
+		return
+	}
+	log.Printf("✅ Database connection test passed (found %d existing permissions)", testCount)
+
+	// Create Permissions
+	log.Println("📝 Creating permissions...")
+	log.Println("📝 About to define permissions array...")
+
+	permissions := []models.Permission{
+		// Facilities
+		{Name: "facilities.read", DisplayName: "View Facilities", Resource: "facilities", Action: "read"},
+		{Name: "facilities.create", DisplayName: "Create Facilities", Resource: "facilities", Action: "create"},
+		{Name: "facilities.update", DisplayName: "Update Facilities", Resource: "facilities", Action: "update"},
+		{Name: "facilities.delete", DisplayName: "Delete Facilities", Resource: "facilities", Action: "delete"},
+
+		// Warehouses
+		{Name: "warehouses.read", DisplayName: "View Warehouses", Resource: "warehouses", Action: "read"},
+		{Name: "warehouses.create", DisplayName: "Create Warehouses", Resource: "warehouses", Action: "create"},
+		{Name: "warehouses.update", DisplayName: "Update Warehouses", Resource: "warehouses", Action: "update"},
+		{Name: "warehouses.delete", DisplayName: "Delete Warehouses", Resource: "warehouses", Action: "delete"},
+
+		// Pharmacies
+		{Name: "pharmacies.read", DisplayName: "View Pharmacies", Resource: "pharmacies", Action: "read"},
+		{Name: "pharmacies.create", DisplayName: "Create Pharmacies", Resource: "pharmacies", Action: "create"},
+		{Name: "pharmacies.update", DisplayName: "Update Pharmacies", Resource: "pharmacies", Action: "update"},
+		{Name: "pharmacies.delete", DisplayName: "Delete Pharmacies", Resource: "pharmacies", Action: "delete"},
+
+		// Procurement Plans
+		{Name: "procurement_plans.read", DisplayName: "View Procurement Plans", Resource: "procurement_plans", Action: "read"},
+		{Name: "procurement_plans.create", DisplayName: "Create Procurement Plans", Resource: "procurement_plans", Action: "create"},
+		{Name: "procurement_plans.update", DisplayName: "Update Procurement Plans", Resource: "procurement_plans", Action: "update"},
+		{Name: "procurement_plans.delete", DisplayName: "Delete Procurement Plans", Resource: "procurement_plans", Action: "delete"},
+
+		// Purchase Orders
+		{Name: "purchase_orders.read", DisplayName: "View Purchase Orders", Resource: "purchase_orders", Action: "read"},
+		{Name: "purchase_orders.create", DisplayName: "Create Purchase Orders", Resource: "purchase_orders", Action: "create"},
+		{Name: "purchase_orders.update", DisplayName: "Update Purchase Orders", Resource: "purchase_orders", Action: "update"},
+		{Name: "purchase_orders.delete", DisplayName: "Delete Purchase Orders", Resource: "purchase_orders", Action: "delete"},
+
+		// Stock Management
+		{Name: "stock.read", DisplayName: "View Stock", Resource: "stock", Action: "read"},
+		{Name: "stock.create", DisplayName: "Create Stock", Resource: "stock", Action: "create"},
+		{Name: "stock.update", DisplayName: "Update Stock", Resource: "stock", Action: "update"},
+		{Name: "stock.delete", DisplayName: "Delete Stock", Resource: "stock", Action: "delete"},
+		{Name: "stock.transfer", DisplayName: "Transfer Stock", Resource: "stock", Action: "transfer"},
+		{Name: "stock.adjust", DisplayName: "Adjust Stock", Resource: "stock", Action: "adjust"},
+
+		// Patient Visits
+		{Name: "patient_visits.read", DisplayName: "View Patient Visits", Resource: "patient_visits", Action: "read"},
+		{Name: "patient_visits.create", DisplayName: "Create Patient Visits", Resource: "patient_visits", Action: "create"},
+
+		// Reports
+		{Name: "reports.read", DisplayName: "View Reports", Resource: "reports", Action: "read"},
+
+		// Administration
+		{Name: "admin.users", DisplayName: "Manage Users", Resource: "admin", Action: "users"},
+		{Name: "admin.roles", DisplayName: "Manage Roles", Resource: "admin", Action: "roles"},
+	}
+
+	log.Println("✅ Permissions array definition complete")
+	log.Printf("✅ Permissions array defined with %d items", len(permissions))
+	log.Printf("📊 Total permissions to create: %d", len(permissions))
+	log.Println("🔄 Starting permission creation loop...")
+
+	// Test DB connection before loop
+	if err := DB.Exec("SELECT 1").Error; err != nil {
+		log.Printf("❌ Database connection test failed: %v", err)
+		return
+	}
+	log.Println("✅ Database connection test passed")
+
+	permCount := 0
+	existingCount := 0
+	errorCount := 0
+
+	for i, perm := range permissions {
+		log.Printf("  [%d/%d] Processing permission: %s", i+1, len(permissions), perm.Name)
+
+		var existing models.Permission
+		result := DB.Where("name = ?", perm.Name).First(&existing)
+
+		if result.Error != nil {
+			// Permission doesn't exist, create it
+			log.Printf("    → Permission not found, creating...")
+			if err := DB.Create(&perm).Error; err != nil {
+				errorCount++
+				log.Printf("    ❌ Failed to create permission %s: %v", perm.Name, err)
+			} else {
+				permCount++
+				log.Printf("    ✅ Created permission: %s", perm.Name)
+			}
+		} else {
+			existingCount++
+			log.Printf("    ℹ️  Permission already exists: %s (ID: %d)", perm.Name, existing.ID)
+		}
+	}
+
+	log.Printf("✅ Permission seeding complete: %d created, %d already existed, %d errors (total: %d)",
+		permCount, existingCount, errorCount, len(permissions))
+
+	// Create Roles
+	roles := []struct {
+		role        models.Role
+		permissions []string
+	}{
+		{
+			role: models.Role{
+				Name:        "super_admin",
+				DisplayName: "Super Administrator",
+				Description: stringPtr("Full system access"),
+			},
+			permissions: []string{}, // All permissions
+		},
+		{
+			role: models.Role{
+				Name:        "admin",
+				DisplayName: "Administrator",
+				Description: stringPtr("Administrative access"),
+			},
+			permissions: []string{
+				"facilities.read", "facilities.create", "facilities.update", "facilities.delete",
+				"warehouses.read", "warehouses.create", "warehouses.update", "warehouses.delete",
+				"pharmacies.read", "pharmacies.create", "pharmacies.update", "pharmacies.delete",
+				"procurement_plans.read", "procurement_plans.create", "procurement_plans.update",
+				"purchase_orders.read", "purchase_orders.create", "purchase_orders.update",
+				"stock.read", "stock.create", "stock.update", "stock.transfer", "stock.adjust",
+				"patient_visits.read", "reports.read",
+				"admin.users", "admin.roles",
+			},
+		},
+		{
+			role: models.Role{
+				Name:        "procurement_officer",
+				DisplayName: "Procurement Officer",
+				Description: stringPtr("Manages procurement and orders"),
+			},
+			permissions: []string{
+				"facilities.read", "warehouses.read",
+				"procurement_plans.read", "procurement_plans.create", "procurement_plans.update",
+				"purchase_orders.read", "purchase_orders.create", "purchase_orders.update",
+				"reports.read",
+			},
+		},
+		{
+			role: models.Role{
+				Name:        "warehouse_manager",
+				DisplayName: "Warehouse Manager",
+				Description: stringPtr("Manages warehouse operations"),
+			},
+			permissions: []string{
+				"warehouses.read", "warehouses.update",
+				"stock.read", "stock.create", "stock.update", "stock.transfer", "stock.adjust",
+				"purchase_orders.read",
+				"reports.read",
+			},
+		},
+		{
+			role: models.Role{
+				Name:        "pharmacist",
+				DisplayName: "Pharmacist",
+				Description: stringPtr("Manages pharmacy operations"),
+			},
+			permissions: []string{
+				"pharmacies.read",
+				"stock.read", "stock.create", "stock.update",
+				"patient_visits.read", "patient_visits.create",
+			},
+		},
+		{
+			role: models.Role{
+				Name:        "viewer",
+				DisplayName: "Viewer",
+				Description: stringPtr("Read-only access"),
+			},
+			permissions: []string{
+				"facilities.read", "warehouses.read", "pharmacies.read",
+				"procurement_plans.read", "purchase_orders.read",
+				"stock.read", "patient_visits.read", "reports.read",
+			},
+		},
+	}
+
+	roleCount := 0
+	for _, r := range roles {
+		var existing models.Role
+		result := DB.Where("name = ?", r.role.Name).First(&existing)
+		if result.Error != nil {
+			// Role doesn't exist, create it
+			if err := DB.Create(&r.role).Error; err != nil {
+				log.Printf("❌ Failed to create role %s: %v", r.role.Name, err)
+				continue
+			}
+			roleCount++
+			log.Printf("✅ Created role: %s", r.role.Name)
+		} else {
+			r.role = existing
+			log.Printf("ℹ️  Role already exists: %s", r.role.Name)
+		}
+
+		// Assign permissions to role using direct SQL to set created_at
+		var permsToAssign []models.Permission
+		if r.role.Name == "super_admin" {
+			// Super admin gets all permissions
+			DB.Find(&permsToAssign)
+		} else {
+			for _, permName := range r.permissions {
+				var perm models.Permission
+				if err := DB.Where("name = ?", permName).First(&perm).Error; err == nil {
+					permsToAssign = append(permsToAssign, perm)
+				}
+			}
+		}
+
+		if len(permsToAssign) > 0 {
+			// Clear existing permissions for this role
+			DB.Exec("DELETE FROM role_permissions WHERE role_id = ?", r.role.ID)
+
+			// Insert new ones with created_at
+			now := time.Now()
+			for _, perm := range permsToAssign {
+				DB.Exec(
+					"INSERT INTO role_permissions (role_id, permission_id, created_at) VALUES (?, ?, ?) ON CONFLICT (role_id, permission_id) DO NOTHING",
+					r.role.ID, perm.ID, now,
+				)
+			}
+			log.Printf("✅ Assigned %d permissions to role %s", len(permsToAssign), r.role.Name)
+		}
+	}
+	log.Printf("✅ Created/verified %d roles", roleCount)
+
+	// Create default admin user
+	var userCount int64
+	if err := DB.Model(&models.User{}).Count(&userCount).Error; err != nil {
+		log.Printf("❌ Error counting users: %v", err)
+	}
+
+	log.Printf("📊 Current user count: %d", userCount)
+
+	if userCount == 0 {
+		log.Println("👤 Creating admin user...")
+		adminUser := models.User{
+			Username:  "admin",
+			Email:     "admin@moh.go.ug",
+			FirstName: "System",
+			LastName:  "Administrator",
+			IsActive:  true,
+		}
+		if err := adminUser.SetPassword("admin123"); err != nil {
+			log.Printf("❌ Failed to set admin password: %v", err)
+		} else {
+			if err := DB.Create(&adminUser).Error; err != nil {
+				log.Printf("❌ Failed to create admin user: %v", err)
+			} else {
+				log.Printf("✅ Created admin user: %s (ID: %d)", adminUser.Username, adminUser.ID)
+				// Assign ALL roles to admin user using direct SQL
+				var allRoles []models.Role
+				if err := DB.Find(&allRoles).Error; err == nil {
+					// Clear existing roles
+					DB.Exec("DELETE FROM user_roles WHERE user_id = ?", adminUser.ID)
+
+					// Insert all roles with created_at
+					now := time.Now()
+					for _, role := range allRoles {
+						DB.Exec(
+							"INSERT INTO user_roles (user_id, role_id, created_at) VALUES (?, ?, ?) ON CONFLICT (user_id, role_id) DO NOTHING",
+							adminUser.ID, role.ID, now,
+						)
+					}
+					log.Printf("✅ Assigned all %d roles to admin user", len(allRoles))
+				} else {
+					log.Printf("❌ Failed to fetch roles: %v", err)
+				}
+			}
+		}
+	} else {
+		log.Println("👤 Admin user already exists, updating roles...")
+		// Update existing admin user to have all roles using direct SQL
+		var adminUser models.User
+		if err := DB.Where("username = ?", "admin").First(&adminUser).Error; err == nil {
+			var allRoles []models.Role
+			if err := DB.Find(&allRoles).Error; err == nil {
+				// Clear existing roles
+				DB.Exec("DELETE FROM user_roles WHERE user_id = ?", adminUser.ID)
+
+				// Insert all roles with created_at
+				now := time.Now()
+				for _, role := range allRoles {
+					DB.Exec(
+						"INSERT INTO user_roles (user_id, role_id, created_at) VALUES (?, ?, ?) ON CONFLICT (user_id, role_id) DO NOTHING",
+						adminUser.ID, role.ID, now,
+					)
+				}
+				log.Printf("✅ Updated admin user with all %d roles", len(allRoles))
+			} else {
+				log.Printf("❌ Failed to fetch roles for update: %v", err)
+			}
+		} else {
+			log.Printf("❌ Failed to find admin user: %v", err)
+		}
+	}
+
+	log.Println("✅ RBAC data seeded")
+
+	// Verify data exists before seeding relationships
+	var roleCheck []models.Role
+	var permCheck []models.Permission
+	DB.Find(&roleCheck)
+	DB.Find(&permCheck)
+	log.Printf("📊 Verification: Found %d roles and %d permissions in database", len(roleCheck), len(permCheck))
+
+	// Seed role permissions, user roles, and user permissions
+	// CRITICAL: These must run for RBAC to work!
+	log.Println("")
+	log.Println("🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗")
+	log.Println("🔗 STARTING JOIN TABLE SEEDING - CRITICAL FOR RBAC!")
+	log.Println("🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗")
+	log.Println("📞 STEP 1: Calling seedRolePermissions()...")
+	seedRolePermissions()
+	log.Println("📞 STEP 1: seedRolePermissions() completed")
+
+	log.Println("📞 STEP 2: Calling seedUserRoles()...")
+	seedUserRoles()
+	log.Println("📞 STEP 2: seedUserRoles() completed")
+
+	log.Println("📞 STEP 3: Calling seedUserPermissions()...")
+	seedUserPermissions()
+	log.Println("📞 STEP 3: seedUserPermissions() completed")
+	log.Println("🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗")
+	log.Println("🔗 JOIN TABLE SEEDING COMPLETED")
+	log.Println("🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗")
+	log.Println("")
+
+	// Final verification and summary
+	var finalRoles []models.Role
+	var finalPerms []models.Permission
+	var finalUsers []models.User
+	DB.Find(&finalRoles)
+	DB.Find(&finalPerms)
+	DB.Find(&finalUsers)
+	log.Printf("✅ RBAC seeding completed: %d roles, %d permissions, %d users", len(finalRoles), len(finalPerms), len(finalUsers))
+
+	// Verify join tables were populated
+	var rolePermCount, userRoleCount, userPermCount int64
+	DB.Table("role_permissions").Count(&rolePermCount)
+	DB.Table("user_roles").Count(&userRoleCount)
+	DB.Table("user_permissions").Count(&userPermCount)
+	log.Printf("📊 Join tables: %d role_permissions, %d user_roles, %d user_permissions", rolePermCount, userRoleCount, userPermCount)
+
+	if rolePermCount == 0 {
+		log.Println("⚠️ WARNING: role_permissions table is empty!")
+	}
+	if userRoleCount == 0 {
+		log.Println("⚠️ WARNING: user_roles table is empty!")
+	}
+	if userPermCount == 0 {
+		log.Println("⚠️ WARNING: user_permissions table is empty!")
+	}
+}
+
+// seedRolePermissions assigns permissions to roles (RolePermission join table)
+func seedRolePermissions() {
+	log.Println("🌱 ========================================")
+	log.Println("🌱 Seeding role permissions (RolePermission relationships)...")
+	log.Println("🌱 ========================================")
+
+	// Get all roles and permissions
+	var roles []models.Role
+	var permissions []models.Permission
+	if err := DB.Find(&roles).Error; err != nil {
+		log.Printf("❌ Error loading roles: %v", err)
+		log.Println("❌ seedRolePermissions() ABORTED due to error loading roles")
+		return
+	}
+	if err := DB.Find(&permissions).Error; err != nil {
+		log.Printf("❌ Error loading permissions: %v", err)
+		log.Println("❌ seedRolePermissions() ABORTED due to error loading permissions")
+		return
+	}
+
+	if len(roles) == 0 || len(permissions) == 0 {
+		log.Printf("⚠️ No roles or permissions found (roles: %d, permissions: %d), skipping role permission seeding", len(roles), len(permissions))
+		log.Println("⚠️ seedRolePermissions() ABORTED - no data to seed")
+		return
+	}
+
+	log.Printf("📊 Found %d roles and %d permissions to assign", len(roles), len(permissions))
+
+	// Create permission map for quick lookup
+	permMap := make(map[string]models.Permission)
+	for _, p := range permissions {
+		permMap[p.Name] = p
+	}
+
+	// Helper function to safely get permission from map
+	getPerm := func(name string) models.Permission {
+		if perm, ok := permMap[name]; ok && perm.ID != 0 {
+			return perm
+		}
+		return models.Permission{}
+	}
+
+	// Assign permissions to each role based on role name
+	for _, role := range roles {
+		var permsToAssign []models.Permission
+
+		switch role.Name {
+		case "super_admin":
+			// Super admin gets ALL permissions
+			permsToAssign = permissions
+		case "admin":
+			// Admin gets most permissions
+			permNames := []string{
+				"facilities.read", "facilities.create", "facilities.update", "facilities.delete",
+				"warehouses.read", "warehouses.create", "warehouses.update", "warehouses.delete",
+				"pharmacies.read", "pharmacies.create", "pharmacies.update", "pharmacies.delete",
+				"procurement_plans.read", "procurement_plans.create", "procurement_plans.update", "procurement_plans.delete",
+				"purchase_orders.read", "purchase_orders.create", "purchase_orders.update", "purchase_orders.delete",
+				"stock.read", "stock.create", "stock.update", "stock.delete", "stock.transfer", "stock.adjust",
+				"patient_visits.read", "patient_visits.create",
+				"reports.read",
+				"admin.users", "admin.roles",
+			}
+			for _, name := range permNames {
+				if perm := getPerm(name); perm.ID != 0 {
+					permsToAssign = append(permsToAssign, perm)
+				}
+			}
+		case "procurement_officer":
+			permNames := []string{
+				"facilities.read", "warehouses.read",
+				"procurement_plans.read", "procurement_plans.create", "procurement_plans.update",
+				"purchase_orders.read", "purchase_orders.create", "purchase_orders.update",
+				"reports.read",
+			}
+			for _, name := range permNames {
+				if perm := getPerm(name); perm.ID != 0 {
+					permsToAssign = append(permsToAssign, perm)
+				}
+			}
+		case "warehouse_manager":
+			permNames := []string{
+				"warehouses.read", "warehouses.update",
+				"stock.read", "stock.create", "stock.update", "stock.transfer", "stock.adjust",
+				"purchase_orders.read",
+				"reports.read",
+			}
+			for _, name := range permNames {
+				if perm := getPerm(name); perm.ID != 0 {
+					permsToAssign = append(permsToAssign, perm)
+				}
+			}
+		case "pharmacist":
+			permNames := []string{
+				"pharmacies.read",
+				"stock.read", "stock.create", "stock.update",
+				"patient_visits.read", "patient_visits.create",
+			}
+			for _, name := range permNames {
+				if perm := getPerm(name); perm.ID != 0 {
+					permsToAssign = append(permsToAssign, perm)
+				}
+			}
+		case "viewer":
+			permNames := []string{
+				"facilities.read", "warehouses.read", "pharmacies.read",
+				"procurement_plans.read", "purchase_orders.read",
+				"stock.read", "patient_visits.read", "reports.read",
+			}
+			for _, name := range permNames {
+				if perm := getPerm(name); perm.ID != 0 {
+					permsToAssign = append(permsToAssign, perm)
+				}
+			}
+		}
+
+		// Insert permissions directly into role_permissions table with created_at
+		if len(permsToAssign) > 0 {
+			log.Printf("  → Assigning %d permissions to role '%s'...", len(permsToAssign), role.Name)
+
+			// First, clear existing permissions for this role
+			DB.Exec("DELETE FROM role_permissions WHERE role_id = ?", role.ID)
+
+			// Then insert new ones with created_at
+			now := time.Now()
+			for _, perm := range permsToAssign {
+				if err := DB.Exec(
+					"INSERT INTO role_permissions (role_id, permission_id, created_at) VALUES (?, ?, ?) ON CONFLICT (role_id, permission_id) DO NOTHING",
+					role.ID, perm.ID, now,
+				).Error; err != nil {
+					log.Printf("    ⚠️ Failed to insert role_permission for role %s, permission %s: %v", role.Name, perm.Name, err)
+				}
+			}
+
+			// Verify
+			var verifyPerms []models.Permission
+			DB.Model(&role).Association("Permissions").Find(&verifyPerms)
+			log.Printf("    ✅ Successfully assigned %d permissions to role: %s (verified: %d)", len(permsToAssign), role.Name, len(verifyPerms))
+		} else {
+			log.Printf("  ⚠️ No valid permissions found for role: %s", role.Name)
+		}
+	}
+
+	// Final count
+	var finalCount int64
+	DB.Table("role_permissions").Count(&finalCount)
+	log.Printf("✅ Role permissions seeded: %d total role_permission records", finalCount)
+}
+
+// seedUserRoles assigns roles to users (UserRole join table)
+func seedUserRoles() {
+	log.Println("🌱 ========================================")
+	log.Println("🌱 Seeding user roles (UserRole relationships)...")
+	log.Println("🌱 ========================================")
+
+	var users []models.User
+	var roles []models.Role
+	if err := DB.Find(&users).Error; err != nil {
+		log.Printf("❌ Error loading users: %v", err)
+		log.Println("❌ seedUserRoles() ABORTED due to error loading users")
+		return
+	}
+	if err := DB.Find(&roles).Error; err != nil {
+		log.Printf("❌ Error loading roles: %v", err)
+		log.Println("❌ seedUserRoles() ABORTED due to error loading roles")
+		return
+	}
+
+	if len(users) == 0 || len(roles) == 0 {
+		log.Printf("⚠️ No users or roles found (users: %d, roles: %d), skipping user role seeding", len(users), len(roles))
+		log.Println("⚠️ seedUserRoles() ABORTED - no data to seed")
+		return
+	}
+
+	log.Printf("📊 Found %d users and %d roles to assign", len(users), len(roles))
+
+	// Create role map
+	roleMap := make(map[string]models.Role)
+	for _, r := range roles {
+		roleMap[r.Name] = r
+	}
+
+	// Assign roles to users based on username
+	for _, user := range users {
+		var rolesToAssign []models.Role
+
+		switch user.Username {
+		case "admin":
+			// Admin user gets ALL roles
+			rolesToAssign = roles
+			log.Printf("🔑 Admin user found, assigning all %d roles", len(roles))
+		default:
+			// Other users get viewer role by default (can be customized)
+			if viewerRole, ok := roleMap["viewer"]; ok {
+				rolesToAssign = []models.Role{viewerRole}
+			}
+		}
+
+		// Insert roles directly into user_roles table with created_at
+		if len(rolesToAssign) > 0 {
+			log.Printf("  → Assigning %d roles to user '%s'...", len(rolesToAssign), user.Username)
+
+			// First, clear existing roles for this user
+			DB.Exec("DELETE FROM user_roles WHERE user_id = ?", user.ID)
+
+			// Then insert new ones with created_at
+			now := time.Now()
+			for _, role := range rolesToAssign {
+				if err := DB.Exec(
+					"INSERT INTO user_roles (user_id, role_id, created_at) VALUES (?, ?, ?) ON CONFLICT (user_id, role_id) DO NOTHING",
+					user.ID, role.ID, now,
+				).Error; err != nil {
+					log.Printf("    ⚠️ Failed to insert user_role for user %s, role %s: %v", user.Username, role.Name, err)
+				}
+			}
+
+			// Verify
+			roleNames := make([]string, len(rolesToAssign))
+			for i, r := range rolesToAssign {
+				roleNames[i] = r.Name
+			}
+			var verifyRoles []models.Role
+			DB.Model(&user).Association("Roles").Find(&verifyRoles)
+			log.Printf("    ✅ Successfully assigned roles [%s] to user: %s (verified: %d)", strings.Join(roleNames, ", "), user.Username, len(verifyRoles))
+		} else {
+			log.Printf("  ⚠️ No roles to assign for user: %s", user.Username)
+		}
+	}
+
+	// Final count
+	var finalCount int64
+	DB.Table("user_roles").Count(&finalCount)
+	log.Printf("✅ User roles seeded: %d total user_role records", finalCount)
+}
+
+// seedUserPermissions assigns permissions directly to users (UserPermission join table)
+func seedUserPermissions() {
+	log.Println("🌱 ========================================")
+	log.Println("🌱 Seeding user permissions (UserPermission relationships)...")
+	log.Println("🌱 ========================================")
+
+	var users []models.User
+	var permissions []models.Permission
+	if err := DB.Find(&users).Error; err != nil {
+		log.Printf("❌ Error loading users: %v", err)
+		log.Println("❌ seedUserPermissions() ABORTED due to error loading users")
+		return
+	}
+	if err := DB.Find(&permissions).Error; err != nil {
+		log.Printf("❌ Error loading permissions: %v", err)
+		log.Println("❌ seedUserPermissions() ABORTED due to error loading permissions")
+		return
+	}
+
+	if len(users) == 0 || len(permissions) == 0 {
+		log.Printf("⚠️ No users or permissions found (users: %d, permissions: %d), skipping user permission seeding", len(users), len(permissions))
+		log.Println("⚠️ seedUserPermissions() ABORTED - no data to seed")
+		return
+	}
+
+	log.Printf("📊 Found %d users and %d permissions", len(users), len(permissions))
+
+	// Assign direct permissions to users (optional - usually permissions come from roles)
+	// This is useful for granting specific permissions that override role-based permissions
+	for _, user := range users {
+		var permsToAssign []models.Permission
+
+		switch user.Username {
+		case "admin":
+			// Admin user gets ALL permissions directly (in addition to role-based)
+			permsToAssign = permissions
+			log.Printf("🔑 Admin user found, assigning all %d direct permissions", len(permissions))
+		default:
+			// Other users don't get direct permissions (they get them from roles)
+			permsToAssign = []models.Permission{}
+		}
+
+		// Replace all direct permissions for this user using GORM association
+		if len(permsToAssign) > 0 {
+			// Reload user to ensure we have the latest version
+			var currentUser models.User
+			if err := DB.First(&currentUser, user.ID).Error; err != nil {
+				log.Printf("❌ Failed to reload user %s: %v", user.Username, err)
+				continue
+			}
+
+			log.Printf("  → Assigning %d direct permissions to user '%s'...", len(permsToAssign), user.Username)
+			// Use direct SQL to insert with created_at
+			DB.Exec("DELETE FROM user_permissions WHERE user_id = ?", currentUser.ID)
+			now := time.Now()
+			for _, perm := range permsToAssign {
+				DB.Exec("INSERT INTO user_permissions (user_id, permission_id, created_at) VALUES (?, ?, ?) ON CONFLICT (user_id, permission_id) DO NOTHING", currentUser.ID, perm.ID, now)
+			}
+			var err error
+			if err != nil {
+				log.Printf("    ❌ Failed to assign permissions to user %s: %v", user.Username, err)
+			} else {
+				log.Printf("    ✅ Successfully assigned %d direct permissions to user: %s", len(permsToAssign), user.Username)
+
+				// Verify the assignment
+				var assignedPerms []models.Permission
+				DB.Model(&currentUser).Association("Permissions").Find(&assignedPerms)
+				log.Printf("    ✓ Verified: User '%s' now has %d direct permissions", user.Username, len(assignedPerms))
+			}
+		} else {
+			// Clear any existing direct permissions for non-admin users
+			DB.Exec("DELETE FROM user_permissions WHERE user_id = ?", user.ID)
+		}
+	}
+
+	// Final count
+	var finalCount int64
+	DB.Table("user_permissions").Count(&finalCount)
+	log.Printf("✅ User permissions seeded: %d total user_permission records", finalCount)
 }
 
 // Products and Facilities

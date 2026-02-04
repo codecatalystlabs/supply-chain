@@ -58,7 +58,21 @@ func CreatePharmacyStock(c *gin.Context) {
 // @Router /pharmacy-stock [get]
 func ListPharmacyStock(c *gin.Context) {
 	var records []models.PharmacyStock
-	if err := config.DB.Find(&records).Error; err != nil {
+	query := config.DB
+
+	// Apply facility filter if user is facility-scoped
+	if user, exists := c.Get("user"); exists {
+		u := user.(*models.User)
+		if u.FacilityID != nil && !u.HasRole("super_admin") {
+			// Get facility code
+			var facility models.Facility
+			if err := config.DB.First(&facility, *u.FacilityID).Error; err == nil {
+				query = query.Where("pha_facility_code = ?", facility.FacilityCode)
+			}
+		}
+	}
+
+	if err := query.Find(&records).Error; err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}

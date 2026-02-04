@@ -87,6 +87,18 @@ func ListStockAdjustments(c *gin.Context) {
 	var records []models.StockAdjustment
 	query := config.DB.Preload("Pharmacy")
 
+	// Apply facility filter if user is facility-scoped
+	if user, exists := c.Get("user"); exists {
+		u := user.(*models.User)
+		if u.FacilityID != nil && !u.HasRole("super_admin") {
+			// Get facility code
+			var facility models.Facility
+			if err := config.DB.First(&facility, *u.FacilityID).Error; err == nil {
+				query = query.Where("adj_facility_code = ?", facility.FacilityCode)
+			}
+		}
+	}
+
 	// Apply filters
 	if facilityCode := c.Query("facility_code"); facilityCode != "" {
 		query = query.Where("adj_facility_code = ?", facilityCode)
