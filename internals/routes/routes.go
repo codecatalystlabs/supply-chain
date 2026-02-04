@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"supply-chain/internals/handlers"
 	webRoutes "supply-chain/internals/web/routes"
 
 	"github.com/gin-gonic/gin"
@@ -34,6 +35,11 @@ func SetupRoutes(router *gin.Engine) {
 	SetupOrderRoutes(api)
 	SetupPatientRoutes(api)
 	SetupEMRRoutes(api)
+	SetupUserRoutes(api)
+	
+	// Roles endpoint
+	api.GET("/roles", handlers.ListRoles)
+	api.GET("/roles/:id", handlers.GetRole)
 
 	// Web routes (for future dashboard)
 	webRoutes.SetupWebRoutes(router)

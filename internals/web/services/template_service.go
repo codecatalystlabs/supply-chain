@@ -24,10 +24,10 @@ var templateService *TemplateService
 func findTemplatesPath() string {
 	// Possible paths relative to different working directories
 	possiblePaths := []string{
-		"internals/web/views",                    // From project root
-		"../internals/web/views",                 // From cmd/server
-		"../../internals/web/views",              // From cmd/server/server
-		"./internals/web/views",                 // Current directory
+		"internals/web/views",       // From project root
+		"../internals/web/views",    // From cmd/server
+		"../../internals/web/views", // From cmd/server/server
+		"./internals/web/views",     // Current directory
 	}
 
 	// Get current working directory
@@ -108,38 +108,67 @@ func (ts *TemplateService) LoadTemplates() {
 
 	// Parse each child template separately with base.tpl
 	// This keeps each template's "content" block isolated
+	log.Printf("Found %d template files to process\n", len(matches))
 	for _, tplFile := range matches {
 		filename := filepath.Base(tplFile)
 
 		// Skip base and sidebar as they'll be included with each page
 		if filename == "base.tpl" || filename == "sidebar_menu.tpl" {
+			log.Printf("⏭️  Skipping %s (base/sidebar template)\n", filename)
 			continue
 		}
 
 		// Get relative path from templates directory for subdirectory support
-		relPath, err := filepath.Rel(ts.templatesPath, tplFile)
-		if err != nil {
+		relPath, relErr := filepath.Rel(ts.templatesPath, tplFile)
+		if relErr != nil {
 			relPath = filename // Fallback to filename if relative path fails
 		}
 
-		// Create a NEW template instance for each page
+		// Create a NEW template instance for each page with helper functions
 		// Parse base + sidebar + child template together
 		// Use filename as the template name (this is what ExecuteTemplate will use)
-		tmpl, err := template.New(filename).ParseFiles(basePath, sidebarPath, tplFile)
-		if err != nil {
-			log.Printf("Error loading template %s: %v\n", relPath, err)
-		} else {
-			// Store by filename (for backward compatibility) and by relative path
-			// Both keys point to the same template, which uses 'filename' as its name
-			ts.templates[filename] = tmpl
-			if relPath != filename {
-				ts.templates[relPath] = tmpl
-			}
-			log.Printf("✅ Loaded %s (template name: %s)\n", relPath, filename)
+		tmpl := template.New(filename).Funcs(template.FuncMap{
+			"get": func(m map[string]interface{}, key string) interface{} {
+				if val, ok := m[key]; ok {
+					return val
+				}
+				return nil
+			},
+			"getString": func(m map[string]interface{}, key string) string {
+				if val, ok := m[key]; ok {
+					if str, ok := val.(string); ok {
+						return str
+					}
+				}
+				return ""
+			},
+		})
+
+		tmpl, parseErr := tmpl.ParseFiles(basePath, sidebarPath, tplFile)
+		if parseErr != nil {
+			log.Printf("❌ Error loading template %s: %v\n", relPath, parseErr)
+			log.Printf("   Base path: %s (exists: %v)\n", basePath, fileExists(basePath))
+			log.Printf("   Sidebar path: %s (exists: %v)\n", sidebarPath, fileExists(sidebarPath))
+			log.Printf("   Template file: %s (exists: %v)\n", tplFile, fileExists(tplFile))
+			continue // Skip this template and continue with others
 		}
+
+		// Store by filename (for backward compatibility) and by relative path
+		// Both keys point to the same template, which uses 'filename' as its name
+		ts.templates[filename] = tmpl
+		if relPath != filename {
+			ts.templates[relPath] = tmpl
+		}
+		log.Printf("✅ Loaded %s (stored as: %s, template name: %s)\n", relPath, filename, filename)
 	}
 
-	log.Printf("✅ All templates loaded successfully")
+	log.Printf("✅ All templates loaded successfully. Total templates: %d\n", len(ts.templates))
+}
+
+// Helper function to check if file exists
+func fileExists(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil
 }
 
 // RenderTemplate renders a template with data
@@ -156,8 +185,18 @@ func (ts *TemplateService) RenderTemplate(c *gin.Context, templateName string, d
 	// Get the specific template instance for this page
 	tmpl, exists := ts.templates[templateName]
 	if !exists {
-		log.Printf("❌ Error: template '%s' not found\n", templateName)
-		c.JSON(500, gin.H{"error": "template not found", "template": templateName})
+		// Log available templates for debugging
+		availableTemplates := make([]string, 0, len(ts.templates))
+		for key := range ts.templates {
+			availableTemplates = append(availableTemplates, key)
+		}
+		log.Printf("❌ Error: template '%s' not found. Available templates: %v\n", templateName, availableTemplates)
+		c.JSON(500, gin.H{
+			"error":               "template not found",
+			"template":            templateName,
+			"available_templates": availableTemplates,
+			"templates_path":      ts.templatesPath,
+		})
 		return
 	}
 
@@ -168,6 +207,7 @@ func (ts *TemplateService) RenderTemplate(c *gin.Context, templateName string, d
 		actualTemplateName = templateName
 	}
 
+	// Templates already have helper functions from loading, so we can use them directly
 	// Execute the template (it will call base.tpl internally)
 	// Use the actual template name (filename) that was used when creating the template
 	err := tmpl.ExecuteTemplate(c.Writer, actualTemplateName, data)

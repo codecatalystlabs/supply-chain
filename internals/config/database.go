@@ -32,7 +32,7 @@ func ConnectDatabase() {
 			log.New(os.Stdout, "\r\n", log.LstdFlags),
 			logger.Config{
 				SlowThreshold: time.Second,
-				LogLevel:      logger.Info,
+				LogLevel:      logger.Warn, // Only log warnings and errors, not every query
 				Colorful:      true,
 			},
 		),
@@ -46,6 +46,18 @@ func ConnectDatabase() {
 	log.Println("✅ Database connected")
 
 	// Auto-migrate models
+	// RBAC models
+	if err := DB.AutoMigrate(
+		&models.User{},
+		&models.Role{},
+		&models.Permission{},
+		&models.UserRole{},
+		&models.UserPermission{},
+		&models.RolePermission{},
+	); err != nil {
+		log.Fatal("Failed to migrate RBAC models:", err)
+	}
+
 	// Core entities
 	if err := DB.AutoMigrate(
 		&models.Facility{},

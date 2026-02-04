@@ -300,6 +300,10 @@
             <a href="/cp/home" class="sidebar-nav-link"><i class="icon ion-ios-home-outline"></i> Home</a>
           </li>
           
+          <li class="sidebar-nav-item">
+            <a href="/cp/dashboard" class="sidebar-nav-link"><i class="icon ion-ios-speedometer-outline"></i> Dashboard</a>
+          </li>
+          
           <!-- Facilities & Warehouses -->
           <li class="sidebar-nav-item with-sub">
             <a href="#" class="sidebar-nav-link"><i class="icon ion-ios-location"></i> Facilities & Warehouses</a>
@@ -348,6 +352,15 @@
           <!-- Reports -->
           <li class="sidebar-nav-item">
             <a href="/cp/reports" class="sidebar-nav-link"><i class="icon ion-stats-bars"></i> Reports</a>
+          </li>
+
+          <!-- Administration -->
+          <li class="sidebar-nav-item with-sub">
+            <a href="#" class="sidebar-nav-link"><i class="icon ion-ios-gear"></i> Administration</a>
+            <ul class="nav sidebar-nav-sub">
+              <li class="nav-sub-item"><a href="/cp/users" class="nav-sub-link">User Management</a></li>
+              <li class="nav-sub-item"><a href="/cp/roles" class="nav-sub-link">Role Management</a></li>
+            </ul>
           </li>
 
           {{block "extra_menu" .}}{{end}}

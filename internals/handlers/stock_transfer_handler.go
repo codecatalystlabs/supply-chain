@@ -122,6 +122,14 @@ func ListStockTransfers(c *gin.Context) {
 	var transfers []models.StockTransfer
 	query := config.DB.Preload("FromFacility").Preload("ToFacility").Preload("FromPharmacy").Preload("ToPharmacy")
 
+	// Apply facility filter if user is facility-scoped
+	if user, exists := c.Get("user"); exists {
+		u := user.(*models.User)
+		if u.FacilityID != nil && !u.HasRole("super_admin") {
+			query = query.Where("from_facility_id = ? OR to_facility_id = ?", *u.FacilityID, *u.FacilityID)
+		}
+	}
+
 	// Apply filters
 	if transferType := c.Query("transfer_type"); transferType != "" {
 		query = query.Where("transfer_type = ?", transferType)

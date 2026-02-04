@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"supply-chain/internals/middleware"
 	"supply-chain/internals/web/controllers"
 
 	"github.com/gin-gonic/gin"
@@ -73,45 +74,56 @@ func SetupWebRoutes(router *gin.Engine) {
 	// Web portal routes - all under /cp/* prefix
 	portal := router.Group("/cp")
 	{
-		// Authentication routes
+		// Authentication routes (no auth required)
 		portal.GET("/login", controllers.ShowLoginPage)
 		portal.POST("/login", controllers.HandleLogin)
-		portal.GET("/logout", controllers.Logout)
+		portal.GET("/logout", controllers.Logout) // Logout should be accessible without auth
+		portal.POST("/logout", controllers.Logout) // Support POST logout as well
 
-		// Dashboard
-		portal.GET("/dashboard", controllers.ShowDashboard)
+		// Protected routes (require authentication)
+		protected := portal.Group("")
+		protected.Use(middleware.AuthRequired())
+		{
+			// Home/Dashboard
+			protected.GET("/home", controllers.ShowHome)
+			protected.GET("/dashboard", controllers.ShowDashboard)
 
-		// Inventory Management
-		portal.GET("/inventory", controllers.ShowInventory)
-		portal.GET("/stock", controllers.ShowStockList)
+			// Inventory Management
+			protected.GET("/inventory", middleware.RequirePermission("stock.read"), controllers.ShowInventory)
+			protected.GET("/stock", middleware.RequirePermission("stock.read"), controllers.ShowStockList)
 
-		// Facilities
-		portal.GET("/facilities", controllers.ShowFacilities)
-		portal.GET("/facility-orders", controllers.ShowFacilityOrders)
+			// Facilities
+			protected.GET("/facilities", middleware.RequirePermission("facilities.read"), controllers.ShowFacilities)
+			protected.GET("/facility-orders", middleware.RequirePermission("purchase_orders.read"), controllers.ShowFacilityOrders)
 
-		// Warehouses
-		portal.GET("/warehouses", controllers.ShowWarehouses)
-		portal.GET("/warehouse-orders", controllers.ShowWarehouseOrders)
-		portal.GET("/goods-receipt", controllers.ShowGoodsReceipt)
+			// Warehouses
+			protected.GET("/warehouses", middleware.RequirePermission("warehouses.read"), controllers.ShowWarehouses)
+			protected.GET("/warehouse-orders", middleware.RequirePermission("purchase_orders.read"), controllers.ShowWarehouseOrders)
+			protected.GET("/goods-receipt", middleware.RequirePermission("stock.read"), controllers.ShowGoodsReceipt)
 
-		// Procurement
-		portal.GET("/procurement", controllers.ShowProcurement)
-		portal.GET("/purchase-orders", controllers.ShowPurchaseOrders)
-		portal.GET("/procurement-plans", controllers.ShowProcurementPlans)
+			// Procurement
+			protected.GET("/procurement", middleware.RequirePermission("procurement_plans.read"), controllers.ShowProcurement)
+			protected.GET("/purchase-orders", middleware.RequirePermission("purchase_orders.read"), controllers.ShowPurchaseOrders)
+			protected.GET("/procurement-plans", middleware.RequirePermission("procurement_plans.read"), controllers.ShowProcurementPlans)
 
-		// Pharmacies
-		portal.GET("/pharmacies", controllers.ShowPharmacies)
-		portal.GET("/pharmacy-stock", controllers.ShowPharmacyStock)
+			// Pharmacies
+			protected.GET("/pharmacies", middleware.RequirePermission("pharmacies.read"), controllers.ShowPharmacies)
+			protected.GET("/pharmacy-stock", middleware.RequirePermission("stock.read"), controllers.ShowPharmacyStock)
 
-		// Stock Management
-		portal.GET("/stock-on-hand", controllers.ShowStockOnHand)
-		portal.GET("/stock-dispensed", controllers.ShowStockDispensed)
-		portal.GET("/stock-adjustments", controllers.ShowStockAdjustments)
-		portal.GET("/stock-returns", controllers.ShowStockReturns)
-		portal.GET("/stock-transfers", controllers.ShowStockTransfers)
+			// Stock Management
+			protected.GET("/stock-on-hand", middleware.RequirePermission("stock.read"), controllers.ShowStockOnHand)
+			protected.GET("/stock-dispensed", middleware.RequirePermission("stock.read"), controllers.ShowStockDispensed)
+			protected.GET("/stock-adjustments", middleware.RequirePermission("stock.adjust"), controllers.ShowStockAdjustments)
+			protected.GET("/stock-returns", middleware.RequirePermission("stock.read"), controllers.ShowStockReturns)
+			protected.GET("/stock-transfers", middleware.RequirePermission("stock.transfer"), controllers.ShowStockTransfers)
 
-		// Reports
-		portal.GET("/patient-visits", controllers.ShowPatientVisits)
-		portal.GET("/product-amc", controllers.ShowProductAMC)
+		// Patient Management
+		protected.GET("/patient-visits", middleware.RequirePermission("patient_visits.read"), controllers.ShowPatientVisits)
+		protected.GET("/product-amc", middleware.RequirePermission("reports.read"), controllers.ShowProductAMC)
+
+		// User Management (Admin only)
+		protected.GET("/users", middleware.RequirePermission("admin.users"), controllers.ShowUsers)
+		protected.GET("/roles", middleware.RequirePermission("admin.roles"), controllers.ShowRoles)
+		}
 	}
 }

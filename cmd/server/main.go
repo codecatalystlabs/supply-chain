@@ -4,6 +4,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 
@@ -36,7 +38,19 @@ func main() {
 	config.ConnectDatabase()
 	config.SeedDatabase()
 
-	router := gin.Default()
+	// Disable Gin's debug logging to reduce noise
+	gin.SetMode(gin.ReleaseMode)
+	router := gin.New()
+	router.Use(gin.Recovery())
+
+	// Initialize sessions
+	sessionSecret := os.Getenv("SESSION_SECRET")
+	if sessionSecret == "" {
+		sessionSecret = "supply-chain-secret-key-change-in-production"
+		log.Println("⚠️  Using default session secret. Set SESSION_SECRET in .env for production!")
+	}
+	store := cookie.NewStore([]byte(sessionSecret))
+	router.Use(sessions.Sessions("supply_chain_session", store))
 
 	// Apply global middleware
 	router.Use(middleware.CORS())

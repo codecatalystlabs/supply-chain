@@ -72,7 +72,17 @@ func CreateProcurementPlan(c *gin.Context) {
 // @Router /procurement [get]
 func ListProcurementPlans(c *gin.Context) {
 	var plans []models.ProcurementPlan
-	if err := config.DB.Find(&plans).Error; err != nil {
+	query := config.DB
+
+	// Apply facility filter if user is facility-scoped
+	if user, exists := c.Get("user"); exists {
+		u := user.(*models.User)
+		if u.FacilityID != nil && !u.HasRole("super_admin") {
+			query = query.Where("facility_id = ?", *u.FacilityID)
+		}
+	}
+
+	if err := query.Find(&plans).Error; err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
