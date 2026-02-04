@@ -146,7 +146,7 @@
           <img src="/cp/static/img/coat_fine.png" alt="SCM" style="max-width: 100px; height: 100px;">
         </div>
         <h3 class="portal-title">SCM</h3>
-        <p class="portal-subtitle">Supply Chain Management Portal</p>
+        <p class="portal-subtitle">Supply Chain Management</p>
       </div>
       <div class="signin-box" style="padding:5px!important;">
         {{if .Errors.general}}
