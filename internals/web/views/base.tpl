@@ -332,7 +332,7 @@
               <li class="nav-sub-item"><a href="/cp/purchase-orders" class="nav-sub-link">Purchase Orders</a></li>
               <li class="nav-sub-item"><a href="/cp/facility-orders" class="nav-sub-link">Facility Orders</a></li>
               <li class="nav-sub-item"><a href="/cp/warehouse-orders" class="nav-sub-link">Warehouse Orders</a></li>
-              <li class="nav-sub-item"><a href="/cp/goods-receipts" class="nav-sub-link">Goods Receipts</a></li>
+              <li class="nav-sub-item"><a href="/cp/goods-receipt" class="nav-sub-link">Goods Receipts</a></li>
             </ul>
           </li>
 

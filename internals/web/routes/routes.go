@@ -1,16 +1,59 @@
 package routes
 
 import (
+	"log"
+	"os"
+	"path/filepath"
 	"supply-chain/internals/web/controllers"
 
 	"github.com/gin-gonic/gin"
 )
 
+// findStaticPath finds the static files directory by checking multiple possible locations
+func findStaticPath() string {
+	// Possible paths relative to different working directories
+	possiblePaths := []string{
+		"internals/web/static",                    // From project root
+		"../internals/web/static",                 // From cmd/server
+		"../../internals/web/static",              // From cmd/server/server
+		"./internals/web/static",                 // Current directory
+	}
+
+	// Get current working directory
+	wd, err := os.Getwd()
+	if err == nil {
+		// Also try absolute paths
+		possiblePaths = append(possiblePaths,
+			filepath.Join(wd, "internals/web/static"),
+			filepath.Join(wd, "../internals/web/static"),
+			filepath.Join(wd, "../../internals/web/static"),
+		)
+	}
+
+	// Check each path
+	for _, path := range possiblePaths {
+		if info, err := os.Stat(path); err == nil && info.IsDir() {
+			absPath, err := filepath.Abs(path)
+			if err == nil {
+				return absPath
+			}
+			return path
+		}
+	}
+
+	// Default fallback
+	return "internals/web/static"
+}
+
 // SetupWebRoutes configures all web portal routes under /cp/* prefix
 func SetupWebRoutes(router *gin.Engine) {
+	// Find static files directory dynamically
+	staticPath := findStaticPath()
+	log.Printf("📁 Serving static files from: %s\n", staticPath)
+	
 	// Serve static files from two paths for convenience
-	router.Static("/static", "internals/web/static")
-	router.Static("/cp/static", "internals/web/static")
+	router.Static("/static", staticPath)
+	router.Static("/cp/static", staticPath)
 
 	// Home/Landing page (JSON API info)
 	router.GET("/", func(c *gin.Context) {
@@ -59,6 +102,13 @@ func SetupWebRoutes(router *gin.Engine) {
 		// Pharmacies
 		portal.GET("/pharmacies", controllers.ShowPharmacies)
 		portal.GET("/pharmacy-stock", controllers.ShowPharmacyStock)
+
+		// Stock Management
+		portal.GET("/stock-on-hand", controllers.ShowStockOnHand)
+		portal.GET("/stock-dispensed", controllers.ShowStockDispensed)
+		portal.GET("/stock-adjustments", controllers.ShowStockAdjustments)
+		portal.GET("/stock-returns", controllers.ShowStockReturns)
+		portal.GET("/stock-transfers", controllers.ShowStockTransfers)
 
 		// Reports
 		portal.GET("/patient-visits", controllers.ShowPatientVisits)

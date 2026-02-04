@@ -3,25 +3,25 @@
 {{define "content"}}
 <div class="card">
   <div class="card-header">
-    <h6 class="card-title">Procurement Plans</h6>
+    <h6 class="card-title">Stock Dispensed</h6>
   </div>
   <div class="card-body">
-    <table class="windows-table" id="procurementPlansTable">
+    <table class="windows-table" id="stockDispensedTable">
       <thead>
         <tr>
           <th>ID</th>
-          <th>Plan System Code</th>
-          <th>Store Code</th>
-          <th>Facility</th>
-          <th>Financial Year</th>
-          <th>Period Type</th>
-          <th>Period Start</th>
-          <th>Period End</th>
-          <th>Items Count</th>
-          <th>Created</th>
+          <th>System Code</th>
+          <th>Facility Code</th>
+          <th>Product Code</th>
+          <th>Batch Number</th>
+          <th>Quantity</th>
+          <th>Dispense Date</th>
+          <th>Patient Hash</th>
+          <th>Expiry Date</th>
+          <th>Status</th>
         </tr>
       </thead>
-      <tbody id="procurementPlansBody">
+      <tbody id="stockDispensedBody">
         <tr>
           <td colspan="10" class="empty-state">
             <i class="icon ion-ios-refresh" style="font-size: 24px; display: block; margin-bottom: 8px;"></i>
@@ -37,15 +37,15 @@
 {{define "extra_js"}}
 <script>
 $(document).ready(function() {
-  loadProcurementPlans();
+  loadStockDispensed();
 });
 
-function loadProcurementPlans() {
+function loadStockDispensed() {
   $.ajax({
-    url: '/api/v1/procurement-plans',
+    url: '/api/v1/stock/dispensed',
     method: 'GET',
     success: function(data) {
-      const tbody = $('#procurementPlansBody');
+      const tbody = $('#stockDispensedBody');
       tbody.empty();
       
       if (data && data.length > 0) {
@@ -53,15 +53,15 @@ function loadProcurementPlans() {
           const row = `
             <tr>
               <td>${item.id}</td>
-              <td>${item.plan_system_code || '-'}</td>
-              <td>${item.store_code || '-'}</td>
-              <td>${item.facility_name || item.facility_code || '-'}</td>
-              <td>${item.financial_year || '-'}</td>
-              <td>${item.plan_period_type || '-'}</td>
-              <td>${item.plan_period_start ? new Date(item.plan_period_start).toLocaleDateString() : '-'}</td>
-              <td>${item.plan_period_end ? new Date(item.plan_period_end).toLocaleDateString() : '-'}</td>
-              <td>${item.items ? item.items.length : 0}</td>
-              <td>${item.created_at ? new Date(item.created_at).toLocaleDateString() : '-'}</td>
+              <td>${item.dsp_system_code || '-'}</td>
+              <td>${item.dsp_facility_code || '-'}</td>
+              <td>${item.dsp_product_code || '-'}</td>
+              <td>${item.dsp_batch_number || '-'}</td>
+              <td>${item.dsp_dispensed_quantity || 0}</td>
+              <td>${item.dsp_dispense_date ? new Date(item.dsp_dispense_date).toLocaleDateString() : '-'}</td>
+              <td>${item.dsp_patient_hash ? item.dsp_patient_hash.substring(0, 8) + '...' : '-'}</td>
+              <td>${item.dsp_expiry_date ? new Date(item.dsp_expiry_date).toLocaleDateString() : '-'}</td>
+              <td><span class="badge badge-${item.validation_status === 1 ? 'success' : 'warning'}">${item.validation_status === 1 ? 'Valid' : 'Pending'}</span></td>
             </tr>
           `;
           tbody.append(row);
@@ -71,14 +71,14 @@ function loadProcurementPlans() {
           <tr>
             <td colspan="10" class="empty-state">
               <i class="icon ion-ios-information-outline" style="font-size: 24px; display: block; margin-bottom: 8px;"></i>
-              No procurement plans found
+              No stock dispensed records found
             </td>
           </tr>
         `);
       }
     },
     error: function(xhr, status, error) {
-      $('#procurementPlansBody').html(`
+      $('#stockDispensedBody').html(`
         <tr>
           <td colspan="10" class="empty-state">
             <i class="icon ion-ios-close-circle-outline" style="font-size: 24px; display: block; margin-bottom: 8px;"></i>
@@ -86,9 +86,10 @@ function loadProcurementPlans() {
           </td>
         </tr>
       `);
-      toastr.error('Failed to load procurement plans data');
+      toastr.error('Failed to load stock dispensed data');
     }
   });
 }
 </script>
 {{end}}
+

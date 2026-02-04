@@ -3,28 +3,26 @@
 {{define "content"}}
 <div class="card">
   <div class="card-header">
-    <h6 class="card-title">Product AMC</h6>
+    <h6 class="card-title">Stock on Hand</h6>
   </div>
   <div class="card-body">
-    <table class="windows-table" id="productAmcTable">
+    <table class="windows-table" id="stockOnHandTable">
       <thead>
         <tr>
           <th>ID</th>
           <th>System Code</th>
           <th>Facility Code</th>
           <th>Product Code</th>
-          <th>Product Name</th>
-          <th>AMC Value</th>
-          <th>Month</th>
-          <th>Year</th>
-          <th>Date</th>
-          <th>Days Out of Stock</th>
+          <th>Batch Number</th>
+          <th>Quantity</th>
+          <th>Expiry Date</th>
+          <th>Timestamp</th>
           <th>Status</th>
         </tr>
       </thead>
-      <tbody id="productAmcBody">
+      <tbody id="stockOnHandBody">
         <tr>
-          <td colspan="11" class="empty-state">
+          <td colspan="9" class="empty-state">
             <i class="icon ion-ios-refresh" style="font-size: 24px; display: block; margin-bottom: 8px;"></i>
             Loading...
           </td>
@@ -38,15 +36,15 @@
 {{define "extra_js"}}
 <script>
 $(document).ready(function() {
-  loadProductAMC();
+  loadStockOnHand();
 });
 
-function loadProductAMC() {
+function loadStockOnHand() {
   $.ajax({
-    url: '/api/v1/product-amc',
+    url: '/api/v1/stock/on-hand',
     method: 'GET',
     success: function(data) {
-      const tbody = $('#productAmcBody');
+      const tbody = $('#stockOnHandBody');
       tbody.empty();
       
       if (data && data.length > 0) {
@@ -54,15 +52,13 @@ function loadProductAMC() {
           const row = `
             <tr>
               <td>${item.id}</td>
-              <td>${item.amc_system_code || '-'}</td>
-              <td>${item.amc_facility_code || '-'}</td>
-              <td>${item.amc_product_code || '-'}</td>
-              <td>${item.amc_product_name || '-'}</td>
-              <td><strong>${item.amc_value || 0}</strong></td>
-              <td>${item.amc_month || '-'}</td>
-              <td>${item.amc_year || '-'}</td>
-              <td>${item.amc_date ? new Date(item.amc_date).toLocaleDateString() : '-'}</td>
-              <td>${item.amc_days_out_stock || 0}</td>
+              <td>${item.src_system_code || '-'}</td>
+              <td>${item.src_facility_code || '-'}</td>
+              <td>${item.src_product_code || '-'}</td>
+              <td>${item.src_batch_number || '-'}</td>
+              <td>${item.src_quantity || 0}</td>
+              <td>${item.src_expiry_date ? new Date(item.src_expiry_date).toLocaleDateString() : '-'}</td>
+              <td>${item.src_timestamp ? new Date(item.src_timestamp).toLocaleString() : '-'}</td>
               <td><span class="badge badge-${item.validation_status === 1 ? 'success' : 'warning'}">${item.validation_status === 1 ? 'Valid' : 'Pending'}</span></td>
             </tr>
           `;
@@ -71,26 +67,27 @@ function loadProductAMC() {
       } else {
         tbody.append(`
           <tr>
-            <td colspan="11" class="empty-state">
+            <td colspan="9" class="empty-state">
               <i class="icon ion-ios-information-outline" style="font-size: 24px; display: block; margin-bottom: 8px;"></i>
-              No product AMC data found
+              No stock on hand records found
             </td>
           </tr>
         `);
       }
     },
     error: function(xhr, status, error) {
-      $('#productAmcBody').html(`
+      $('#stockOnHandBody').html(`
         <tr>
-          <td colspan="11" class="empty-state">
+          <td colspan="9" class="empty-state">
             <i class="icon ion-ios-close-circle-outline" style="font-size: 24px; display: block; margin-bottom: 8px;"></i>
             Error loading data: ${error}
           </td>
         </tr>
       `);
-      toastr.error('Failed to load product AMC data');
+      toastr.error('Failed to load stock on hand data');
     }
   });
 }
 </script>
 {{end}}
+
