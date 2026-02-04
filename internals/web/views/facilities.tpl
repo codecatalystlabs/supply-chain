@@ -8,7 +8,7 @@
     <h6 class="card-title">Health Facilities</h6>
   </div>
   <div class="card-body">
-    <table class="table table-hover table-striped">
+    <table class="windows-table">
       <thead>
         <tr>
           <th>ID</th>
@@ -25,14 +25,14 @@
           <tr>
             <td>{{.ID}}</td>
             <td>{{.Name}}</td>
-            <td><span class="badge badge-info">{{.FacilityType}}</span></td>
+            <td><span class="status-badge pending">{{.FacilityType}}</span></td>
             <td>{{.Location}}</td>
-            <td><span class="badge badge-success">Active</span></td>
+            <td><span class="status-badge active">Active</span></td>
             <td>{{.CreatedAt}}</td>
           </tr>
           {{end}}
         {{else}}
-          <tr><td colspan="6" class="text-center text-muted">No facilities found</td></tr>
+          <tr><td colspan="6" class="empty-state"><i class="icon ion-ios-information-outline" style="font-size: 24px; display: block; margin-bottom: 8px;"></i>No facilities found</td></tr>
         {{end}}
       </tbody>
     </table>

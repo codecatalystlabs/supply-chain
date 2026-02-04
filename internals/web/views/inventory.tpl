@@ -9,7 +9,7 @@
     <div class="alert alert-info">
       <strong>Inventory System:</strong> Monitor and manage all stock levels across facilities
     </div>
-    <table class="table table-hover table-striped">
+    <table class="windows-table">
       <thead>
         <tr>
           <th>Item</th>

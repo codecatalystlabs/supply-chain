@@ -6,7 +6,7 @@
     <h6 class="card-title">Warehouses</h6>
   </div>
   <div class="card-body">
-    <table class="table table-hover table-striped">
+    <table class="windows-table">
       <thead>
         <tr>
           <th>ID</th>
@@ -26,11 +26,11 @@
             <td>{{.Location}}</td>
             <td>{{.Capacity}}</td>
             <td>{{.CurrentStock}}</td>
-            <td><span class="badge badge-success">Active</span></td>
+            <td><span class="status-badge active">Active</span></td>
           </tr>
           {{end}}
         {{else}}
-          <tr><td colspan="6" class="text-center text-muted">No warehouses found</td></tr>
+          <tr><td colspan="6" class="empty-state"><i class="icon ion-ios-information-outline" style="font-size: 24px; display: block; margin-bottom: 8px;"></i>No warehouses found</td></tr>
         {{end}}
       </tbody>
     </table>

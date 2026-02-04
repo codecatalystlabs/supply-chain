@@ -6,7 +6,7 @@
     <h6 class="card-title">Goods Receipt</h6>
   </div>
   <div class="card-body">
-    <table class="table table-hover table-striped">
+    <table class="windows-table">
       <thead>
         <tr>
           <th>Receipt ID</th>
