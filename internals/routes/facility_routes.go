@@ -12,6 +12,8 @@ func SetupFacilityRoutes(api *gin.RouterGroup) {
 	facilities := api.Group("/facilities")
 	{
 		facilities.POST("/", handlers.CreateFacility)
+		facilities.GET("/regions", handlers.ListRegions)
+		facilities.GET("/districts", handlers.ListDistricts)
 		facilities.GET("/", handlers.ListFacilities)
 		facilities.GET("/:id", handlers.GetFacility)
 		facilities.PUT("/:id", handlers.UpdateFacility)

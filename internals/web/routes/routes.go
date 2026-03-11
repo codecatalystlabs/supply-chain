@@ -105,6 +105,7 @@ func SetupWebRoutes(router *gin.Engine) {
 			protected.GET("/procurement", middleware.RequirePermission("procurement_plans.read"), controllers.ShowProcurement)
 			protected.GET("/purchase-orders", middleware.RequirePermission("purchase_orders.read"), controllers.ShowPurchaseOrders)
 			protected.GET("/procurement-plans", middleware.RequirePermission("procurement_plans.read"), controllers.ShowProcurementPlans)
+			protected.GET("/procurement-plan-import", middleware.RequirePermission("procurement_plans.read"), controllers.ShowProcurementPlanImport)
 
 			// Pharmacies
 			protected.GET("/pharmacies", middleware.RequirePermission("pharmacies.read"), controllers.ShowPharmacies)

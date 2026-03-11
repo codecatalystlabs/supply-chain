@@ -58,6 +58,19 @@ func ConnectDatabase() {
 		log.Fatal("Failed to migrate RBAC models:", err)
 	}
 
+	// Location lookup tables (regions, zones, districts, levels of care)
+	// Clean orphan rows so FK constraints can be applied (e.g. after schema or data changes).
+	DB.Exec(`DELETE FROM "districts" WHERE "zone_id" NOT IN (SELECT "id" FROM "zones")`)
+	DB.Exec(`DELETE FROM "zones" WHERE "region_id" IS NOT NULL AND "region_id" NOT IN (SELECT "id" FROM "regions")`)
+	if err := DB.AutoMigrate(
+		&models.Region{},
+		&models.Zone{},
+		&models.District{},
+		&models.LevelOfCare{},
+	); err != nil {
+		log.Fatal("Failed to migrate location models:", err)
+	}
+
 	// Core entities
 	if err := DB.AutoMigrate(
 		&models.Facility{},
@@ -69,10 +82,8 @@ func ConnectDatabase() {
 		log.Fatal("Failed to migrate core models:", err)
 	}
 	
-	// Procurement and orders
+	// Procurement and orders (exclude ProcurementPlan tables – managed externally)
 	if err := DB.AutoMigrate(
-		&models.ProcurementPlan{},
-		&models.ProcurementPlanItem{},
 		&models.FacilityOrder{},
 		&models.FacilityOrderItem{},
 		&models.FacilityDelivery{},

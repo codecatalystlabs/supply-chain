@@ -105,34 +105,6 @@ func Seed() {
 	}
 
 	// =======================
-	// Procurement Plan
-	// =======================
-	db.Model(&models.ProcurementPlan{}).Count(&cnt)
-	if cnt == 0 {
-		plan := models.ProcurementPlan{
-			PlanSystemCode: "PROC_SYS",
-			StoreCode:      "CENTRAL_STORE",
-			CreatedAt:      time.Now().Add(-3 * 24 * time.Hour),
-			Notes:          ptrString("Quarterly restock for region north"),
-		}
-
-		if err := db.Create(&plan).Error; err != nil {
-			log.Println("seed: failed to create ProcurementPlan:", err)
-		} else {
-			items := []models.ProcurementPlanItem{
-				{ProcurementID: plan.ID, ProductCode: "PARA500", Quantity: 1000, NeededBy: time.Now().AddDate(0, 1, 0), Status: "planned"},
-				{ProcurementID: plan.ID, ProductCode: "AMOX250", Quantity: 500, NeededBy: time.Now().AddDate(0, 1, 0), Status: "planned"},
-			}
-
-			for _, it := range items {
-				if err := db.Create(&it).Error; err != nil {
-					log.Println("seed: failed to create ProcurementPlanItem:", err)
-				}
-			}
-		}
-	}
-
-	// =======================
 	// Warehouse Orders + Deliveries
 	// =======================
 	db.Model(&models.WarehouseOrder{}).Count(&cnt)

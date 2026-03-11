@@ -29,6 +29,7 @@ func SetupRoutes(router *gin.Engine) {
 	// Setup feature-specific routes
 	SetupStockRoutes(api)
 	SetupProcurementRoutes(api)
+	SetupLocationRoutes(api)
 	SetupFacilityRoutes(api)
 	SetupPharmacyRoutes(api)
 	SetupWarehouseRoutes(api)

@@ -23,6 +23,7 @@ func SetupProcurementRoutes(api *gin.RouterGroup) {
 	{
 		pp.POST("/", handlers.CreateProcurementPlan)
 		pp.GET("/", handlers.ListProcurementPlans)
+		pp.POST("/upload-xls", handlers.UploadProcurementPlanXLS)
 		pp.GET("/:id", handlers.GetProcurementPlan)
 		pp.DELETE("/:id", handlers.DeleteProcurementPlan)
 	}

@@ -23,13 +23,27 @@ type ProcurementPlan struct {
 	Zone                        *string    `gorm:"size:100" json:"zone,omitempty"`
 	ProductCode                 string     `gorm:"size:100" json:"product_code"`
 	ProductDescription          string     `gorm:"size:255" json:"product_description"`
+	UnitOfMeasure               *string    `gorm:"size:50" json:"unit_of_measure,omitempty"`
+	Section                     *string    `gorm:"size:100" json:"section,omitempty"`
+	SubSection                  *string    `gorm:"size:100" json:"sub_section,omitempty"`
 	VenClassification           *string    `gorm:"size:100" json:"ven_classification,omitempty"`
 	UnitPrice                   *float64   `json:"unit_price,omitempty"`
 	Currency                    *string    `gorm:"size:10" json:"currency,omitempty"`
 	PreviousBiMonthlyPlannedQty *int       `json:"previous_bi_monthly_planned_qty,omitempty"`
+	PastAvgNmsIssuePlanQty     *float64   `json:"past_avg_nms_issue_plan_qty,omitempty"`
 	AverageMonthlyConsumption   *float64   `json:"average_monthly_consumption,omitempty"`
 	AverageDaysOutOfStock       *int       `json:"average_days_out_of_stock,omitempty"`
 	AdjustedAmc                 *float64   `json:"adjusted_amc,omitempty"`
+	BiMonthlyPlanQty            *int       `json:"bi_monthly_plan_qty,omitempty"`
+	Comment                     *string    `gorm:"size:500" json:"comment,omitempty"`
+	FundedQty                   *int       `json:"funded_qty,omitempty"`
+	// Budget summary (often same for all rows in a facility plan)
+	IndicativeAnnualBudget       *float64   `json:"indicative_annual_budget,omitempty"`
+	CalculatedAnnualProcurement  *float64   `json:"calculated_annual_procurement,omitempty"`
+	IndicativeBiMonthlyBudget    *float64   `json:"indicative_bi_monthly_budget,omitempty"`
+	CalculatedBiMonthlyProcurement *float64  `json:"calculated_bi_monthly_procurement,omitempty"`
+	RemainingBudget              *float64   `json:"remaining_budget,omitempty"`
+	PercentBudgetRemaining       *float64   `json:"percent_budget_remaining,omitempty"`
 	FinancialYear               string     `gorm:"size:50" json:"financial_year"`
 	PlanPeriodType              *string    `gorm:"size:50" json:"plan_period_type,omitempty"`
 	PlanPeriodStart             *time.Time `json:"plan_period_start,omitempty"`

@@ -30,3 +30,11 @@ func ShowProcurementPlans(c *gin.Context) {
 	}
 	services.GetTemplateService().RenderTemplate(c, "procurement-plans.tpl", viewData)
 }
+
+// ShowProcurementPlanImport displays the import procurement plan (XLS) page
+func ShowProcurementPlanImport(c *gin.Context) {
+	viewData := &views.ViewData{
+		Title: "Import Procurement Plan",
+	}
+	services.GetTemplateService().RenderTemplate(c, "procurement-plan-import.tpl", viewData)
+}

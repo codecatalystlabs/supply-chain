@@ -41,6 +41,7 @@ func SeedDatabase() {
 	log.Println("📋 Starting core entities seeding...")
 	seedWarehouses()
 	seedFacilities()
+	seedLocationLookups()
 	seedPharmacies()
 	seedEMRIntegrations()
 
@@ -858,118 +859,51 @@ func seedWarehouses() {
 	log.Println("✅ Warehouses seeded (2 records)")
 }
 
+// seedLocationLookups: regions and zones are managed in the DB only.
+// Districts are seeded from seed_districts.sql when the districts table is empty
+// (join to existing zones on zone_code + region_code).
+func seedLocationLookups() {
+	log.Println("ℹ️ Location lookups: regions and zones are managed in the DB.")
+	var districtCount int64
+	if err := DB.Model(&models.District{}).Count(&districtCount).Error; err != nil {
+		log.Printf("⚠️ Could not count districts: %v", err)
+		return
+	}
+	if districtCount > 0 {
+		log.Println("ℹ️ Districts already present; skipping district seed.")
+		return
+	}
+	sql := string(seedDistrictsSQL)
+	if err := DB.Exec(sql).Error; err != nil {
+		log.Printf("❌ District seed failed (ensure regions and zones are populated): %v", err)
+		return
+	}
+	var after int64
+	DB.Model(&models.District{}).Count(&after)
+	log.Printf("✅ Districts seeded: %d", after)
+}
+
 func seedFacilities() {
-	facilities := []models.Facility{
-		{
-			FacilityCode:  "HC_KAMPALA_001",
-			FacilityName:  "Kampala Health Center",
-			DHIS2Code:     stringPtr("DHIS2_KLA_001"),
-			LevelOfCare:   stringPtr("HCIV"),
-			District:      stringPtr("Kampala"),
-			Region:        stringPtr("Central"),
-			Zone:          stringPtr("Central"),
-			Address:       stringPtr("Kampala City"),
-			ContactPerson: stringPtr("Dr. John Doe"),
-			ContactPhone:  stringPtr("+256-700-000001"),
-			ContactEmail:  stringPtr("kampala.hc@moh.go.ug"),
-			IsActive:      true,
-			EMRSystemCode: stringPtr("OPENMRS"),
-			EMRSystemName: stringPtr("OpenMRS"),
-			CreatedAt:     time.Now(),
-		},
-		{
-			FacilityCode:  "HC_JINJA_002",
-			FacilityName:  "Jinja Health Center",
-			DHIS2Code:     stringPtr("DHIS2_JNJ_002"),
-			LevelOfCare:   stringPtr("HCIII"),
-			District:      stringPtr("Jinja"),
-			Region:        stringPtr("Eastern"),
-			Zone:          stringPtr("Eastern"),
-			Address:       stringPtr("Jinja Town"),
-			ContactPerson: stringPtr("Dr. Jane Smith"),
-			ContactPhone:  stringPtr("+256-700-000002"),
-			ContactEmail:  stringPtr("jinja.hc@moh.go.ug"),
-			IsActive:      true,
-			EMRSystemCode: stringPtr("DHIS2"),
-			EMRSystemName: stringPtr("DHIS2"),
-			CreatedAt:     time.Now(),
-		},
-		{
-			FacilityCode:  "HC_MBARARA_003",
-			FacilityName:  "Mbarara Health Center",
-			DHIS2Code:     stringPtr("DHIS2_MBR_003"),
-			LevelOfCare:   stringPtr("HCIV"),
-			District:      stringPtr("Mbarara"),
-			Region:        stringPtr("Western"),
-			Zone:          stringPtr("Western"),
-			Address:       stringPtr("Mbarara Town"),
-			ContactPerson: stringPtr("Dr. Peter Okello"),
-			ContactPhone:  stringPtr("+256-700-000003"),
-			ContactEmail:  stringPtr("mbarara.hc@moh.go.ug"),
-			IsActive:      true,
-			EMRSystemCode: stringPtr("OPENMRS"),
-			EMRSystemName: stringPtr("OpenMRS"),
-			CreatedAt:     time.Now(),
-		},
-		{
-			FacilityCode:  "HC_GULU_004",
-			FacilityName:  "Gulu Health Center",
-			DHIS2Code:     stringPtr("DHIS2_GUL_004"),
-			LevelOfCare:   stringPtr("HCIII"),
-			District:      stringPtr("Gulu"),
-			Region:        stringPtr("Northern"),
-			Zone:          stringPtr("Northern"),
-			Address:       stringPtr("Gulu Town"),
-			ContactPerson: stringPtr("Dr. Mary Aceng"),
-			ContactPhone:  stringPtr("+256-700-000004"),
-			ContactEmail:  stringPtr("gulu.hc@moh.go.ug"),
-			IsActive:      true,
-			EMRSystemCode: stringPtr("OPENMRS"),
-			EMRSystemName: stringPtr("OpenMRS"),
-			CreatedAt:     time.Now(),
-		},
-		{
-			FacilityCode:  "HC_MASINDI_005",
-			FacilityName:  "Masindi Health Center",
-			DHIS2Code:     stringPtr("DHIS2_MSD_005"),
-			LevelOfCare:   stringPtr("HCIII"),
-			District:      stringPtr("Masindi"),
-			Region:        stringPtr("Western"),
-			Zone:          stringPtr("Western"),
-			Address:       stringPtr("Masindi Town"),
-			ContactPerson: stringPtr("Dr. James Kigozi"),
-			ContactPhone:  stringPtr("+256-700-000005"),
-			ContactEmail:  stringPtr("masindi.hc@moh.go.ug"),
-			IsActive:      true,
-			EMRSystemCode: stringPtr("OPENMRS"),
-			EMRSystemName: stringPtr("OpenMRS"),
-			CreatedAt:     time.Now(),
-		},
-		{
-			FacilityCode:  "HC_LIRA_006",
-			FacilityName:  "Lira Health Center",
-			DHIS2Code:     stringPtr("DHIS2_LIR_006"),
-			LevelOfCare:   stringPtr("HCIV"),
-			District:      stringPtr("Lira"),
-			Region:        stringPtr("Northern"),
-			Zone:          stringPtr("Northern"),
-			Address:       stringPtr("Lira Town"),
-			ContactPerson: stringPtr("Dr. Sarah Nakato"),
-			ContactPhone:  stringPtr("+256-700-000006"),
-			ContactEmail:  stringPtr("lira.hc@moh.go.ug"),
-			IsActive:      true,
-			EMRSystemCode: stringPtr("DHIS2"),
-			EMRSystemName: stringPtr("DHIS2"),
-			CreatedAt:     time.Now(),
-		},
+	// If facilities already exist, assume you're using real data and skip seed.
+	var count int64
+	if err := DB.Model(&models.Facility{}).Count(&count).Error; err == nil && count > 0 {
+		log.Println("ℹ️ Facilities already present; skipping facility seed.")
+		return
 	}
 
-	for _, facility := range facilities {
-		if err := DB.Create(&facility).Error; err != nil {
-			log.Printf("⚠️ Failed to seed facility: %v", err)
-		}
+	// Use embedded SQL so you can keep the facility master list outside the code.
+	sql := string(seedFacilitiesSQL)
+	if sql == "" {
+		log.Println("⚠️ seedFacilities.sql is empty; skipping facility seed.")
+		return
 	}
-	log.Println("✅ Facilities seeded (6 records)")
+	if err := DB.Exec(sql).Error; err != nil {
+		log.Printf("❌ Facility seed failed: %v", err)
+		return
+	}
+	var after int64
+	DB.Model(&models.Facility{}).Count(&after)
+	log.Printf("✅ Facilities seeded: %d", after)
 }
 
 func seedPharmacies() {

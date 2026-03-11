@@ -64,11 +64,40 @@ func CreateFacility(c *gin.Context) {
 	c.JSON(http.StatusCreated, mapToFacilityResponse(facility))
 }
 
+// @Summary List distinct regions from facilities
+// @Tags Facility
+// @Produce json
+// @Success 200 {array} string
+// @Router /facilities/regions [get]
+func ListRegions(c *gin.Context) {
+	var regions []string
+	config.DB.Model(&models.Facility{}).Where("region IS NOT NULL AND region != ''").Distinct("region").Pluck("region", &regions)
+	c.JSON(http.StatusOK, regions)
+}
+
+// @Summary List distinct districts from facilities
+// @Tags Facility
+// @Produce json
+// @Param region query string false "Filter by region"
+// @Success 200 {array} string
+// @Router /facilities/districts [get]
+func ListDistricts(c *gin.Context) {
+	query := config.DB.Model(&models.Facility{}).Where("district IS NOT NULL AND district != ''").Distinct("district")
+	if region := c.Query("region"); region != "" {
+		query = query.Where("region = ?", region)
+	}
+	var districts []string
+	query.Pluck("district", &districts)
+	c.JSON(http.StatusOK, districts)
+}
+
 // @Summary List facilities
 // @Tags Facility
 // @Produce json
 // @Param active query bool false "Filter by active status"
 // @Param region query string false "Filter by region"
+// @Param district query string false "Filter by district"
+// @Param search query string false "Search by facility code or name"
 // @Success 200 {array} dto.FacilityResponseDTO
 // @Failure 500 {object} map[string]string
 // @Router /facilities [get]
@@ -93,7 +122,14 @@ func ListFacilities(c *gin.Context) {
 		}
 	}
 	if region := c.Query("region"); region != "" {
-		query = query.Where("region = ?", region)
+		query = query.Where("region IS NOT NULL AND LOWER(TRIM(region)) = LOWER(TRIM(?))", region)
+	}
+	if district := c.Query("district"); district != "" {
+		query = query.Where("district IS NOT NULL AND LOWER(TRIM(district)) = LOWER(TRIM(?))", district)
+	}
+	if search := c.Query("search"); search != "" {
+		searchLike := "%" + search + "%"
+		query = query.Where("facility_code ILIKE ? OR facility_name ILIKE ?", searchLike, searchLike)
 	}
 
 	if err := query.Preload("Pharmacies").Find(&facilities).Error; err != nil {

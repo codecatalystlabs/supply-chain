@@ -333,6 +333,7 @@
             <a href="#" class="sidebar-nav-link"><i class="icon ion-ios-cart"></i> Procurement & Orders</a>
             <ul class="nav sidebar-nav-sub">
               <li class="nav-sub-item"><a href="/cp/procurement-plans" class="nav-sub-link">Procurement Plans</a></li>
+              <li class="nav-sub-item"><a href="/cp/procurement-plan-import" class="nav-sub-link">Import Procurement Plan</a></li>
               <li class="nav-sub-item"><a href="/cp/purchase-orders" class="nav-sub-link">Purchase Orders</a></li>
               <li class="nav-sub-item"><a href="/cp/facility-orders" class="nav-sub-link">Facility Orders</a></li>
               <li class="nav-sub-item"><a href="/cp/warehouse-orders" class="nav-sub-link">Warehouse Orders</a></li>
