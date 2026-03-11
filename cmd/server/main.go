@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -42,6 +43,16 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
 	router.Use(gin.Recovery())
+
+	// Increase multipart upload limit (default is too small for Excel files).
+	// Configure via env var MAX_UPLOAD_MB (defaults to 50).
+	maxUploadMB := 50
+	if v := os.Getenv("MAX_UPLOAD_MB"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n > 0 {
+			maxUploadMB = n
+		}
+	}
+	router.MaxMultipartMemory = int64(maxUploadMB) << 20
 
 	// Initialize sessions
 	sessionSecret := os.Getenv("SESSION_SECRET")
